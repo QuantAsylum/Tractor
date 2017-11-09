@@ -13,7 +13,7 @@
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -32,8 +32,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="QAAnalyzer">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\QuantAsylum\QA401\QAAnalyzer.exe</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -45,6 +49,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgTestRun.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgTestRun.Designer.cs">
+      <DependentUpon>DlgTestRun.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Com.QuantAsylum.Tractor.Settings\SerDes.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\TestManager.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\Gain\Gain.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\IMD_ITU\IMD_ITU.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\ITest.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\THD\THD.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\NoiseFloor\NoiseFloor.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\TestBase.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Ui.Extensions\Extensions.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgAddTest.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgAddTest.Designer.cs">
+      <DependentUpon>DlgAddTest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -53,6 +78,15 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgAddTest.resx">
+      <DependentUpon>DlgAddTest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgTestRun.resx">
+      <DependentUpon>DlgTestRun.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -61,6 +95,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
