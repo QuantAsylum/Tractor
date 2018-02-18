@@ -17,7 +17,7 @@ namespace Com.QuantAsylum.Tractor.Tests
         /// is hardcoded into the test class and cannot be modified by the user
         /// </summary>
         /// <returns></returns>
-        string TestDescription();
+        string GetTestDescription();
 
         /// <summary>
         /// Returns the name of the test. This will be shown 
@@ -25,7 +25,9 @@ namespace Com.QuantAsylum.Tractor.Tests
         /// is hardcoded into the test class and cannot be modified by the user
         /// </summary>
         /// <returns></returns>
-        string TestName();
+        string GetTestName();
+
+        //string GetTestType();
 
         /// <summary>
         /// Synchronously execute the test

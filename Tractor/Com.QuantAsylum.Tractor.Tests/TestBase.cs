@@ -1,15 +1,19 @@
 ﻿using Com.QuantAsylum.Tractor.Tests.GainTests;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Tractor;
 using Tractor.Com.QuantAsylum.Tractor.Tests.IMDTests;
 using Tractor.Com.QuantAsylum.Tractor.Tests.NoiseFloors;
+using Tractor.Com.QuantAsylum.Tractor.Tests.THDs;
 
 namespace Com.QuantAsylum.Tractor.Tests
 {
@@ -17,15 +21,16 @@ namespace Com.QuantAsylum.Tractor.Tests
     /// Base class for handling the display and update of data used by each test. 
     /// </summary>
     [Serializable]
-    [System.Xml.Serialization.XmlInclude(typeof(Gain))]
-    [System.Xml.Serialization.XmlInclude(typeof(IMD_ITU))]
-    [System.Xml.Serialization.XmlInclude(typeof(NoiseFloor))]
+    [System.Xml.Serialization.XmlInclude(typeof(Gain01))]
+    [System.Xml.Serialization.XmlInclude(typeof(Imd01))]
+    [System.Xml.Serialization.XmlInclude(typeof(NoiseFloor01))]
+    [System.Xml.Serialization.XmlInclude(typeof(IdInput01))]
+    [System.Xml.Serialization.XmlInclude(typeof(Thd01))]
+    [System.Xml.Serialization.XmlInclude(typeof(Prompt01))]
     public class TestBase 
     {
-        /// <summary>
-        /// Determines if the test will be run or not
-        /// </summary>
-        public bool RunTest { get; set; } = true;
+
+        internal bool RunTest { get; set; } = true;
 
         /// <summary>
         /// Returns the user-assigned name for the test. This name must be unique among
@@ -33,8 +38,31 @@ namespace Com.QuantAsylum.Tractor.Tests
         /// </summary>
         public string Name = "Placeholder";
 
+        /// <summary>
+        /// This is to permit grouping of tests by type. The type should be 
+        /// one of the following:
+        /// User Input
+        /// Level
+        /// Frequency Response
+        /// Phase
+        /// Crosstalk 
+        /// SNR
+        /// Distortion
+        /// 
+        /// Level measures the absolute level of a signal
+        /// Frequency Response measures amplitude relative to a reference amplitude
+        /// Phase measures the phase relationship between two signals
+        /// Crosstalk meausures the leakage between channels
+        /// SNR measures the ratio between the signal and the noise
+        /// Distortion measures THD or THD + N
+        /// </summary>
+        internal enum TestTypeEnum { Unspecified, User, LevelGain, FrequencyResponse, Phase, CrossTalk, SNR, Distortion };
+        internal TestTypeEnum TestType = TestTypeEnum.Unspecified;
+
         public bool LeftChannel = true;
         public bool RightChannel = true;
+
+        internal Bitmap TestResultBitmap { get; set; }
 
         TableLayoutPanel TLPanel;
 
@@ -53,20 +81,24 @@ namespace Com.QuantAsylum.Tractor.Tests
             int row = 0;
             foreach (FieldInfo fi in f)
             {
-                TLPanel.Controls.Add(new Label() { Text = fi.Name, Anchor = AnchorStyles.Right, AutoSize = true }, 0, row);
                 object obj = fi.GetValue(this);
 
-                if (fi.GetValue(this) is float)
+                //if (obj is TestTypeEnum)
+                //    continue;
+
+                TLPanel.Controls.Add(new Label() { Text = UnCamelCase(fi.Name), Anchor = AnchorStyles.Right, AutoSize = true }, 0, row);
+
+                if (obj is float)
                 {
                     float value = (float)fi.GetValue(this);
                     TLPanel.Controls.Add(new TextBox() { Text = value.ToString("0.0"), Anchor = AnchorStyles.Left, AutoSize = true }, 1, row);
                 }
-                else if (fi.GetValue(this) is string)
+                else if (obj is string)
                 {
                     string value = (string)fi.GetValue(this);
                     TLPanel.Controls.Add(new TextBox() { Text = value, Anchor = AnchorStyles.Left, AutoSize = true }, 1, row);
                 }
-                else if (fi.GetValue(this) is bool)
+                else if (obj is bool)
                 {
                     bool value = (bool)fi.GetValue(this);
                     TLPanel.Controls.Add(new CheckBox() { Checked = value, Anchor = AnchorStyles.Left, AutoSize = true }, 1, row);
@@ -78,11 +110,11 @@ namespace Com.QuantAsylum.Tractor.Tests
 
             Button okBtn = new Button() { Text = "Update", Anchor = AnchorStyles.None, AutoSize = false, };
             okBtn.Click += UpdateBtn_Click;
-            Button cancelBtn = new Button() { Text = "Cancel", Anchor = AnchorStyles.None, AutoSize = false };
-            cancelBtn.Click += CancelBtn_Click;
+            //Button cancelBtn = new Button() { Text = "Cancel", Anchor = AnchorStyles.None, AutoSize = false };
+            //cancelBtn.Click += CancelBtn_Click;
 
             p.Controls.Add(okBtn, 0, row);
-            p.Controls.Add(cancelBtn, 1, row);
+            //p.Controls.Add(cancelBtn, 1, row);
 
         }
 
@@ -92,8 +124,9 @@ namespace Com.QuantAsylum.Tractor.Tests
 
             for (int i=0; i<TLPanel.RowCount; i++)
             {
-                string FieldName = TLPanel.GetControlFromPosition(0, i).Text;
-                FieldInfo fi = t.GetField(FieldName);
+                string fieldName = TLPanel.GetControlFromPosition(0, i).Text;
+                fieldName = ReCamelCase(fieldName);
+                FieldInfo fi = t.GetField(fieldName);
 
                 if (fi.GetValue(this) is float)
                 {
@@ -112,24 +145,64 @@ namespace Com.QuantAsylum.Tractor.Tests
             Form1.This.RePopulateTreeView(this.Name);
         }
 
-        private void CancelBtn_Click(object sender, EventArgs e)
+        //private void CancelBtn_Click(object sender, EventArgs e)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        public virtual string GetTestDescription()
         {
             throw new NotImplementedException();
         }
 
-        public virtual string TestDescription()
+        public virtual string GetTestName()
         {
-            throw new NotImplementedException();
+            return this.GetType().Name;
         }
 
-        public virtual string TestName()
+        internal virtual TestTypeEnum GetTestType()
         {
-            throw new NotImplementedException();
+            return TestType;
         }
 
         public virtual void DoTest(out float[] value, out bool pass)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Because the remoting interface can only pass common data types that know how to 
+        /// serialize themselves, images are passed as byte arrays. This helper will take
+        /// a byte array and save it to the property
+        /// </summary>
+        /// <param name="imgArray"></param>
+        public Bitmap CaptureBitmap(byte[] imgArray)
+        {
+            MemoryStream ms = new MemoryStream(imgArray);
+            return (Bitmap)Image.FromStream(ms);
+        }
+
+        /// <summary>
+        /// Converts CamelStringData into Camel String Data
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public string UnCamelCase(string s)
+        {
+            return Regex.Replace(
+                    Regex.Replace(
+                        s,
+                        @"(\P{Ll})(\P{Ll}\p{Ll})",
+                        "$1 $2"
+                    ),
+                    @"(\p{Ll})(\P{Ll})",
+                    "$1 $2"
+                );
+        }
+
+        public string ReCamelCase(string s)
+        {
+            return s.Replace(" ", string.Empty);
         }
     }
 }

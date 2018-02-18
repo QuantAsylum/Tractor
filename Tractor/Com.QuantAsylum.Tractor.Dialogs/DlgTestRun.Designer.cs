@@ -47,7 +47,7 @@
             this.dataGridView1.Location = new System.Drawing.Point(20, 20);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.dataGridView1.Size = new System.Drawing.Size(354, 387);
+            this.dataGridView1.Size = new System.Drawing.Size(760, 361);
             this.dataGridView1.TabIndex = 0;
             // 
             // panel2
@@ -55,9 +55,9 @@
             this.panel2.Controls.Add(this.button3);
             this.panel2.Controls.Add(this.button1);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel2.Location = new System.Drawing.Point(0, 427);
+            this.panel2.Location = new System.Drawing.Point(0, 401);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(394, 69);
+            this.panel2.Size = new System.Drawing.Size(800, 69);
             this.panel2.TabIndex = 1;
             // 
             // button3
@@ -87,17 +87,18 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
             this.panel1.Padding = new System.Windows.Forms.Padding(20);
-            this.panel1.Size = new System.Drawing.Size(394, 427);
+            this.panel1.Size = new System.Drawing.Size(800, 401);
             this.panel1.TabIndex = 2;
             // 
-            // DlgReporting
+            // DlgTestRun
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(394, 496);
+            this.ClientSize = new System.Drawing.Size(800, 470);
+            this.ControlBox = false;
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel2);
-            this.Name = "DlgReporting";
+            this.Name = "DlgTestRun";
             this.Text = "DlgReporting";
             this.Load += new System.EventHandler(this.DlgReporting_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();

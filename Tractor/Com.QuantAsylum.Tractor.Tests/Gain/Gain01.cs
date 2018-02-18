@@ -7,8 +7,11 @@ using System.Threading.Tasks;
 
 namespace Com.QuantAsylum.Tractor.Tests.GainTests
 {
+    /// <summary>
+    /// This test will check the gain
+    /// </summary>
     [Serializable]
-    public class Gain : TestBase, ITest
+    public class Gain01 : TestBase, ITest
     {           
         public float Freq = 1000;
         public float OutputLevel = -10;
@@ -16,9 +19,9 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         public float MinimumOKGain = -10.5f;
         public float MaximumOKGain = -9.5f;
 
-        public Gain() : base()
+        public Gain01() : base()
         {
-            Name = "GainTest";
+            TestType = TestTypeEnum.LevelGain;
         }
 
         public override void DoTest(out float[] value, out bool pass)
@@ -38,6 +41,8 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
 
             }
 
+            TestResultBitmap = CaptureBitmap(TestManager.AudioAnalyzer.GetBitmapBytes());
+
             // Compute the total RMS around the freq of interest
             value[0] = (float)TestManager.AudioAnalyzer.ComputePowerDB(TestManager.AudioAnalyzer.GetData(QA401.ChannelType.LeftIn), Freq * 0.98, Freq * 1.02 );
             value[1] = (float)TestManager.AudioAnalyzer.ComputePowerDB(TestManager.AudioAnalyzer.GetData(QA401.ChannelType.RightIn), Freq * 0.98, Freq * 1.02);
@@ -52,18 +57,9 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             return;
         }
 
-        public override string TestDescription()
+        public override string GetTestDescription()
         {
-            return "Measures the gain at a specified frequency";
-        }
-
-        /// <summary>
-        /// This must return the name of the class. BUGBUG fix this
-        /// </summary>
-        /// <returns></returns>
-        public override string TestName()
-        {
-            return "Gain";
+            return "Measures the gain at a specified frequency and amplitude. Results must be within a given window to 'pass'.";
         }
     }
 }

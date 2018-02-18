@@ -31,18 +31,22 @@ namespace Tractor
         private void Form1_Load(object sender, EventArgs e)
         {
             // These two lines needed by treeview extensions
-            this.treeView1.DrawMode = TreeViewDrawMode.OwnerDrawText;
-            this.treeView1.DrawNode += new DrawTreeNodeEventHandler(treeView1_DrawNode);
+            //this.treeView1.DrawMode = TreeViewDrawMode.OwnerDrawText;
+            //this.treeView1.DrawNode += new DrawTreeNodeEventHandler(treeView1_DrawNode);
+
+            Text = Constants.TitleBarText;
 
             DefaultTreeview();
+
+            SetTreeviewControls();
         }
 
         // This method is needed by treeview extensions
-        void treeView1_DrawNode(object sender, DrawTreeNodeEventArgs e)
-        {
-            if (e.Node.Level == 1) e.Node.HideCheckBox();
-            e.DrawDefault = true;
-        }
+        //void treeView1_DrawNode(object sender, DrawTreeNodeEventArgs e)
+        //{
+        //    if (e.Node.Level == 1) e.Node.HideCheckBox();
+        //    e.DrawDefault = true;
+        //}
 
         /// <summary>
         /// Sets treeview defaults
@@ -61,10 +65,10 @@ namespace Tractor
         private void TreeViewAdd(string testName, TestBase test)
         {
             TreeNode root = new TreeNode();
-            root.Text = testName;
-            TreeNode sub = new TreeNode();
-            sub.Text = "Test: " + (test as ITest).TestName();
-            root.Nodes.Add(sub);
+            root.Text = testName + "   [" + (test as ITest).GetTestName() + "]";
+            //TreeNode sub = new TreeNode();
+            //sub.Text = "Test: " + (test as ITest).GetTestName();
+            //root.Nodes.Add(sub);
 
             if ((test as TestBase).RunTest)
                 root.Checked = true;
@@ -97,6 +101,30 @@ namespace Tractor
         }
 
         /// <summary>
+        /// Given a string such as "abctest0 [xyz]" this returns abctest0
+        /// </summary>
+        /// <param name="testString"></param>
+        /// <returns></returns>
+        private string GetTestName(string testString)
+        {
+            string[] toks = testString.Split('[', ']');
+
+            return toks[0].Trim();
+        }
+
+        /// <summary>
+        /// Given a string such as "abctest0 [xyz]" this returns xyz
+        /// </summary>
+        /// <param name="testString"></param>
+        /// <returns></returns>
+        private string GetTestClass(string testString)
+        {
+            string[] toks = testString.Split('[', ']');
+
+            return toks[1].Trim();
+        }
+
+        /// <summary>
         /// Called after a node has been selected. This will update the UI in the 
         /// right panel
         /// </summary>
@@ -109,11 +137,11 @@ namespace Tractor
             if (e.Node.Level != 0)
                 return;
 
-            string id = e.Node.Text;
-
             ClearEditFields();
-            TestBase tb = TestManager.TestList.Find(o => o.Name == id);
+            TestBase tb = TestManager.TestList.Find(o => o.Name == GetTestName(e.Node.Text));
             tb.PopulateUI(tableLayoutPanel1);
+
+            SetTreeviewControls();
         }
 
         /// <summary>
@@ -123,11 +151,46 @@ namespace Tractor
         /// <param name="e"></param>
         private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
         {
-            string id = e.Node.Text;
-
-            //List<TestBase> list = (List<TestBase>)(TestManager.TestList);
-            TestBase tb = TestManager.TestList.Find(o => o.Name == id);
+            TestBase tb = TestManager.TestList.Find(o => o.Name == GetTestName(e.Node.Text));
             tb.RunTest = e.Node.Checked;
+        }
+
+        /// <summary>
+        /// Sets button on/off states depending on treeview state
+        /// </summary>
+        private void SetTreeviewControls()
+        {
+            if (treeView1.Nodes.Count == 0)
+                RunTestsBtn.Enabled = false;
+            else
+                RunTestsBtn.Enabled = true;
+
+            if (treeView1.SelectedNode == null)
+            {
+                MoveUpBtn.Enabled = false;
+                MoveDownBtn.Enabled = false;
+                DeleteBtn.Enabled = false;
+                return;
+            }
+
+            if (treeView1.SelectedNode != null)
+                DeleteBtn.Enabled = true;
+
+            if (treeView1.SelectedNode.Index == 0)
+                MoveUpBtn.Enabled = false;
+            else
+                MoveUpBtn.Enabled = true;
+
+            if (treeView1.SelectedNode.Index == treeView1.Nodes.Count - 1)
+            {
+                MoveDownBtn.Enabled = false;
+            }
+            else
+            {
+                MoveDownBtn.Enabled = true;
+            }
+
+          
         }
 
             
@@ -138,17 +201,23 @@ namespace Tractor
 
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                string className = (string)(dlg.comboBox1.Items[dlg.comboBox1.SelectedIndex]);
+                //string className = (string)(dlg.comboBox1.Items[dlg.comboBox1.SelectedIndex]);
+                string className = dlg.GetSelectedTestName();
+                
                 TestBase testInst = CreateTestInstance(className);
                 (testInst as TestBase).Name = dlg.textBox1.Text;
                 TestManager.TestList.Add(testInst as TestBase);
 
                 TreeViewAdd(dlg.textBox1.Text, CreateTestInstance(className));
             }
+
+            SetTreeviewControls();
         }
 
         /// <summary>
-        /// Creates an instance based on the classname
+        /// Creates an instance based on the classname. This is used when the user
+        /// specifies a particular test they'd like to run. That test name is mapped
+        /// to a class, and then an instance of that class is created
         /// </summary>
         /// <param name="className"></param>
         /// <returns></returns>
@@ -189,17 +258,36 @@ namespace Tractor
             RePopulateTreeView();
         }
 
+        /// <summary>
+        /// Pops a modal dlg where the user is given a chance to review the tests and then execute them
+        /// over and over if desired. This doesn't return until the user closes the dlg
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button3_Click(object sender, EventArgs e)
         {
             if (TestManager.TestList.Count == 0)
                 return;
 
-            DlgTestRun dlg = new DlgTestRun();
+            DlgTestRun dlg = new DlgTestRun(@"d:\trash\testruns");
 
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-
+                
             }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void DeleteBtn_Click(object sender, EventArgs e)
+        {
+            if (treeView1.SelectedNode != null)
+                treeView1.Nodes.Remove(treeView1.SelectedNode);
+
+            SetTreeviewControls();
         }
     }
 }

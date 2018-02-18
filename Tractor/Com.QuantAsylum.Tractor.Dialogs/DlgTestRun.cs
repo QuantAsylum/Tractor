@@ -10,18 +10,22 @@ using System.Windows.Forms;
 using Com.QuantAsylum.Tractor.TestManagers;
 using Com.QuantAsylum.Tractor.Tests;
 using System.Threading;
+using Tractor.Com.QuantAsylum.Tractor.HTML;
 
 namespace Com.QuantAsylum.Tractor.Dialogs
 {
     public partial class DlgTestRun : Form
     {
-        enum ColText { TEST = 0, TARGET = 1, L = 2, R =3, PASSFAIL = 4};
+        enum ColText { TEST = 0, ENABLED = 1, TARGET = 2, L = 3, R = 4, PASSFAIL = 5};
 
         bool Abort = false;
 
-        public DlgTestRun()
+        string ReportDirectory = "";
+
+        public DlgTestRun(string directory)
         {
             InitializeComponent();
+            ReportDirectory = directory;
         }
 
         private void DlgReporting_Load(object sender, EventArgs e)
@@ -30,6 +34,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
             dataGridView1.ColumnCount = Enum.GetValues(typeof(ColText)).Cast<int>().Max()+1;
             dataGridView1.Columns[(int)ColText.TEST].HeaderText = "Test";
+            dataGridView1.Columns[(int)ColText.ENABLED].HeaderText = "Enabled";
             dataGridView1.Columns[(int)ColText.TARGET].HeaderText = "Target";
             dataGridView1.Columns[(int)ColText.L].HeaderText = "Measured L";
             dataGridView1.Columns[(int)ColText.R].HeaderText = "Measured R";
@@ -39,7 +44,8 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
             for (int i=0; i<TestManager.TestList.Count; i++)
             {
-                dataGridView1[0, i].Value = TestManager.TestList[i].Name;
+                dataGridView1[(int)ColText.TEST, i].Value = TestManager.TestList[i].Name;
+                dataGridView1[(int)ColText.ENABLED, i].Value = TestManager.TestList[i].RunTest;
             }
 
             dataGridView1.Refresh(); 
@@ -60,8 +66,6 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             Start();
         }
 
-
-
         private void Start()
         {
             if (TestManager.AudioAnalyzer == null)
@@ -73,8 +77,12 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
             Abort = false;
 
+            dataGridView1[(int)ColText.PASSFAIL, 0].Value = "Starting...";
+            dataGridView1.Refresh();
+
             // Set everthing to defaults by specifying an empty settings file
             TestManager.AudioAnalyzer.SetToDefault("");
+            TestManager.AudioAnalyzer.SetLog(true);
             TestManager.AudioAnalyzer.SetInputAtten(QA401.InputAttenState.NoAtten);
             TestManager.AudioAnalyzer.SetBufferLength(16384);
             TestManager.AudioAnalyzer.SetUnits(QA401.UnitsType.dBV);
@@ -83,6 +91,8 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
             new Thread(() =>
             {
+                HtmlWriter html = new HtmlWriter(ReportDirectory);
+
                 for (int i = 0; i < TestManager.TestList.Count; i++)
                 {
                     float[] value = new float[2] { float.NaN, float.NaN };
@@ -106,8 +116,31 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                     dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.PASSFAIL, i].Value = pass ? "Pass" : "Fail"; });
                     dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1.Refresh(); });
 
+                    if (i==0 && (TestManager.TestList[0] is  IdInput01))
+                    {
+                        html.AddHeading1(string.Format("Test ID: {0}", (TestManager.TestList[0] as IdInput01).Id));
+                    }
+                    else
+                    {
+                        html.AddParagraph(string.Format("<B>Test Name:</B> {0}  <B>Result L:</B> {1}   <B>Result R:</B> {2} <B>P/F</B>: {3} <B>Image:</B> {4}", 
+                            TestManager.TestList[i].GetTestName(), 
+                            TestManager.TestList[i].LeftChannel ? value[0].ToString("0.00") : "---",
+                            TestManager.TestList[i].RightChannel ? value[1].ToString("0.00") : "---",
+                            pass == true ? "PASS" : "<mark>FAIL</mark>",
+                            TestManager.TestList[i].TestResultBitmap == null ? "[No Image]" : html.ImageLink("Screen", TestManager.TestList[i].TestResultBitmap)
+                            ));
+                    }
+
+
+                    //if (TestManager.TestList[i].TestResultBitmap != null)
+                    //{
+                    //    html.AddImageLink("Screen", TestManager.TestList[i].TestResultBitmap);
+                    //}
+
                     if (IsConnected() == false) return;
                 }
+
+                html.Render();
             }).Start();
         }
 

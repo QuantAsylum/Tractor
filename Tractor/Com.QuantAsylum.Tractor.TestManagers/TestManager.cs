@@ -21,6 +21,7 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
         static public string FindUniqueName(string nameRoot)
         {
+            nameRoot += "-";
             string newName = "";
 
             for (int i = 0; i < 10000; i++)

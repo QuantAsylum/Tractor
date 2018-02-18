@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
 {
     [Serializable]
-    public class THD : TestBase, ITest
+    public class Thd01 : TestBase, ITest
     {
         public float Freq = 1000;
         public float OutputLevel = -10;
@@ -18,9 +18,10 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
         public float MinimumOKTHD = -110;
         public float MaximumOKTHD = -100;
 
-        public THD() : base()
+        public Thd01() : base()
         {
-            Name = "THD";
+            Name = "THD01";
+            TestType = TestTypeEnum.Distortion;
         }
 
         public override void DoTest(out float[] value, out bool pass)
@@ -40,6 +41,8 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
 
             }
 
+            TestResultBitmap = CaptureBitmap(TestManager.AudioAnalyzer.GetBitmapBytes());
+
             value[0] = (float)TestManager.AudioAnalyzer.ComputeTHDPct(TestManager.AudioAnalyzer.GetData(QA401.ChannelType.LeftIn), Freq, 20000);
             value[1] = (float)TestManager.AudioAnalyzer.ComputeTHDPct(TestManager.AudioAnalyzer.GetData(QA401.ChannelType.RightIn), Freq, 20000);
 
@@ -57,18 +60,9 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             return;
         }
 
-        public override string TestDescription()
+        public override string GetTestDescription()
         {
-            return "Measures THD";
-        }
-
-        /// <summary>
-        /// This must return the name of the class. 
-        /// </summary>
-        /// <returns></returns>
-        public override string TestName()
-        {
-            return "THD";
+            return "Measures THD at a given frequency and amplitude. Results must be within a given window to 'pass'.";
         }
     }
 }

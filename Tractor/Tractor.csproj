@@ -32,11 +32,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="QAAnalyzer">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\QuantAsylum\QA401\QAAnalyzer.exe</HintPath>
+    <Reference Include="QAAnalyzer, Version=1.5.1.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Visual Studio 2010\Projects\QA401 GIT\Application\bin\Debug\QAAnalyzer.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -47,21 +49,42 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="ZedGraph, Version=5.1.7.430, Culture=neutral, PublicKeyToken=02a83cbd123fcd60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DLL\ZedGraph.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Com.QuantAsylum.Tractor.Database\DataSchema.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgAnalysis.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgAnalysis.Designer.cs">
+      <DependentUpon>DlgAnalysis.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgInput.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgInput.Designer.cs">
+      <DependentUpon>DlgInput.cs</DependentUpon>
+    </Compile>
     <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgTestRun.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgTestRun.Designer.cs">
       <DependentUpon>DlgTestRun.cs</DependentUpon>
     </Compile>
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\Histogram.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.HTML\Html.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Settings\SerDes.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\TestManager.cs" />
-    <Compile Include="Com.QuantAsylum.Tractor.Tests\Gain\Gain.cs" />
-    <Compile Include="Com.QuantAsylum.Tractor.Tests\IMD_ITU\IMD_ITU.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\Prompt\Prompt01.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\IdInput\IdInput01.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\Gain\Gain01.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\IMD\Imd01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\ITest.cs" />
-    <Compile Include="Com.QuantAsylum.Tractor.Tests\THD\THD.cs" />
-    <Compile Include="Com.QuantAsylum.Tractor.Tests\NoiseFloor\NoiseFloor.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\THD\Thd01.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\NoiseFloor\NoiseFloor01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\TestBase.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Ui.Extensions\Extensions.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgAddTest.cs">
@@ -70,6 +93,7 @@
     <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgAddTest.Designer.cs">
       <DependentUpon>DlgAddTest.cs</DependentUpon>
     </Compile>
+    <Compile Include="Constants.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -80,6 +104,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgAddTest.resx">
       <DependentUpon>DlgAddTest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgAnalysis.resx">
+      <DependentUpon>DlgAnalysis.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgInput.resx">
+      <DependentUpon>DlgInput.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgTestRun.resx">
       <DependentUpon>DlgTestRun.cs</DependentUpon>
@@ -106,6 +136,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
