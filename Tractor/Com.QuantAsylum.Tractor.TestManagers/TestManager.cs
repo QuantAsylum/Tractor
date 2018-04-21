@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +8,8 @@ using System.Xml.Serialization;
 using Com.QuantAsylum.Tractor.Tests;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Remoting.Channels;
+using System.Runtime.Serialization.Formatters;
+using Tractor.Com.QuantAsylum.Tractor.TestManagers;
 
 namespace Com.QuantAsylum.Tractor.TestManagers
 {
@@ -17,7 +20,8 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         /// </summary>   
         static public List<TestBase> TestList = new List<TestBase>();
 
-        static public QA401Interface AudioAnalyzer;
+        static public QA401Interface QA401;
+        static public IQA450 QA450;
 
         static public string FindUniqueName(string nameRoot)
         {
@@ -47,27 +51,23 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             return newName;
         }
 
-        static public void ConnectQA401()
+        static public void ConnectToDevices()
         {
-            // Try to connect to QA400 Application. Note the code below is boilerplate, likely needed by any app that wants to connect
-            // to the QA400 application. This is routine dotnet remoting code. 
-            try
+            QAConnectionManager.LaunchAppIfNotRunning(QAConnectionManager.Devices.QA401);
+            QAConnectionManager.LaunchAppIfNotRunning(QAConnectionManager.Devices.QA450);
+
+            if (QAConnectionManager.ConnectToDevices(out QA401, out QA450))
             {
-                TcpChannel tcpChannel = new TcpChannel();
-                ChannelServices.RegisterChannel(tcpChannel, false);
 
-                Type requiredType = typeof(QA401Interface);
-
-                AudioAnalyzer = (QA401Interface)Activator.GetObject(requiredType, "tcp://localhost:9401/QuantAsylumQA401Server");
-
-                if (AudioAnalyzer.IsConnected() == false)
-                    AudioAnalyzer = null;
             }
-            catch
-            {
-                // If the above fails for any reason, make sure the rest of the app can tell. We do that here by setting AudioAnalyzer to null.
-                AudioAnalyzer = null;
-            }
+        }
+
+        static public bool AllConnected()
+        {
+            if (QA401 != null && QA401.IsConnected() && QA450 != null && QA450.IsConnected())
+                return true;
+
+            return false;
         }
     }
 }

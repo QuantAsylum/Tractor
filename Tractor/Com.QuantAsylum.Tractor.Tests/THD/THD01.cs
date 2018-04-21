@@ -13,7 +13,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
     public class Thd01 : TestBase, ITest
     {
         public float Freq = 1000;
-        public float OutputLevel = -10;
+        public float OutputLevel = -30;
 
         public float MinimumOKTHD = -110;
         public float MaximumOKTHD = -100;
@@ -29,22 +29,22 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             value = new float[2] { float.NaN, float.NaN };
             pass = false;
 
-            if (TestManager.AudioAnalyzer == null)
+            if (TestManager.QA401 == null)
                 return;
 
-            TestManager.AudioAnalyzer.SetGenerator(QA401.GenType.Gen1, true, OutputLevel, Freq);
-            TestManager.AudioAnalyzer.SetGenerator(QA401.GenType.Gen2, false, OutputLevel, Freq);
-            TestManager.AudioAnalyzer.RunSingle();
+            TestManager.QA401.SetGenerator(QA401.GenType.Gen1, true, OutputLevel, Freq);
+            TestManager.QA401.SetGenerator(QA401.GenType.Gen2, false, OutputLevel, Freq);
+            TestManager.QA401.RunSingle();
 
-            while (TestManager.AudioAnalyzer.GetAcquisitionState() == QA401.AcquisitionState.Busy)
+            while (TestManager.QA401.GetAcquisitionState() == QA401.AcquisitionState.Busy)
             {
 
             }
 
-            TestResultBitmap = CaptureBitmap(TestManager.AudioAnalyzer.GetBitmapBytes());
+            TestResultBitmap = CaptureBitmap(TestManager.QA401.GetBitmapBytes());
 
-            value[0] = (float)TestManager.AudioAnalyzer.ComputeTHDPct(TestManager.AudioAnalyzer.GetData(QA401.ChannelType.LeftIn), Freq, 20000);
-            value[1] = (float)TestManager.AudioAnalyzer.ComputeTHDPct(TestManager.AudioAnalyzer.GetData(QA401.ChannelType.RightIn), Freq, 20000);
+            value[0] = (float)TestManager.QA401.ComputeTHDPct(TestManager.QA401.GetData(QA401.ChannelType.LeftIn), Freq, 20000);
+            value[1] = (float)TestManager.QA401.ComputeTHDPct(TestManager.QA401.GetData(QA401.ChannelType.RightIn), Freq, 20000);
 
             // Convert to db
             value[0] = 20 * (float)Math.Log10(value[0] / 100);

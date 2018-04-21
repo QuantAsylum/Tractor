@@ -100,6 +100,7 @@
             this.Controls.Add(this.panel2);
             this.Name = "DlgTestRun";
             this.Text = "DlgReporting";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DlgTestRun_FormClosing);
             this.Load += new System.EventHandler(this.DlgReporting_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.panel2.ResumeLayout(false);

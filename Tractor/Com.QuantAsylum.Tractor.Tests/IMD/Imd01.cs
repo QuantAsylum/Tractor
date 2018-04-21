@@ -26,7 +26,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.IMDTests
         /// <summary>
         /// This is the output level for each tone.
         /// </summary>
-        public float OutputLevelDBV = -0;
+        public float OutputLevelDBV = -10;
 
         public Imd01() : base()
         {
@@ -38,22 +38,22 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.IMDTests
             value = new float[2] { float.NaN, float.NaN };
             pass = false;
 
-            if (TestManager.AudioAnalyzer == null)
+            if (TestManager.QA401 == null)
                 return;
 
-            TestManager.AudioAnalyzer.SetGenerator(QA401.GenType.Gen1, true, OutputLevelDBV - 6, 19000);
-            TestManager.AudioAnalyzer.SetGenerator(QA401.GenType.Gen2, true, OutputLevelDBV - 6, 20000);
-            TestManager.AudioAnalyzer.RunSingle();
+            TestManager.QA401.SetGenerator(QA401.GenType.Gen1, true, OutputLevelDBV - 6, 19000);
+            TestManager.QA401.SetGenerator(QA401.GenType.Gen2, true, OutputLevelDBV - 6, 20000);
+            TestManager.QA401.RunSingle();
 
-            while (TestManager.AudioAnalyzer.GetAcquisitionState() == QA401.AcquisitionState.Busy)
+            while (TestManager.QA401.GetAcquisitionState() == QA401.AcquisitionState.Busy)
             {
                 Thread.Sleep(20);
             }
 
-            TestResultBitmap = CaptureBitmap(TestManager.AudioAnalyzer.GetBitmapBytes());
+            TestResultBitmap = CaptureBitmap(TestManager.QA401.GetBitmapBytes());
 
-            value[0] = (float)TestManager.AudioAnalyzer.ComputePowerDB(TestManager.AudioAnalyzer.GetData(QA401.ChannelType.LeftIn), 995, 1005);
-            value[1] = (float)TestManager.AudioAnalyzer.ComputePowerDB(TestManager.AudioAnalyzer.GetData(QA401.ChannelType.RightIn), 995, 1005);
+            value[0] = (float)TestManager.QA401.ComputePowerDB(TestManager.QA401.GetData(QA401.ChannelType.LeftIn), 995, 1005);
+            value[1] = (float)TestManager.QA401.ComputePowerDB(TestManager.QA401.GetData(QA401.ChannelType.RightIn), 995, 1005);
 
             value[0] = -(OutputLevelDBV + 6 - value[0]);
             value[1] = -(OutputLevelDBV + 6 - value[1]);

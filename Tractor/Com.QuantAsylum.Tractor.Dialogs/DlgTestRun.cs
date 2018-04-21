@@ -48,7 +48,9 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                 dataGridView1[(int)ColText.ENABLED, i].Value = TestManager.TestList[i].RunTest;
             }
 
-            dataGridView1.Refresh(); 
+            dataGridView1.Refresh();
+
+            IntPtr handle = dataGridView1.Handle;
         }
 
         private void ClearPassFailColumn()
@@ -68,10 +70,8 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
         private void Start()
         {
-            if (TestManager.AudioAnalyzer == null)
-                TestManager.ConnectQA401();
-
-            if (IsConnected() == false) return;
+            if (TestManager.AllConnected() == false)
+                TestManager.ConnectToDevices();
 
             ClearPassFailColumn();
 
@@ -81,16 +81,20 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             dataGridView1.Refresh();
 
             // Set everthing to defaults by specifying an empty settings file
-            TestManager.AudioAnalyzer.SetToDefault("");
-            TestManager.AudioAnalyzer.SetLog(true);
-            TestManager.AudioAnalyzer.SetInputAtten(QA401.InputAttenState.NoAtten);
-            TestManager.AudioAnalyzer.SetBufferLength(16384);
-            TestManager.AudioAnalyzer.SetUnits(QA401.UnitsType.dBV);
+            string s = TestManager.QA401.GetName();
+            s = TestManager.QA450.GetName();
+            TestManager.QA401.SetToDefault("");
+            TestManager.QA401.SetLog(true);
+            TestManager.QA401.SetInputAtten(QA401.InputAttenState.NoAtten);
+            TestManager.QA401.SetBufferLength(16384);
+            TestManager.QA401.SetUnits(QA401.UnitsType.dBV);
             
             Thread.Sleep(500);
 
             new Thread(() =>
             {
+                Thread.CurrentThread.Name = "Test Runner";
+
                 HtmlWriter html = new HtmlWriter(ReportDirectory);
 
                 for (int i = 0; i < TestManager.TestList.Count; i++)
@@ -106,8 +110,8 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
                     // In here, we're running in another thread and so we need to switch from 
                     // that thread back to the UI threa to update the UI. 
-                    dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.PASSFAIL, i].Value = "Running..."; });
-                    dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1.Refresh(); });
+                    //dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.PASSFAIL, i].Value = "Running..."; });
+                    //dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1.Refresh(); });
 
                     TestManager.TestList[i].DoTest(out value, out pass);
 
@@ -146,7 +150,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
         private bool IsConnected()
         {
-            if (TestManager.AudioAnalyzer == null)
+            if (TestManager.QA401 == null)
             {
                 MessageBox.Show("Unable to connect to the QA40x Audio Analyzer. Is it connected and the QA40x application running?");
                 return false;
@@ -163,6 +167,11 @@ namespace Com.QuantAsylum.Tractor.Dialogs
         private void button3_Click(object sender, EventArgs e)
         {
             Abort = true;
+        }
+
+        private void DlgTestRun_FormClosing(object sender, FormClosingEventArgs e)
+        {
+
         }
     }
 }

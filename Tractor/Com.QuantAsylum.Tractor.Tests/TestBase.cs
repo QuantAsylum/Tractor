@@ -22,6 +22,7 @@ namespace Com.QuantAsylum.Tractor.Tests
     /// </summary>
     [Serializable]
     [System.Xml.Serialization.XmlInclude(typeof(Gain01))]
+    [System.Xml.Serialization.XmlInclude(typeof(Gain03))]
     [System.Xml.Serialization.XmlInclude(typeof(Imd01))]
     [System.Xml.Serialization.XmlInclude(typeof(NoiseFloor01))]
     [System.Xml.Serialization.XmlInclude(typeof(IdInput01))]
@@ -103,6 +104,12 @@ namespace Com.QuantAsylum.Tractor.Tests
                     bool value = (bool)fi.GetValue(this);
                     TLPanel.Controls.Add(new CheckBox() { Checked = value, Anchor = AnchorStyles.Left, AutoSize = true }, 1, row);
                 }
+                else if (obj is int)
+                {
+                    int value = (int)fi.GetValue(this);
+                    TLPanel.Controls.Add(new TextBox() { Text = value.ToString(), Anchor = AnchorStyles.Left, AutoSize = true }, 1, row);
+                }
+
 
                 ++row;
             }
@@ -140,6 +147,17 @@ namespace Com.QuantAsylum.Tractor.Tests
                 {
                     fi.SetValue(this, ((CheckBox)(TLPanel.GetControlFromPosition(1, i))).Checked);
                 }
+                if (fi.GetValue(this) is int)
+                {
+                    fi.SetValue(this, Convert.ToInt32(TLPanel.GetControlFromPosition(1, i).Text));
+                }
+            }
+
+            string s;
+
+            if (CheckValues(out s) == false)
+            {
+                MessageBox.Show(s);
             }
 
             Form1.This.RePopulateTreeView(this.Name);
@@ -149,6 +167,12 @@ namespace Com.QuantAsylum.Tractor.Tests
         //{
         //    throw new NotImplementedException();
         //}
+
+        public virtual bool CheckValues(out string s)
+        {
+            s = "";
+            return true;
+        }
 
         public virtual string GetTestDescription()
         {
