@@ -30,8 +30,10 @@
         {
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.PauseBtn = new System.Windows.Forms.Button();
+            this.CloseBtn = new System.Windows.Forms.Button();
+            this.StopBtn = new System.Windows.Forms.Button();
+            this.StartBtn = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panel2.SuspendLayout();
@@ -52,33 +54,57 @@
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.button3);
-            this.panel2.Controls.Add(this.button1);
+            this.panel2.Controls.Add(this.PauseBtn);
+            this.panel2.Controls.Add(this.CloseBtn);
+            this.panel2.Controls.Add(this.StopBtn);
+            this.panel2.Controls.Add(this.StartBtn);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel2.Location = new System.Drawing.Point(0, 401);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(800, 69);
             this.panel2.TabIndex = 1;
             // 
-            // button3
+            // PauseBtn
             // 
-            this.button3.Location = new System.Drawing.Point(206, 20);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 2;
-            this.button3.Text = "Stop";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.PauseBtn.Enabled = false;
+            this.PauseBtn.Location = new System.Drawing.Point(101, 20);
+            this.PauseBtn.Name = "PauseBtn";
+            this.PauseBtn.Size = new System.Drawing.Size(75, 23);
+            this.PauseBtn.TabIndex = 4;
+            this.PauseBtn.Text = "Pause";
+            this.PauseBtn.UseVisualStyleBackColor = true;
+            this.PauseBtn.Click += new System.EventHandler(this.PauseBtn_Click);
             // 
-            // button1
+            // CloseBtn
             // 
-            this.button1.Location = new System.Drawing.Point(20, 20);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Start";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.CloseBtn.Location = new System.Drawing.Point(705, 20);
+            this.CloseBtn.Name = "CloseBtn";
+            this.CloseBtn.Size = new System.Drawing.Size(75, 23);
+            this.CloseBtn.TabIndex = 3;
+            this.CloseBtn.Text = "Close";
+            this.CloseBtn.UseVisualStyleBackColor = true;
+            this.CloseBtn.Click += new System.EventHandler(this.CloseBtn_Click);
+            // 
+            // StopBtn
+            // 
+            this.StopBtn.Enabled = false;
+            this.StopBtn.Location = new System.Drawing.Point(182, 20);
+            this.StopBtn.Name = "StopBtn";
+            this.StopBtn.Size = new System.Drawing.Size(75, 23);
+            this.StopBtn.TabIndex = 2;
+            this.StopBtn.Text = "Stop";
+            this.StopBtn.UseVisualStyleBackColor = true;
+            this.StopBtn.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // StartBtn
+            // 
+            this.StartBtn.Location = new System.Drawing.Point(20, 20);
+            this.StartBtn.Name = "StartBtn";
+            this.StartBtn.Size = new System.Drawing.Size(75, 23);
+            this.StartBtn.TabIndex = 0;
+            this.StartBtn.Text = "Start";
+            this.StartBtn.UseVisualStyleBackColor = true;
+            this.StartBtn.Click += new System.EventHandler(this.button1_Click);
             // 
             // panel1
             // 
@@ -112,8 +138,10 @@
         #endregion
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button StopBtn;
+        private System.Windows.Forms.Button StartBtn;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Button PauseBtn;
+        private System.Windows.Forms.Button CloseBtn;
     }
 }

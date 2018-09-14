@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tractor.Com.QuantAsylum.Tractor.TestManagers;
 
 namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
 {
@@ -29,22 +30,22 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             value = new float[2] { float.NaN, float.NaN };
             pass = false;
 
-            if (TestManager.QA401 == null)
+            if (Tm == null)
                 return;
 
-            TestManager.QA401.SetGenerator(QA401.GenType.Gen1, true, OutputLevel, Freq);
-            TestManager.QA401.SetGenerator(QA401.GenType.Gen2, false, OutputLevel, Freq);
-            TestManager.QA401.RunSingle();
+            Tm.AudioGenSetGen1(true, OutputLevel, Freq);
+            Tm.AudioGenSetGen2(false, OutputLevel, Freq);
+            Tm.RunSingle();
 
-            while (TestManager.QA401.GetAcquisitionState() == QA401.AcquisitionState.Busy)
+            while (Tm.AnalyzerIsBusy())
             {
 
             }
 
-            TestResultBitmap = CaptureBitmap(TestManager.QA401.GetBitmapBytes());
+            TestResultBitmap = Tm.GetBitmap();
 
-            value[0] = (float)TestManager.QA401.ComputeTHDPct(TestManager.QA401.GetData(QA401.ChannelType.LeftIn), Freq, 20000);
-            value[1] = (float)TestManager.QA401.ComputeTHDPct(TestManager.QA401.GetData(QA401.ChannelType.RightIn), Freq, 20000);
+            value[0] = (float)Tm.ComputeThdPct(Tm.GetData(ChannelEnum.Left), Freq, 20000);
+            value[1] = (float)Tm.ComputeThdPct(Tm.GetData(ChannelEnum.Right), Freq, 20000);
 
             // Convert to db
             value[0] = 20 * (float)Math.Log10(value[0] / 100);

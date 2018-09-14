@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
 {
+
+    // Various attribute classes are below. These exist so that the HAL can convey
+    // what functions are supported to the higher levels of the design. For example,
+    // 
+
     [AttributeUsage(AttributeTargets.Method)]
     class MethodNotSupported : Attribute
     {
@@ -57,8 +62,11 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
 
         // DUT power. This section controls the power provided to the DUT.
 
-
+        /// <summary>
+        /// Sets default options for the instrument
+        /// </summary>
         void    DutSetDefault();
+
         void    DutSetPowerState(bool powerEnable);
         bool    DutGetPowerState();
         float   DutGetCurrent();
@@ -70,8 +78,6 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
         void    LoadSetDefault();
         void    LoadSetImpedance(int impedance);
         int     LoadGetImpedance();
-        void    LoadSetLoadState(bool loadEnable);
-        bool    LoadGetLoadState();
         float   LoadGetTemperature();
 
         // Audio Generators

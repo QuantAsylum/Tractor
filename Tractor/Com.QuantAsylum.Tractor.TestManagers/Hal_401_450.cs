@@ -4,8 +4,9 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tractor.Com.QuantAsylum.Hardware;
 
-namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
+namespace Tractor.Com.QuantAsylum.Tractor.TestManagers dsb
 {
 
     class Hal_401_450 : iHal
@@ -29,18 +30,18 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
 
         public void DutSetPowerState(bool powerEnable)
         {
-
+            QA450.SetDutPower(powerEnable);
         }
 
         public bool DutGetPowerState()
         {
-            throw new NotImplementedException();
+            return QA450.GetDutPower();
         }
 
 
         public float DutGetCurrent()
         {
-            throw new NotImplementedException();
+            return QA450.GetCurrent();
         }
 
         [MethodNotSupported]
@@ -67,15 +68,15 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
 
         }
 
-        [MethodImpedanceSupported_Ohms(new int[] { Int32.MaxValue, 8, 4 })]
+        [MethodImpedanceSupported_Ohms(new int[] {8, 4, 0})]
         public void LoadSetImpedance(int impedance)
         {
-
+            QA450.SetImpedance(impedance);
         }
 
         public int LoadGetImpedance()
         {
-            throw new NotImplementedException();
+            return QA450.GetImpedance();
         }
 
         public void LoadSetLoadState(bool loadEnable)

@@ -51,7 +51,6 @@ namespace Tractor.Com.QuantAsylum.Tractor.Dialogs
 
                 if (bucket >= 0 && bucket < BinCount)
                     ++hist[bucket];
-
             }
 
             PointPairList ppl = new PointPairList();

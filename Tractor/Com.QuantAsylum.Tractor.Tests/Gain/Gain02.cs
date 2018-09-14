@@ -1,6 +1,7 @@
 ﻿using Com.QuantAsylum.Tractor.TestManagers;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,10 +10,10 @@ using Tractor.Com.QuantAsylum.Tractor.TestManagers;
 namespace Com.QuantAsylum.Tractor.Tests.GainTests
 {
     /// <summary>
-    /// This test will check the gain
+    /// This test will check the gain at a given impedance level
     /// </summary>
     [Serializable]
-    public class Gain01 : TestBase, ITest
+    public class Gain02 : TestBase, ITest
     {           
         public float Freq = 1000;
         public float OutputLevel = -30;
@@ -20,7 +21,13 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         public float MinimumOKGain = -10.5f;
         public float MaximumOKGain = -9.5f;
 
-        public Gain01() : base()
+        public int OutputImpedance = 8;
+        public int InputRange = 6;
+
+        private int[] AllowedInputRanges;
+        private int[] AllowedLoadImpedances;
+
+        public Gain02() : base()
         {
             TestType = TestTypeEnum.LevelGain;
         }
@@ -33,13 +40,19 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             if (Tm == null)
                 return;
 
+            AllowedInputRanges = Tm.GetInputRanges();
+            AllowedLoadImpedances = Tm.GetImpedances();
+
+            Tm.LoadSetImpedance(OutputImpedance);
+
             Tm.AudioGenSetGen1(true, OutputLevel, Freq);
             Tm.AudioGenSetGen2(false, OutputLevel, Freq);
             Tm.RunSingle();
 
             while (Tm.AnalyzerIsBusy())
             {
-
+                float current = Tm.DutGetCurrent();
+                Debug.WriteLine("Current: " + current);
             }
 
             TestResultBitmap = Tm.GetBitmap();
@@ -58,9 +71,27 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             return;
         }
 
+        public override bool CheckValues(out string s)
+        {
+            s = "";
+            if (AllowedLoadImpedances.Contains(OutputImpedance) == false)
+            {
+                s = "Output impedance must be: " + string.Join(" ", AllowedLoadImpedances);
+                return false;
+            }
+
+            if (AllowedInputRanges.Contains(InputRange) == false)
+            {
+                s = "Input range not supported. Must be: " + string.Join(" ", AllowedInputRanges);
+                return false;
+            }
+
+            return true;
+        }
+
         public override string GetTestDescription()
         {
-            return "Measures the gain at a specified frequency and amplitude. Results must be within a given window to 'pass'.";
+            return "Measures the gain at a specified frequency and amplitude at a specified impedance level. Results must be within a given window to 'pass'.";
         }
     }
 }

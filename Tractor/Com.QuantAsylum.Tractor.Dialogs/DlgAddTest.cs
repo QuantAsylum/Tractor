@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using Com.QuantAsylum.Tractor.TestManagers;
 using Com.QuantAsylum.Tractor.Tests;
 using static Com.QuantAsylum.Tractor.Tests.TestBase;
+using Tractor.Com.QuantAsylum.Tractor.TestManagers;
 
 namespace Tractor
 {
@@ -27,9 +28,12 @@ namespace Tractor
             }
         }
 
-        public DlgAddTest()
+        TestManager Tm;
+
+        public DlgAddTest(TestManager tm)
         {
             InitializeComponent();
+            Tm = tm;
         }
 
         private void DlgAddTest_Load(object sender, EventArgs e)
@@ -67,7 +71,7 @@ namespace Tractor
         private void comboBox1_SelectedValueChanged(object sender, EventArgs e)
         {
             string s = comboBox1.Items[comboBox1.SelectedIndex].ToString();
-            textBox1.Text = TestManager.FindUniqueName(s);
+            textBox1.Text = Tm.FindUniqueName(s);
 
             ComboItem ci = (ComboItem)comboBox1.Items[comboBox1.SelectedIndex];
             label4.Text = ci.Description;
@@ -107,6 +111,11 @@ namespace Tractor
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
             PopulateListBox();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

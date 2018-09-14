@@ -31,7 +31,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
 
         static QAConnectionManager()
         {
-            // Note the trailing slash!
+            // Note the trailing slash
             InstallDirSearchPaths.Add(@"c:\program files\quantasylum\");
             InstallDirSearchPaths.Add(@"c:\program files (x86)\quantasylum\");
             InstallDirSearchPaths.Add(@"d:\program files\quantasylum\");
@@ -71,7 +71,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
 
         /// <summary>
         /// Attempts to load assembly from the given name by iterating through all search paths. The 'name'
-        /// should specify subdirectory and exe name, for example "QA100\QAScope.exe" (Note! No leading backslash!)
+        /// should specify subdirectory and exe name, for example "QA401\QAAnalyzer.exe" (Note! No leading backslash!)
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -130,28 +130,27 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
             }
 
             return null;
-
         }
 
-        public static bool ConnectToDevices(out QA401Interface qa401, out IQA450 qa450)
+        /// <summary>
+        /// We only need to connect to QA401. The QA450 doesn't need a connection established
+        /// </summary>
+        /// <param name="qa401"></param>
+        /// <returns></returns>
+        public static bool ConnectToDevices(out QA401Interface qa401)
         {
-            qa401 = null; qa450 = null;
+            qa401 = null; 
+
             try
             {
                 // QA401 first
                 TcpChannel tcpChannel = (TcpChannel)Helper.GetChannel(4401, false);
+                //TcpChannel tcpChannel = new TcpChannel();
                 ChannelServices.RegisterChannel(tcpChannel, false);
 
                 Type requiredType = typeof(QA401Interface);
 
                 qa401 = (QA401Interface)Activator.GetObject(requiredType, "tcp://localhost:9401/QuantAsylumQA401Server");
-
-                // QA450 next
-                tcpChannel = (TcpChannel)Helper.GetChannel(4450, false);
-                ChannelServices.RegisterChannel(tcpChannel, false);
-
-                requiredType = typeof(IQA450);
-                qa450 = (IQA450)Activator.GetObject(requiredType, "tcp://localhost:9450/QuantAsylumQA450Server");
 
                 return true;
             }

@@ -11,9 +11,11 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Tractor;
+using Tractor.Com.QuantAsylum.Tractor.TestManagers;
 using Tractor.Com.QuantAsylum.Tractor.Tests.IMDTests;
 using Tractor.Com.QuantAsylum.Tractor.Tests.NoiseFloors;
 using Tractor.Com.QuantAsylum.Tractor.Tests.THDs;
+using Tractor.Com.QuantAsylum.Tractor.Tests.Other;
 
 namespace Com.QuantAsylum.Tractor.Tests
 {
@@ -22,12 +24,13 @@ namespace Com.QuantAsylum.Tractor.Tests
     /// </summary>
     [Serializable]
     [System.Xml.Serialization.XmlInclude(typeof(Gain01))]
-    [System.Xml.Serialization.XmlInclude(typeof(Gain03))]
+    [System.Xml.Serialization.XmlInclude(typeof(Gain02))]
     [System.Xml.Serialization.XmlInclude(typeof(Imd01))]
     [System.Xml.Serialization.XmlInclude(typeof(NoiseFloor01))]
     [System.Xml.Serialization.XmlInclude(typeof(IdInput01))]
     [System.Xml.Serialization.XmlInclude(typeof(Thd01))]
     [System.Xml.Serialization.XmlInclude(typeof(Prompt01))]
+    [System.Xml.Serialization.XmlInclude(typeof(Impedance01))]
     public class TestBase 
     {
 
@@ -57,7 +60,7 @@ namespace Com.QuantAsylum.Tractor.Tests
         /// SNR measures the ratio between the signal and the noise
         /// Distortion measures THD or THD + N
         /// </summary>
-        internal enum TestTypeEnum { Unspecified, User, LevelGain, FrequencyResponse, Phase, CrossTalk, SNR, Distortion };
+        internal enum TestTypeEnum { Unspecified, User, LevelGain, FrequencyResponse, Phase, CrossTalk, SNR, Distortion, Other };
         internal TestTypeEnum TestType = TestTypeEnum.Unspecified;
 
         public bool LeftChannel = true;
@@ -65,7 +68,14 @@ namespace Com.QuantAsylum.Tractor.Tests
 
         internal Bitmap TestResultBitmap { get; set; }
 
+        internal TestManager Tm;
+
         TableLayoutPanel TLPanel;
+
+        void SetTestManager(TestManager tm)
+        {
+            Tm = tm;
+        }
 
         internal void PopulateUI(TableLayoutPanel p)
         {

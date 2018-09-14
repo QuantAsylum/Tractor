@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace Com.QuantAsylum.Tractor.Settings
+namespace Com.QuantAsylum.Tractor.Settings 
 {
     /// <summary>
     /// Saves and retrieves app settings to an xml file. This requires class and members to be public

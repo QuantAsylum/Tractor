@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Tractor.Com.QuantAsylum.Tractor.TestManagers;
 
 namespace Tractor.Com.QuantAsylum.Tractor.Tests.IMDTests
 {
@@ -38,22 +39,22 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.IMDTests
             value = new float[2] { float.NaN, float.NaN };
             pass = false;
 
-            if (TestManager.QA401 == null)
+            if (Tm == null)
                 return;
 
-            TestManager.QA401.SetGenerator(QA401.GenType.Gen1, true, OutputLevelDBV - 6, 19000);
-            TestManager.QA401.SetGenerator(QA401.GenType.Gen2, true, OutputLevelDBV - 6, 20000);
-            TestManager.QA401.RunSingle();
+            Tm.AudioGenSetGen1(true, OutputLevelDBV - 6, 19000);
+            Tm.AudioGenSetGen1(true, OutputLevelDBV - 6, 20000);
+            Tm.RunSingle();
 
-            while (TestManager.QA401.GetAcquisitionState() == QA401.AcquisitionState.Busy)
+            while (Tm.AnalyzerIsBusy())
             {
                 Thread.Sleep(20);
             }
 
-            TestResultBitmap = CaptureBitmap(TestManager.QA401.GetBitmapBytes());
+            TestResultBitmap = Tm.GetBitmap();
 
-            value[0] = (float)TestManager.QA401.ComputePowerDB(TestManager.QA401.GetData(QA401.ChannelType.LeftIn), 995, 1005);
-            value[1] = (float)TestManager.QA401.ComputePowerDB(TestManager.QA401.GetData(QA401.ChannelType.RightIn), 995, 1005);
+            value[0] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Left), 995, 1005);
+            value[1] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Right), 995, 1005);
 
             value[0] = -(OutputLevelDBV + 6 - value[0]);
             value[1] = -(OutputLevelDBV + 6 - value[1]);

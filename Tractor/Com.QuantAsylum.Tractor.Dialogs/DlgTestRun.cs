@@ -11,21 +11,30 @@ using Com.QuantAsylum.Tractor.TestManagers;
 using Com.QuantAsylum.Tractor.Tests;
 using System.Threading;
 using Tractor.Com.QuantAsylum.Tractor.HTML;
+using Tractor.Com.QuantAsylum.Tractor.TestManagers;
 
 namespace Com.QuantAsylum.Tractor.Dialogs
 {
-    public partial class DlgTestRun : Form
+    partial class DlgTestRun : Form
     {
         enum ColText { TEST = 0, ENABLED = 1, TARGET = 2, L = 3, R = 4, PASSFAIL = 5};
 
         bool Abort = false;
+        bool Pause = false;
 
         string ReportDirectory = "";
 
-        public DlgTestRun(string directory)
+        TestManager Tm;
+
+        public delegate void TestRunComplete();
+        public TestRunComplete RunCompleteCallback;
+
+        public DlgTestRun(TestManager tm, TestRunComplete runCompleteCallback, string reportDir)
         {
             InitializeComponent();
-            ReportDirectory = directory;
+            ReportDirectory = reportDir;
+            Tm = tm;
+            RunCompleteCallback = runCompleteCallback;
         }
 
         private void DlgReporting_Load(object sender, EventArgs e)
@@ -40,12 +49,12 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             dataGridView1.Columns[(int)ColText.R].HeaderText = "Measured R";
             dataGridView1.Columns[(int)ColText.PASSFAIL].HeaderText = "Pass/Fail";
 
-            dataGridView1.RowCount = TestManager.TestList.Count;
+            dataGridView1.RowCount = Tm.TestList.Count;
 
-            for (int i=0; i<TestManager.TestList.Count; i++)
+            for (int i=0; i<Tm.TestList.Count; i++)
             {
-                dataGridView1[(int)ColText.TEST, i].Value = TestManager.TestList[i].Name;
-                dataGridView1[(int)ColText.ENABLED, i].Value = TestManager.TestList[i].RunTest;
+                dataGridView1[(int)ColText.TEST, i].Value = Tm.TestList[i].Name;
+                dataGridView1[(int)ColText.ENABLED, i].Value = Tm.TestList[i].RunTest;
             }
 
             dataGridView1.Refresh();
@@ -65,13 +74,17 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
         private void button1_Click(object sender, EventArgs e)
         {
+            CloseBtn.Enabled = false;
+            PauseBtn.Enabled = true;
+            StartBtn.Enabled = false;
+            StopBtn.Enabled = true;
             Start();
         }
 
         private void Start()
         {
-            if (TestManager.AllConnected() == false)
-                TestManager.ConnectToDevices();
+            if (Tm.AllConnected() == false)
+                Tm.ConnectToDevices();
 
             ClearPassFailColumn();
 
@@ -81,13 +94,13 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             dataGridView1.Refresh();
 
             // Set everthing to defaults by specifying an empty settings file
-            string s = TestManager.QA401.GetName();
-            s = TestManager.QA450.GetName();
-            TestManager.QA401.SetToDefault("");
-            TestManager.QA401.SetLog(true);
-            TestManager.QA401.SetInputAtten(QA401.InputAttenState.NoAtten);
-            TestManager.QA401.SetBufferLength(16384);
-            TestManager.QA401.SetUnits(QA401.UnitsType.dBV);
+            //string s = Tm.QA401.GetName();
+            //s = QATestManager.QA450.GetName();
+            Tm.AudioAnalyzerSetDefaults();
+            //Tm.QA401.SetLog(true);
+            Tm.SetInputRange(Tm.GetInputRanges()[0]);
+            Tm.AudioAnalyzerSetFftLength(16384);
+            //QATestManager.QA401.SetUnits(QA401.UnitsType.dBV);
             
             Thread.Sleep(500);
 
@@ -97,7 +110,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
                 HtmlWriter html = new HtmlWriter(ReportDirectory);
 
-                for (int i = 0; i < TestManager.TestList.Count; i++)
+                for (int i = 0; i < Tm.TestList.Count; i++)
                 {
                     float[] value = new float[2] { float.NaN, float.NaN };
                     bool pass = false;
@@ -108,51 +121,54 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                         break;
                     }
 
-                    // In here, we're running in another thread and so we need to switch from 
-                    // that thread back to the UI threa to update the UI. 
-                    //dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.PASSFAIL, i].Value = "Running..."; });
-                    //dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1.Refresh(); });
+                    while (Pause)
+                        Thread.Sleep(500);
 
-                    TestManager.TestList[i].DoTest(out value, out pass);
+                    Tm.TestList[i].DoTest(out value, out pass);
 
-                    dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.L, i].Value = value[0].ToString("0.0"); });
-                    dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.R, i].Value = value[1].ToString("0.0"); });
+                    dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.L, i].Value = float.IsNaN(value[0]) ? "---" : value[0].ToString("0.000"); });
+                    dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.R, i].Value = float.IsNaN(value[1]) ? "---" : value[1].ToString("0.000"); });
                     dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.PASSFAIL, i].Value = pass ? "Pass" : "Fail"; });
                     dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1.Refresh(); });
 
-                    if (i==0 && (TestManager.TestList[0] is  IdInput01))
+                    if (i==0 && (Tm.TestList[0] is  IdInput01))
                     {
-                        html.AddHeading1(string.Format("Test ID: {0}", (TestManager.TestList[0] as IdInput01).Id));
+                        html.AddHeading1(string.Format("Test ID: {0}", (Tm.TestList[0] as IdInput01).Id));
                     }
                     else
                     {
                         html.AddParagraph(string.Format("<B>Test Name:</B> {0}  <B>Result L:</B> {1}   <B>Result R:</B> {2} <B>P/F</B>: {3} <B>Image:</B> {4}", 
-                            TestManager.TestList[i].GetTestName(), 
-                            TestManager.TestList[i].LeftChannel ? value[0].ToString("0.00") : "---",
-                            TestManager.TestList[i].RightChannel ? value[1].ToString("0.00") : "---",
+                            Tm.TestList[i].GetTestName(), 
+                            Tm.TestList[i].LeftChannel ? value[0].ToString("0.00") : "---",
+                            Tm.TestList[i].RightChannel ? value[1].ToString("0.00") : "---",
                             pass == true ? "PASS" : "<mark>FAIL</mark>",
-                            TestManager.TestList[i].TestResultBitmap == null ? "[No Image]" : html.ImageLink("Screen", TestManager.TestList[i].TestResultBitmap)
+                            Tm.TestList[i].TestResultBitmap == null ? "[No Image]" : html.ImageLink("Screen", Tm.TestList[i].TestResultBitmap)
                             ));
                     }
-
-
-                    //if (TestManager.TestList[i].TestResultBitmap != null)
-                    //{
-                    //    html.AddImageLink("Screen", TestManager.TestList[i].TestResultBitmap);
-                    //}
 
                     if (IsConnected() == false) return;
                 }
 
                 html.Render();
+                this.Invoke(((MethodInvoker)delegate { TestPastFinished(); }));
+
             }).Start();
+        }
+
+        private void TestPastFinished()
+        {
+            StartBtn.Enabled = true;
+            PauseBtn.Enabled = false;
+            StopBtn.Enabled = false;
+            CloseBtn.Enabled = true;
+            RunCompleteCallback?.Invoke();
         }
 
         private bool IsConnected()
         {
-            if (TestManager.QA401 == null)
+            if (Tm.AllConnected() == false)
             {
-                MessageBox.Show("Unable to connect to the QA40x Audio Analyzer. Is it connected and the QA40x application running?");
+                MessageBox.Show("Unable to connect to the equipment. Is it connected and the QA40x application running?");
                 return false;
             }
 
@@ -172,6 +188,21 @@ namespace Com.QuantAsylum.Tractor.Dialogs
         private void DlgTestRun_FormClosing(object sender, FormClosingEventArgs e)
         {
 
+        }
+
+        private void PauseBtn_Click(object sender, EventArgs e)
+        {
+            Pause = true;
+            if (MessageBox.Show("Testing has been paused. Press OK to continue", "Test Paused", MessageBoxButtons.OK) == DialogResult.OK)
+            {
+
+            }
+            Pause = false;
+        }
+
+        private void CloseBtn_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }

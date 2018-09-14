@@ -15,6 +15,7 @@ using Com.QuantAsylum.Tractor.Tests;
 using Com.QuantAsylum.Tractor.Tests.GainTests;
 using Com.QuantAsylum.Tractor.Ui.Extensions;
 using Com.QuantAsylum.Tractor.Dialogs;
+using Tractor.Com.QuantAsylum.Tractor.TestManagers;
 
 namespace Tractor
 {
@@ -22,18 +23,22 @@ namespace Tractor
     {
         internal static Form1 This;
 
+        TestManager Tm;
+
         public Form1()
         {
             This = this;
             InitializeComponent();
+
+            Tm = new QATestManager();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // These two lines needed by treeview extensions
-            //this.treeView1.DrawMode = TreeViewDrawMode.OwnerDrawText;
-            //this.treeView1.DrawNode += new DrawTreeNodeEventHandler(treeView1_DrawNode);
+            Directory.CreateDirectory(Constants.DataFilePath);
+            Directory.CreateDirectory(Constants.TestLogsPath);
 
+      
             Text = Constants.TitleBarText;
 
             DefaultTreeview();
@@ -83,9 +88,9 @@ namespace Tractor
         {
             treeView1.Nodes.Clear();
 
-            for (int i=0; i<TestManager.TestList.Count; i++)
+            for (int i=0; i<Tm.TestList.Count(); i++)
             {
-                TreeViewAdd((TestManager.TestList[i] as TestBase).Name, TestManager.TestList[i]);
+                TreeViewAdd((Tm.TestList[i] as TestBase).Name, Tm.TestList[i]);
             }
 
             treeView1.ExpandAll();
@@ -138,7 +143,7 @@ namespace Tractor
                 return;
 
             ClearEditFields();
-            TestBase tb = TestManager.TestList.Find(o => o.Name == GetTestName(e.Node.Text));
+            TestBase tb = Tm.TestList.Find(o => o.Name == GetTestName(e.Node.Text));
             tb.PopulateUI(tableLayoutPanel1);
 
             SetTreeviewControls();
@@ -151,7 +156,7 @@ namespace Tractor
         /// <param name="e"></param>
         private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
         {
-            TestBase tb = TestManager.TestList.Find(o => o.Name == GetTestName(e.Node.Text));
+            TestBase tb = Tm.TestList.Find(o => o.Name == GetTestName(e.Node.Text));
             tb.RunTest = e.Node.Checked;
         }
 
@@ -197,7 +202,7 @@ namespace Tractor
 
         private void button1_Click(object sender, EventArgs e)
         {
-            DlgAddTest dlg = new DlgAddTest();
+            DlgAddTest dlg = new DlgAddTest(Tm);
 
             if (dlg.ShowDialog() == DialogResult.OK)
             {
@@ -205,8 +210,9 @@ namespace Tractor
                 string className = dlg.GetSelectedTestName();
                 
                 TestBase testInst = CreateTestInstance(className);
+                testInst.Tm = Tm;
                 (testInst as TestBase).Name = dlg.textBox1.Text;
-                TestManager.TestList.Add(testInst as TestBase);
+                Tm.TestList.Add(testInst as TestBase);
 
                 TreeViewAdd(dlg.textBox1.Text, CreateTestInstance(className));
             }
@@ -243,18 +249,18 @@ namespace Tractor
         {
             ClearEditFields();
 
-            if (TestManager.TestList.Count > 0)
-                (TestManager.TestList[0] as TestBase).PopulateUI(tableLayoutPanel1);
+            if (Tm.TestList.Count > 0)
+                (Tm.TestList[0] as TestBase).PopulateUI(tableLayoutPanel1);
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            File.WriteAllText("data.xml", SerDes.Serialize(TestManager.TestList));
+            File.WriteAllText("data.xml", SerDes.Serialize(Tm.TestList));
         }
 
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            TestManager.TestList = (List<TestBase>)SerDes.Deserialize(typeof(List<TestBase>), File.ReadAllText("data.xml"));
+            Tm.TestList = (List<TestBase>)SerDes.Deserialize(typeof(List<TestBase>), File.ReadAllText("data.xml"));
             RePopulateTreeView();
         }
 
@@ -266,10 +272,10 @@ namespace Tractor
         /// <param name="e"></param>
         private void button3_Click(object sender, EventArgs e)
         {
-            if (TestManager.TestList.Count == 0)
+            if (Tm.TestList.Count == 0)
                 return;
 
-            DlgTestRun dlg = new DlgTestRun(@"d:\trash\testruns");
+            DlgTestRun dlg = new DlgTestRun(Tm, TestRunCallback, Constants.TestLogsPath);
 
             if (dlg.ShowDialog() == DialogResult.OK)
             {
@@ -279,6 +285,11 @@ namespace Tractor
             {
 
             }
+        }
+
+        public void TestRunCallback()
+        {
+
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -292,6 +303,23 @@ namespace Tractor
                 treeView1.Nodes.Remove(treeView1.SelectedNode);
 
             SetTreeviewControls();
+        }
+
+        private void saveTestProfileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.InitialDirectory = Constants.DataFilePath;
+            sfd.Filter = "Test Profile files (*.tp)|*.tp|All files (*.*)|*.*";
+
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                File.WriteAllText(sfd.FileName, SerDes.Serialize(Tm.TestList));
+            }
+        }
+
+        private void loadTestProfileToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
