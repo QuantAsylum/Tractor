@@ -15,39 +15,34 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
     /// This test will check the gain at a given impedance level
     /// </summary>
     [Serializable]
-    public class Impedance01 : TestBase, ITest
+    public class Impedance01 : TestBase
     {           
         public float Freq = 1000;
         public float OutputLevel = -30;
 
-        //public int OutputImpedance = 8;
-
         public int InputRange = 6;
 
-        public float MinimumZ = 0.01f;
-        public float MaximumZ = 0.02f;
+        public float MinimumPassImpedance = 0.01f;
+        public float MaximumPassImpedance = 0.02f;
 
         public Impedance01() : base()
         {
             TestType = TestTypeEnum.Other;
         }
 
-        public override void DoTest(out float[] value, out bool pass)
+        public override void DoTest(string title, out TestResult tr)
         {
-
-            value = new float[2] { float.NaN, float.NaN };
+            // Two channels of testing
+            tr = new TestResult(2);
 
             float[] vOut4 = new float[2] { float.NaN, float.NaN };
             float[] vOut8 = new float[2] { float.NaN, float.NaN };
 
-            pass = false;
-
-            if (Tm == null)
-                return;
-
+            Tm.SetInstrumentsToDefault();
+            Tm.AudioAnalyzerSetTitle(title);
             Tm.SetInputRange(InputRange);
 
-            // First, we make 8 ohm
+            // First, we make 8 ohm measurement
             Tm.LoadSetImpedance(8); Thread.Sleep(200);
             Tm.AudioGenSetGen1(true, OutputLevel, Freq);
             Tm.AudioGenSetGen2(false, OutputLevel, Freq);
@@ -58,7 +53,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
                 Thread.Sleep(30);
             }
 
-            // Grab the open circuit levels
+            // Grab the 8 ohm levels
             if (LeftChannel)
                 vOut8[0] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f );
 
@@ -76,7 +71,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
                 Thread.Sleep(30);
             }
 
-            // Grab the loaded circuit levels
+            // Grab the 4 ohm circuit levels
             vOut4[0] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f);
             vOut4[1] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f);
 
@@ -84,15 +79,36 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
             for (int i = 0; i < 2; i++)
             {
                 if (!float.IsNaN(vOut4[i]) && !float.IsNaN(vOut8[i]))
-                    value[i] = CalcImpedance(vOut4[i], vOut8[i]);
+                    tr.Value[i] = CalcImpedance(vOut4[i], vOut8[i]);
             }
 
-            if (LeftChannel && value[0] > MinimumZ && value[0] < MaximumZ && RightChannel && value[1] > MinimumZ && value[1] < MaximumZ)
-                pass = true;
-            else if (!LeftChannel && RightChannel && value[1] > MinimumZ && value[1] < MaximumZ)
-                pass = true;
-            else if (!RightChannel && LeftChannel && value[0] > MinimumZ && value[0] < MaximumZ)
-                pass = true;
+            bool passLeft = true, passRight = true;
+
+            if (LeftChannel)
+            {
+                tr.StringValue[0] = tr.Value[0].ToString("0.0000") + " ohms";
+                if ((tr.Value[0] < MinimumPassImpedance) || (tr.Value[0] > MaximumPassImpedance))
+                    passLeft = false;
+            }
+            else
+                tr.StringValue[0] = "SKIP";
+
+            if (RightChannel)
+            {
+                tr.StringValue[1] = tr.Value[1].ToString("0.0000") + " ohms";
+                if ((tr.Value[1] < MinimumPassImpedance) || (tr.Value[1] > MaximumPassImpedance))
+                    passLeft = false;
+            }
+            else
+                tr.StringValue[1] = "SKIP";
+
+
+            if (LeftChannel && RightChannel)
+                tr.Pass = passLeft && passRight;
+            else if (LeftChannel)
+                tr.Pass = passLeft;
+            else if (RightChannel)
+                tr.Pass = passRight;
 
             return;
         }
@@ -124,11 +140,6 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
         public override bool CheckValues(out string s)
         {
             s = "";
-            //if ( AllowedLoadImpedances.Contains(OutputImpedance) == false )
-            //{
-            //    s = "Output impedance must be: " + string.Join(" ", AllowedLoadImpedances);
-            //    return false;
-            //}
 
             if (Tm.GetInputRanges().Contains(InputRange) == false)
             {

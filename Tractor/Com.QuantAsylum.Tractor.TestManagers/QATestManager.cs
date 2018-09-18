@@ -47,6 +47,12 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             return "QA401, QA450";
         }
 
+        public override void SetInstrumentsToDefault()
+        {
+            QA401.SetToDefault("");
+            QA450.SetToDefault();
+        }
+
         public override void DutSetDefault()
         {
             
@@ -118,6 +124,11 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         public override void AudioAnalyzerSetFftLength(uint length)
         {
             QA401.SetBufferLength(length);
+        }
+
+        public override void AudioAnalyzerSetTitle(string s)
+        {
+            QA401.SetTitle(s);
         }
 
         public override void AudioGenSetGen1(bool isOn, float ampLevel_dBV, float freq_Hz)

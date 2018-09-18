@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Tractor.Com.QuantAsylum.Tractor.TestManagers;
 
@@ -13,10 +14,11 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
     /// This test will check the gain at a given impedance level
     /// </summary>
     [Serializable]
-    public class Gain02 : TestBase, ITest
+    public class Gain02 : TestBase
     {           
         public float Freq = 1000;
         public float OutputLevel = -30;
+        public float ExtGain = 0;
 
         public float MinimumOKGain = -10.5f;
         public float MaximumOKGain = -9.5f;
@@ -24,26 +26,21 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         public int OutputImpedance = 8;
         public int InputRange = 6;
 
-        private int[] AllowedInputRanges;
-        private int[] AllowedLoadImpedances;
-
         public Gain02() : base()
         {
             TestType = TestTypeEnum.LevelGain;
         }
 
-        public override void DoTest(out float[] value, out bool pass)
+        public override void DoTest(string title, out TestResult tr)
         {
-            value = new float[2] { float.NaN, float.NaN };
-            pass = false;
+            // Two channels of testing
+            tr = new TestResult(2);
 
-            if (Tm == null)
-                return;
+            Tm.SetInstrumentsToDefault();
+            Tm.SetInputRange(InputRange);
+            Tm.AudioAnalyzerSetTitle(title);
 
-            AllowedInputRanges = Tm.GetInputRanges();
-            AllowedLoadImpedances = Tm.GetImpedances();
-
-            Tm.LoadSetImpedance(OutputImpedance);
+            Tm.LoadSetImpedance(OutputImpedance); Thread.Sleep(500);
 
             Tm.AudioGenSetGen1(true, OutputLevel, Freq);
             Tm.AudioGenSetGen2(false, OutputLevel, Freq);
@@ -58,15 +55,38 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             TestResultBitmap = Tm.GetBitmap();
 
             // Compute the total RMS around the freq of interest
-            value[0] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f );
-            value[1] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f);
+            tr.Value[0] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f);
+            tr.Value[0] = tr.Value[0] - OutputLevel - ExtGain;
+            tr.Value[1] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f);
+            tr.Value[1] = tr.Value[1] - OutputLevel - ExtGain;
 
-            if (LeftChannel && value[0] > MinimumOKGain && value[0] < MaximumOKGain && RightChannel && value[1] > MinimumOKGain && value[1] < MaximumOKGain)
-                pass = true;
-            else if (!LeftChannel && RightChannel && value[1] > MinimumOKGain && value[1] < MaximumOKGain)
-                pass = true;
-            else if (!RightChannel && LeftChannel && value[0] > MinimumOKGain && value[0] < MaximumOKGain)
-                pass = true;
+            bool passLeft = true, passRight = true;
+
+            if (LeftChannel)
+            {
+                tr.StringValue[0] = tr.Value[0].ToString("0.00") + " dB";
+                if ((tr.Value[0] < MinimumOKGain) || (tr.Value[0] > MaximumOKGain))
+                    passLeft = false;
+            }
+            else
+                tr.StringValue[0] = "SKIP";
+
+            if (RightChannel)
+            {
+                tr.StringValue[1] = tr.Value[1].ToString("0.00") + " dB";
+                if ((tr.Value[1] < MinimumOKGain) || (tr.Value[1] > MaximumOKGain))
+                    passLeft = false;
+            }
+            else
+                tr.StringValue[1] = "SKIP";
+
+
+            if (LeftChannel && RightChannel)
+                tr.Pass = passLeft && passRight;
+            else if (LeftChannel)
+                tr.Pass = passLeft;
+            else if (RightChannel)
+                tr.Pass = passRight;
 
             return;
         }
@@ -74,15 +94,15 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         public override bool CheckValues(out string s)
         {
             s = "";
-            if (AllowedLoadImpedances.Contains(OutputImpedance) == false)
+            if (Tm.GetImpedances().Contains(OutputImpedance) == false)
             {
-                s = "Output impedance must be: " + string.Join(" ", AllowedLoadImpedances);
+                s = "Output impedance must be: " + string.Join(" ", Tm.GetImpedances());
                 return false;
             }
 
-            if (AllowedInputRanges.Contains(InputRange) == false)
+            if (Tm.GetInputRanges().Contains(InputRange) == false)
             {
-                s = "Input range not supported. Must be: " + string.Join(" ", AllowedInputRanges);
+                s = "Input range not supported. Must be: " + string.Join(" ", Tm.GetInputRanges());
                 return false;
             }
 

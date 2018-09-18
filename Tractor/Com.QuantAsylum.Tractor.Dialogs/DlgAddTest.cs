@@ -86,14 +86,23 @@ namespace Tractor
             comboBox1.Text = "";
 
             // Find all the classes in this assembly that implement ITest
+            //var instances = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(TestBase)));
+
             var instances = from t in Assembly.GetExecutingAssembly().GetTypes()
-                            where t.GetInterfaces().Contains(typeof(ITest))
+                            where t.IsSubclassOf(typeof(TestBase))
                                      && t.GetConstructor(Type.EmptyTypes) != null
-                            select Activator.CreateInstance(t) as ITest;
+                            select Activator.CreateInstance(t) as TestBase;
+
+
+            //var instances = from t in Assembly.GetExecutingAssembly().GetTypes()
+            //                where t.GetInterfaces().Contains(typeof(TestBase))
+            //                         && t.GetConstructor(Type.EmptyTypes) != null
+            //                select Activator.CreateInstance(t) as TestBase;
 
             string filter = comboBox2.Text;
 
             // Add them to the combobox. This is our list of options
+            
             foreach (var instance in instances)
             {
                 if ((instance as TestBase).GetTestType().ToString() == filter)

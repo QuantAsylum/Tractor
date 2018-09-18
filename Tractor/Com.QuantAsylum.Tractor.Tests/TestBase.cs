@@ -19,6 +19,39 @@ using Tractor.Com.QuantAsylum.Tractor.Tests.Other;
 
 namespace Com.QuantAsylum.Tractor.Tests
 {
+    public class TestResult
+    {
+       
+        /// <summary>
+        /// An array of doubles that represent the test results. Index 0 = Left, Index 1 = Right
+        /// </summary>
+        public double[] Value;
+
+        /// <summary>
+        /// Results formatted for display. This allows each test to show whatever number of 
+        /// significant digits makes sense OR to display an error code
+        /// </summary>
+        public string[] StringValue;
+
+        /// <summary>
+        /// Indicates if the test overall passed
+        /// </summary>
+        public bool Pass;
+
+        public TestResult(int count)
+        {
+            Pass = false;
+            Value = new double[count];
+            StringValue = new string[count];
+
+            for (int i=0; i<count; i++)
+            {
+                Value[i] = double.NaN;
+                StringValue[i] = "---";
+            }
+        }
+    }
+
     /// <summary>
     /// Base class for handling the display and update of data used by each test. 
     /// </summary>
@@ -26,12 +59,15 @@ namespace Com.QuantAsylum.Tractor.Tests
     [System.Xml.Serialization.XmlInclude(typeof(Gain01))]
     [System.Xml.Serialization.XmlInclude(typeof(Gain02))]
     [System.Xml.Serialization.XmlInclude(typeof(Imd01))]
+    [System.Xml.Serialization.XmlInclude(typeof(Imd02))]
     [System.Xml.Serialization.XmlInclude(typeof(NoiseFloor01))]
+    [System.Xml.Serialization.XmlInclude(typeof(NoiseFloor02))]
     [System.Xml.Serialization.XmlInclude(typeof(IdInput01))]
     [System.Xml.Serialization.XmlInclude(typeof(Thd01))]
+    [System.Xml.Serialization.XmlInclude(typeof(Thd02))]
     [System.Xml.Serialization.XmlInclude(typeof(Prompt01))]
     [System.Xml.Serialization.XmlInclude(typeof(Impedance01))]
-    public class TestBase 
+    public class TestBase
     {
 
         internal bool RunTest { get; set; } = true;
@@ -63,6 +99,7 @@ namespace Com.QuantAsylum.Tractor.Tests
         internal enum TestTypeEnum { Unspecified, User, LevelGain, FrequencyResponse, Phase, CrossTalk, SNR, Distortion, Other };
         internal TestTypeEnum TestType = TestTypeEnum.Unspecified;
 
+        public int RetryCount = 2;
         public bool LeftChannel = true;
         public bool RightChannel = true;
 
@@ -71,8 +108,11 @@ namespace Com.QuantAsylum.Tractor.Tests
         internal TestManager Tm;
 
         TableLayoutPanel TLPanel;
+        
+        internal bool IsDirty = false;
+        internal Button OkButton;
 
-        void SetTestManager(TestManager tm)
+        public void SetTestManager(TestManager tm)
         {
             Tm = tm;
         }
@@ -94,89 +134,127 @@ namespace Com.QuantAsylum.Tractor.Tests
             {
                 object obj = fi.GetValue(this);
 
-                //if (obj is TestTypeEnum)
-                //    continue;
-
                 TLPanel.Controls.Add(new Label() { Text = UnCamelCase(fi.Name), Anchor = AnchorStyles.Right, AutoSize = true }, 0, row);
 
                 if (obj is float)
                 {
                     float value = (float)fi.GetValue(this);
-                    TLPanel.Controls.Add(new TextBox() { Text = value.ToString("0.0"), Anchor = AnchorStyles.Left, AutoSize = true }, 1, row);
+                    TextBox tb = new TextBox() { Text = value.ToString("0.0"), Anchor = AnchorStyles.Left, AutoSize = true };
+                    tb.TextChanged += Tb_TextChanged;
+                    TLPanel.Controls.Add(tb, 1, row);
                 }
                 else if (obj is string)
                 {
                     string value = (string)fi.GetValue(this);
-                    TLPanel.Controls.Add(new TextBox() { Text = value, Anchor = AnchorStyles.Left, AutoSize = true }, 1, row);
+                    TextBox tb = new TextBox() { Text = value, Anchor = AnchorStyles.Left, AutoSize = true };
+                    tb.TextChanged += Tb_TextChanged;
+                    TLPanel.Controls.Add(tb, 1, row);
                 }
                 else if (obj is bool)
                 {
                     bool value = (bool)fi.GetValue(this);
-                    TLPanel.Controls.Add(new CheckBox() { Checked = value, Anchor = AnchorStyles.Left, AutoSize = true }, 1, row);
+                    CheckBox cb = new CheckBox() { Checked = value, Anchor = AnchorStyles.Left, AutoSize = true };
+                    cb.CheckedChanged += Cb_CheckedChanged;
+                    TLPanel.Controls.Add(cb, 1, row);
                 }
                 else if (obj is int)
                 {
                     int value = (int)fi.GetValue(this);
-                    TLPanel.Controls.Add(new TextBox() { Text = value.ToString(), Anchor = AnchorStyles.Left, AutoSize = true }, 1, row);
+                    TextBox tb = new TextBox() { Text = value.ToString(), Anchor = AnchorStyles.Left, AutoSize = true };
+                    tb.TextChanged += Tb_TextChanged;
+                    TLPanel.Controls.Add(tb, 1, row);
                 }
-
 
                 ++row;
             }
             ++row;
 
-            Button okBtn = new Button() { Text = "Update", Anchor = AnchorStyles.None, AutoSize = false, };
-            okBtn.Click += UpdateBtn_Click;
-            //Button cancelBtn = new Button() { Text = "Cancel", Anchor = AnchorStyles.None, AutoSize = false };
-            //cancelBtn.Click += CancelBtn_Click;
+            OkButton = new Button() { Text = "Update", Anchor = (AnchorStyles.Top | AnchorStyles.Right), AutoSize = true, Enabled = false};
+            OkButton.Click += UpdateBtn_Click;
+            p.Controls.Add(OkButton, 0, row++);
 
-            p.Controls.Add(okBtn, 0, row);
-            //p.Controls.Add(cancelBtn, 1, row);
+            //Label label = new Label() { Text = this.GetTestDescription(), Size = new Size(TLPanel.Width / 2, 200) };
+            //p.Controls.Add(label, 0, row++);
 
+        }
+
+        private void Cb_CheckedChanged(object sender, EventArgs e)
+        {
+            IsDirty = true;
+            OkButton.Enabled = true;
+        }
+
+        private void Tb_TextChanged(object sender, EventArgs e)
+        {
+            IsDirty = true;
+            OkButton.Enabled = true;
+        }
+
+        public bool SaveChanges(out string errorCode)
+        {
+            Type t = GetType();
+            errorCode = "";
+
+            try
+            {
+
+                for (int i = 0; i < TLPanel.RowCount; i++)
+                {
+                    string fieldName = TLPanel.GetControlFromPosition(0, i).Text;
+                    fieldName = ReCamelCase(fieldName);
+                    FieldInfo fi = t.GetField(fieldName);
+
+                    if (fi.GetValue(this) is float)
+                    {
+                        fi.SetValue(this, Convert.ToSingle(TLPanel.GetControlFromPosition(1, i).Text));
+                    }
+                    else if (fi.GetValue(this) is string)
+                    {
+                        fi.SetValue(this, TLPanel.GetControlFromPosition(1, i).Text);
+                    }
+                    else if (fi.GetValue(this) is bool)
+                    {
+                        fi.SetValue(this, ((CheckBox)(TLPanel.GetControlFromPosition(1, i))).Checked);
+                    }
+                    if (fi.GetValue(this) is int)
+                    {
+                        fi.SetValue(this, Convert.ToInt32(TLPanel.GetControlFromPosition(1, i).Text));
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                // Failed to parse and thus failed to save
+                errorCode = ex.Message;
+                return false;
+            }
+
+            //string s;
+
+            //if (CheckValues(out s) == false)
+            //{
+            //    MessageBox.Show(s);
+            //}
+
+            IsDirty = false;
+            return true;
         }
 
         private void UpdateBtn_Click(object sender, EventArgs e)
         {
-            Type t = GetType();
-
-            for (int i=0; i<TLPanel.RowCount; i++)
+            string error;
+            if (SaveChanges(out error) == false)
             {
-                string fieldName = TLPanel.GetControlFromPosition(0, i).Text;
-                fieldName = ReCamelCase(fieldName);
-                FieldInfo fi = t.GetField(fieldName);
-
-                if (fi.GetValue(this) is float)
+                if (MessageBox.Show("Incorrect data has been entered: " + error + Environment.NewLine + Environment.NewLine + "Press Retry to continue editing. Press Cancel to revert to previous values", "Invalid Data", MessageBoxButtons.RetryCancel) == DialogResult.Retry)
                 {
-                    fi.SetValue(this, Convert.ToSingle(TLPanel.GetControlFromPosition(1, i).Text));
-                }
-                else if (fi.GetValue(this) is string)
-                {
-                    fi.SetValue(this, TLPanel.GetControlFromPosition(1, i).Text);
-                }
-                else if (fi.GetValue(this) is bool)
-                {
-                    fi.SetValue(this, ((CheckBox)(TLPanel.GetControlFromPosition(1, i))).Checked);
-                }
-                if (fi.GetValue(this) is int)
-                {
-                    fi.SetValue(this, Convert.ToInt32(TLPanel.GetControlFromPosition(1, i).Text));
-                }
-            }
 
-            string s;
-
-            if (CheckValues(out s) == false)
-            {
-                MessageBox.Show(s);
-            }
-
-            Form1.This.RePopulateTreeView(this.Name);
+                }
+                else
+                {
+                    Form1.This.RePopulateTreeView(this.Name, true);
+                }
+            }            
         }
-
-        //private void CancelBtn_Click(object sender, EventArgs e)
-        //{
-        //    throw new NotImplementedException();
-        //}
 
         public virtual bool CheckValues(out string s)
         {
@@ -199,7 +277,7 @@ namespace Com.QuantAsylum.Tractor.Tests
             return TestType;
         }
 
-        public virtual void DoTest(out float[] value, out bool pass)
+        public virtual void DoTest(string title, out TestResult testResult)
         {
             throw new NotImplementedException();
         }

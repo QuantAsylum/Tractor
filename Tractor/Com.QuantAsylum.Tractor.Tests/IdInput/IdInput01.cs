@@ -13,7 +13,7 @@ namespace Com.QuantAsylum.Tractor.Tests
     /// This test will prompt the user to enter a serial number or other identifier
     /// </summary>
     [Serializable]
-    public class IdInput01 : TestBase, ITest
+    public class IdInput01 : TestBase
     {
         public string Id { get; set; }
 
@@ -23,25 +23,22 @@ namespace Com.QuantAsylum.Tractor.Tests
             TestType = TestTypeEnum.User;
         }
 
-        public override void DoTest(out float[] value, out bool pass)
+        public override void DoTest(string title, out TestResult tr)
         {
+            // Two channels of testing
+            tr = new TestResult(2);
+
             DlgInput dlg = new DlgInput("Enter serial number");
 
             if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 Id = dlg.Result;
                 if (Id != "")
-                    pass = true;
-                else
-                    pass = false;
-
-                value = new float[] { 0, 0 };
-                return;
+                {
+                    tr.Pass = true;
+                    tr.StringValue[0] = Id;
+                }
             }
-
-            Id = "?????";
-            pass = false;
-            value = new float[] { 0, 0 };
         }
 
         public override string GetTestDescription()

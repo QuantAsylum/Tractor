@@ -17,7 +17,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 {
     partial class DlgTestRun : Form
     {
-        enum ColText { TEST = 0, ENABLED = 1, TARGET = 2, L = 3, R = 4, PASSFAIL = 5};
+        enum ColText { TEST = 0, ENABLED = 1, TARGET = 2, L = 3, R = 4, PASSFAIL = 5 };
 
         bool Abort = false;
         bool Pause = false;
@@ -25,6 +25,8 @@ namespace Com.QuantAsylum.Tractor.Dialogs
         string ReportDirectory = "";
 
         TestManager Tm;
+
+        DateTime TestStartTime;
 
         public delegate void TestRunComplete();
         public TestRunComplete RunCompleteCallback;
@@ -41,7 +43,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
         {
             dataGridView1.ReadOnly = true;
 
-            dataGridView1.ColumnCount = Enum.GetValues(typeof(ColText)).Cast<int>().Max()+1;
+            dataGridView1.ColumnCount = Enum.GetValues(typeof(ColText)).Cast<int>().Max() + 1;
             dataGridView1.Columns[(int)ColText.TEST].HeaderText = "Test";
             dataGridView1.Columns[(int)ColText.ENABLED].HeaderText = "Enabled";
             dataGridView1.Columns[(int)ColText.TARGET].HeaderText = "Target";
@@ -51,7 +53,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
             dataGridView1.RowCount = Tm.TestList.Count;
 
-            for (int i=0; i<Tm.TestList.Count; i++)
+            for (int i = 0; i < Tm.TestList.Count; i++)
             {
                 dataGridView1[(int)ColText.TEST, i].Value = Tm.TestList[i].Name;
                 dataGridView1[(int)ColText.ENABLED, i].Value = Tm.TestList[i].RunTest;
@@ -62,10 +64,12 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             IntPtr handle = dataGridView1.Handle;
         }
 
-        private void ClearPassFailColumn()
+        private void ClearPassFailResultColumn()
         {
-            for (int i=0; i<dataGridView1.RowCount; i++)
+            for (int i = 0; i < dataGridView1.RowCount; i++)
             {
+                dataGridView1[(int)ColText.L, i].Value = "";
+                dataGridView1[(int)ColText.R, i].Value = "";
                 dataGridView1[(int)ColText.PASSFAIL, i].Value = "";
             }
 
@@ -78,6 +82,9 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             PauseBtn.Enabled = true;
             StartBtn.Enabled = false;
             StopBtn.Enabled = true;
+            TestStartTime = DateTime.Now;
+            timer1.Enabled = true;
+            label1.Text = "Wait...";
             Start();
         }
 
@@ -86,7 +93,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             if (Tm.AllConnected() == false)
                 Tm.ConnectToDevices();
 
-            ClearPassFailColumn();
+            ClearPassFailResultColumn();
 
             Abort = false;
 
@@ -101,7 +108,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             Tm.SetInputRange(Tm.GetInputRanges()[0]);
             Tm.AudioAnalyzerSetFftLength(16384);
             //QATestManager.QA401.SetUnits(QA401.UnitsType.dBV);
-            
+
             Thread.Sleep(500);
 
             new Thread(() =>
@@ -112,55 +119,81 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
                 for (int i = 0; i < Tm.TestList.Count; i++)
                 {
-                    float[] value = new float[2] { float.NaN, float.NaN };
-                    bool pass = false;
+                    //float[] value = new float[2] { float.NaN, float.NaN };
+                    //bool pass = false;
 
                     if (Abort)
                     {
                         dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.PASSFAIL, i].Value = "Aborted..."; });
                         break;
                     }
+                    else
+                    {
+                        dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.PASSFAIL, i].Value = "Running..."; });
+                    }
 
                     while (Pause)
                         Thread.Sleep(500);
 
-                    Tm.TestList[i].DoTest(out value, out pass);
+                    TestResult tr = null;
 
-                    dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.L, i].Value = float.IsNaN(value[0]) ? "---" : value[0].ToString("0.000"); });
-                    dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.R, i].Value = float.IsNaN(value[1]) ? "---" : value[1].ToString("0.000"); });
-                    dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.PASSFAIL, i].Value = pass ? "Pass" : "Fail"; });
+                    for (int j = 0; j < Tm.TestList[i].RetryCount; j++)
+                    {
+                        if (j > 0)
+                            dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.PASSFAIL, i].Value = "Retry: " + j.ToString(); });
+
+                        Tm.TestList[i].DoTest(Tm.TestList[i].Name, out tr);
+
+                        if (tr.Pass)
+                            break;
+                    }
+
+                    dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.L, i].Value = tr.StringValue[0]; });
+                    dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.R, i].Value = tr.StringValue[1]; });
+                    dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.PASSFAIL, i].Value = tr.Pass ? "PASS" : "FAIL"; });
                     dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1.Refresh(); });
 
-                    if (i==0 && (Tm.TestList[0] is  IdInput01))
+                    // Delineate new tests
+                    if (i == 0)
                     {
-                        html.AddHeading1(string.Format("Test ID: {0}", (Tm.TestList[0] as IdInput01).Id));
+                        html.AddParagraph("================================================");
+                        html.AddHeading2(string.Format("{0} {1}", DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString()));
                     }
-                    else
+
+                    // If new test AND first test is serial number, then print it larger
+                    if (i == 0 && (Tm.TestList[0] is IdInput01))
                     {
-                        html.AddParagraph(string.Format("<B>Test Name:</B> {0}  <B>Result L:</B> {1}   <B>Result R:</B> {2} <B>P/F</B>: {3} <B>Image:</B> {4}", 
-                            Tm.TestList[i].GetTestName(), 
-                            Tm.TestList[i].LeftChannel ? value[0].ToString("0.00") : "---",
-                            Tm.TestList[i].RightChannel ? value[1].ToString("0.00") : "---",
-                            pass == true ? "PASS" : "<mark>FAIL</mark>",
-                            Tm.TestList[i].TestResultBitmap == null ? "[No Image]" : html.ImageLink("Screen", Tm.TestList[i].TestResultBitmap)
-                            ));
+                        html.AddHeading2(string.Format("Device SN: {0}", tr.StringValue[0]));
                     }
+
+
+                    html.AddParagraph(string.Format("<B>Test Name:</B> {0}  <B>Result L:</B> {1}   <B>Result R:</B> {2} <B>P/F</B>: {3} <B>Image:</B> {4}",
+                        Tm.TestList[i].Name,
+                        tr.StringValue[0],
+                        tr.StringValue[1],
+                        tr.Pass ? "PASS" : "<mark>FAIL</mark>",
+                        Tm.TestList[i].TestResultBitmap == null ? "[No Image]" : html.ImageLink("Screen", Tm.TestList[i].TestResultBitmap)
+                        ));
+
 
                     if (IsConnected() == false) return;
                 }
+                TimeSpan ts = DateTime.Now.Subtract(TestStartTime);
+                html.AddParagraph(string.Format("Elapsed Time: {0:N1} sec", ts.TotalSeconds));
 
                 html.Render();
-                this.Invoke(((MethodInvoker)delegate { TestPastFinished(); }));
+                this.Invoke(((MethodInvoker)delegate { TestPassFinished(); }));
 
             }).Start();
         }
 
-        private void TestPastFinished()
+        private void TestPassFinished()
         {
             StartBtn.Enabled = true;
             PauseBtn.Enabled = false;
             StopBtn.Enabled = false;
             CloseBtn.Enabled = true;
+            timer1.Enabled = false;
             RunCompleteCallback?.Invoke();
         }
 
@@ -183,6 +216,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
         private void button3_Click(object sender, EventArgs e)
         {
             Abort = true;
+            timer1.Enabled = false;
         }
 
         private void DlgTestRun_FormClosing(object sender, FormClosingEventArgs e)
@@ -203,6 +237,12 @@ namespace Com.QuantAsylum.Tractor.Dialogs
         private void CloseBtn_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            TimeSpan ts = DateTime.Now.Subtract(TestStartTime);
+            label1.Text = string.Format("Elapsed Time: {0:N1} sec", ts.TotalSeconds);
         }
     }
 }

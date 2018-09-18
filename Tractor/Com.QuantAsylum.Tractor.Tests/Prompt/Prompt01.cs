@@ -14,7 +14,7 @@ namespace Com.QuantAsylum.Tractor.Tests
     /// This test will prompt the user to enter a serial number or other identifier
     /// </summary>
     [Serializable]
-    public class Prompt01 : TestBase, ITest
+    public class Prompt01 : TestBase
     {
         public string Id { get; set; }
 
@@ -26,12 +26,14 @@ namespace Com.QuantAsylum.Tractor.Tests
             TestType = TestTypeEnum.User;
         }
 
-        public override void DoTest(out float[] value, out bool pass)
+        public override void DoTest(string title, out TestResult tr)
         {
+            // Two channels of testing
+            tr = new TestResult(2);
+
             MessageBox.Show(PromptMessage);
 
-            pass = true;
-            value = new float[] { 0, 0 };
+            tr.Pass = true;
             return;
         }
 

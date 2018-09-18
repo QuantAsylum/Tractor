@@ -36,9 +36,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="QAAnalyzer, Version=1.6.0.2, Culture=neutral, processorArchitecture=x86">
+    <Reference Include="QAAnalyzer, Version=1.6.1.5, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\QuantAsylum\QA401\QAAnalyzer.exe</HintPath>
+      <HintPath>..\..\..\Visual Studio 2010\Projects\QA401 GIT\Application\bin\Debug\QAAnalyzer.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -87,12 +87,15 @@
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QAConnectionManager.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QATestManager.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Gain\Gain02.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\IMD\Imd02.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\NoiseFloor\NoiseFloor02.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\Impedance01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Prompt\Prompt01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\IdInput\IdInput01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Gain\Gain01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\IMD\Imd01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\ITest.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\THD\Thd02.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\THD\Thd01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\NoiseFloor\NoiseFloor01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\TestBase.cs" />

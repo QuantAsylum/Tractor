@@ -19,19 +19,20 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.IMDTests
     /// referenced to that.
     /// </summary>
     [Serializable]
-    public class Imd01 : TestBase
+    public class Imd02 : TestBase
     {
         public float MinimumLevelDbc = -200;
         public float MaximumLevelDbc = -105;
 
         public int InputRange = 6;
+        public int OutputImpedance = 8;
 
         /// <summary>
         /// This is the output level for each tone.
         /// </summary>
         public float OutputLevelDBV = -10;
 
-        public Imd01() : base()
+        public Imd02() : base()
         {
             TestType = TestTypeEnum.Distortion;
         }
@@ -44,6 +45,8 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.IMDTests
             Tm.SetInstrumentsToDefault();
             Tm.AudioAnalyzerSetTitle(title);
             Tm.SetInputRange(InputRange);
+
+            Tm.LoadSetImpedance(OutputImpedance); Thread.Sleep(500);
 
             Tm.AudioGenSetGen1(true, OutputLevelDBV - 6, 19000);
             Tm.AudioGenSetGen2(true, OutputLevelDBV - 6, 20000);

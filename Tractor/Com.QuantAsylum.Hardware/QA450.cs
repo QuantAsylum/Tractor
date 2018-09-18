@@ -68,6 +68,14 @@ namespace Tractor.Com.QuantAsylum.Hardware
             return Convert.ToBoolean(result);
         }
 
+        /// <summary>
+        /// Sets the QA450 to a known state
+        /// </summary>
+        static public void SetToDefault()
+        {
+            PutSync("/default");
+        }
+
         static public void SetDutPower(bool powerEnable)
         {
             if (powerEnable)
@@ -82,6 +90,11 @@ namespace Tractor.Com.QuantAsylum.Hardware
             return Convert.ToBoolean(result);
         }
 
+        static private void PutSync(string url)
+        {
+            PutSync(url, "", 0);
+        }
+
         /// <summary>
         /// Synchronous PUT. This will throw an exception of the PUT fails for some reason
         /// </summary>
@@ -90,7 +103,13 @@ namespace Tractor.Com.QuantAsylum.Hardware
         /// <param name="value"></param>
         static private void PutSync(string url, string token, int value)
         {
-            string json = string.Format("{{\"{0}\":{1}}}", token, value);
+            string json;
+
+            if (token != "")
+                json = string.Format("{{\"{0}\":{1}}}", token, value);
+            else
+                json = "{{}}";
+
             StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
 
             // We make the PutAsync synchronous via the .Result

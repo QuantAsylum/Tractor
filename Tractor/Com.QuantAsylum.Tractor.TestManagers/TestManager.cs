@@ -10,6 +10,9 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
 {
     public enum ChannelEnum { Left, Right};
 
+    /// <summary>
+    /// Data returned from some equipment is an array of Points (for example, amplitude and frequency)
+    /// </summary>
     public class PointD
     {
         public double X;
@@ -44,23 +47,26 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
             nameRoot += "-";
             string newName = "";
 
+            // Bounded search for unique names
             for (int i = 0; i < 10000; i++)
             {
                 newName = nameRoot + i.ToString();
 
-                bool nameIsUnique = true;
+                if (TestList.Count == 0)
+                    return newName;
 
-                foreach (TestBase Test in TestList)
+                try
                 {
-                    if (Test.Name == newName)
+                    if (TestList.First(o => o.Name == newName) != null)
                     {
-                        nameIsUnique = false;
-                        break;
+                        // This name is already being used. Keep going
                     }
                 }
-
-                if (nameIsUnique)
+                catch
+                {
+                    // Nothing matched. 
                     break;
+                }
             }
 
             // Here, we've found a unique name
@@ -86,8 +92,11 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
         /// <returns></returns>
         abstract public string GetProfileName();
 
+        abstract public void SetInstrumentsToDefault();
+
         // DUT power. This section controls the power provided to the DUT.
 
+        
         /// <summary>
         /// Sets default options for the instrument
         /// </summary>
@@ -115,6 +124,8 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
         abstract public void AudioAnalyzerSetDefaults();
 
         abstract public void AudioAnalyzerSetFftLength(uint length);
+
+        abstract public void AudioAnalyzerSetTitle(string s);
 
         // Audio Generators
         abstract public void AudioGenSetGen1(bool isOn, float ampLevel_dBV, float freq_Hz);

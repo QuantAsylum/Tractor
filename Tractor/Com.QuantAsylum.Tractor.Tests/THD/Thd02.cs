@@ -5,25 +5,27 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Tractor.Com.QuantAsylum.Tractor.TestManagers;
 
 namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
 {
     [Serializable]
-    public class Thd01 : TestBase
+    public class Thd02 : TestBase
     {
         public float Freq = 1000;
         public float OutputLevel = -30;
 
-        public float MinimumOKTHD = -110;
-        public float MaximumOKTHD = -100;
+        public float MinimumOKThd = -110;
+        public float MaximumOKThd = -100;
 
+        public int OutputImpedance = 8;
         public int InputRange = 6;
 
-        public Thd01() : base()
+        public Thd02() : base()
         {
-            Name = "THD01";
+            Name = "THD02";
             TestType = TestTypeEnum.Distortion;
         }
 
@@ -35,6 +37,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             Tm.SetInstrumentsToDefault();
             Tm.AudioAnalyzerSetTitle(title);
             Tm.SetInputRange(InputRange);
+            Tm.LoadSetImpedance(OutputImpedance); Thread.Sleep(500);
 
             Tm.AudioGenSetGen1(true, OutputLevel, Freq);
             Tm.AudioGenSetGen2(false, OutputLevel, Freq);
@@ -59,7 +62,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             if (LeftChannel)
             {
                 tr.StringValue[0] = tr.Value[0].ToString("0.0") + " dB";
-                if ((tr.Value[0] < MinimumOKTHD) || (tr.Value[0] > MaximumOKTHD))
+                if ((tr.Value[0] < MinimumOKThd) || (tr.Value[0] > MaximumOKThd))
                     passLeft = false;
             }
             else
@@ -68,7 +71,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             if (RightChannel)
             {
                 tr.StringValue[1] = tr.Value[1].ToString("0.0") + " dB";
-                if ((tr.Value[1] < MinimumOKTHD) || (tr.Value[1] > MaximumOKTHD))
+                if ((tr.Value[1] < MinimumOKThd) || (tr.Value[1] > MaximumOKThd))
                     passLeft = false;
             }
             else

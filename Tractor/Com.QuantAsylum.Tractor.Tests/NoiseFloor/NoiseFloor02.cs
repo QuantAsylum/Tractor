@@ -15,12 +15,13 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.NoiseFloors
     /// Measures the noise floor without any weighting applied, from 20 to 20KHz
     /// </summary>
     [Serializable]
-    public class NoiseFloor01 : TestBase
+    public class NoiseFloor02 : TestBase
     {
+        public int OutputImpedance = 8;
         public float MinimumOKNoise = -200;
         public float MaximumOKNoise = -105;
 
-        public NoiseFloor01() : base()
+        public NoiseFloor02() : base()
         {
             TestType = TestTypeEnum.LevelGain;
         }
@@ -32,7 +33,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.NoiseFloors
 
             Tm.SetInstrumentsToDefault();
             Tm.AudioAnalyzerSetTitle(title);
-            Tm.AudioAnalyzerSetTitle(title);
+            Tm.LoadSetImpedance(OutputImpedance); Thread.Sleep(500);
 
             // Disable generators
             Tm.AudioGenSetGen1(false, -60, 1000);

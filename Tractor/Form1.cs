@@ -25,11 +25,16 @@ namespace Tractor
 
         TestManager Tm;
 
+        TestBase SelectedTb;
+
+        bool IgnoreTreeViewBeforeSelects = false;
+
         public Form1()
         {
             This = this;
             InitializeComponent();
 
+            label3.Text = "";
             Tm = new QATestManager();
         }
 
@@ -38,7 +43,7 @@ namespace Tractor
             Directory.CreateDirectory(Constants.DataFilePath);
             Directory.CreateDirectory(Constants.TestLogsPath);
 
-      
+
             Text = Constants.TitleBarText;
 
             DefaultTreeview();
@@ -70,7 +75,7 @@ namespace Tractor
         private void TreeViewAdd(string testName, TestBase test)
         {
             TreeNode root = new TreeNode();
-            root.Text = testName + "   [" + (test as ITest).GetTestName() + "]";
+            root.Text = testName + "   [" + (test as TestBase).GetTestName() + "]";
             //TreeNode sub = new TreeNode();
             //sub.Text = "Test: " + (test as ITest).GetTestName();
             //root.Nodes.Add(sub);
@@ -84,11 +89,14 @@ namespace Tractor
         /// <summary>
         /// Populates the treeview based on the data in the TestManager
         /// </summary>
-        internal void RePopulateTreeView(string highlightId = "")
+        internal void RePopulateTreeView(string highlightId = "", bool ignoreBeforeSelects = false)
         {
+            bool oldIgnore = IgnoreTreeViewBeforeSelects;
+
+            IgnoreTreeViewBeforeSelects = ignoreBeforeSelects;
             treeView1.Nodes.Clear();
 
-            for (int i=0; i<Tm.TestList.Count(); i++)
+            for (int i = 0; i < Tm.TestList.Count(); i++)
             {
                 TreeViewAdd((Tm.TestList[i] as TestBase).Name, Tm.TestList[i]);
             }
@@ -97,12 +105,19 @@ namespace Tractor
 
             if (highlightId != "")
             {
-                TreeNode[] tn = treeView1.Nodes.Cast<TreeNode>().Where(o => o.Text == highlightId).ToArray();
+                TreeNode[] tn = treeView1.Nodes.Cast<TreeNode>().Where(o => o.Text.Contains(highlightId)).ToArray();
 
-                if (tn.Length == 1)
-                    tn[0].ForeColor = Color.LightSalmon;
-                
+                if (tn.Length > 0)
+                    treeView1.SelectedNode = tn[0];
             }
+            else
+            {
+                treeView1.SelectedNode = treeView1.Nodes[0];
+            }
+
+            IgnoreTreeViewBeforeSelects = oldIgnore;
+
+
         }
 
         /// <summary>
@@ -129,6 +144,47 @@ namespace Tractor
             return toks[1].Trim();
         }
 
+
+        /// <summary>
+        /// Called before a selection is made in the treeview. This routine can cancel it if needed.
+        /// Here, we use this as a way to determine if user changes need to be made
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void treeView1_BeforeSelect(object sender, TreeViewCancelEventArgs e)
+        {
+            if (IgnoreTreeViewBeforeSelects)
+                return;
+
+            if (SelectedTb != null && SelectedTb.IsDirty)
+            {
+                IgnoreTreeViewBeforeSelects = true;
+
+                if (MessageBox.Show("The selected test profile has changed. Save changes to current Test?", "Unsaved Changes", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    string error;
+                    if (SelectedTb.SaveChanges(out error) == false)
+                    {
+                        if (MessageBox.Show("Incorrect data has been entered: " + error + Environment.NewLine + Environment.NewLine + "Press Retry to continue editing. Press Cancel to revert to previous values", "Invalid Data", MessageBoxButtons.RetryCancel) == DialogResult.Retry)
+                        {
+                            e.Cancel = true;
+                        }
+                        else
+                        {
+                            //Form1.This.RePopulateTreeView(this.Name, true);
+                            
+                        }
+                    }
+                }
+                else
+                {
+                    SelectedTb.IsDirty = false;
+                }
+
+                IgnoreTreeViewBeforeSelects = false;
+            }
+        }
+
         /// <summary>
         /// Called after a node has been selected. This will update the UI in the 
         /// right panel
@@ -144,7 +200,9 @@ namespace Tractor
 
             ClearEditFields();
             TestBase tb = Tm.TestList.Find(o => o.Name == GetTestName(e.Node.Text));
+            SelectedTb = tb;
             tb.PopulateUI(tableLayoutPanel1);
+            label3.Text = tb.GetTestDescription();
 
             SetTreeviewControls();
         }
@@ -157,6 +215,7 @@ namespace Tractor
         private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
         {
             TestBase tb = Tm.TestList.Find(o => o.Name == GetTestName(e.Node.Text));
+            SelectedTb = tb;
             tb.RunTest = e.Node.Checked;
         }
 
@@ -195,12 +254,15 @@ namespace Tractor
                 MoveDownBtn.Enabled = true;
             }
 
-          
+
         }
 
-            
-
-        private void button1_Click(object sender, EventArgs e)
+        /// <summary>
+        /// Add Test
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AddButton_Click(object sender, EventArgs e)
         {
             DlgAddTest dlg = new DlgAddTest(Tm);
 
@@ -208,7 +270,7 @@ namespace Tractor
             {
                 //string className = (string)(dlg.comboBox1.Items[dlg.comboBox1.SelectedIndex]);
                 string className = dlg.GetSelectedTestName();
-                
+
                 TestBase testInst = CreateTestInstance(className);
                 testInst.Tm = Tm;
                 (testInst as TestBase).Name = dlg.textBox1.Text;
@@ -270,7 +332,7 @@ namespace Tractor
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void button3_Click(object sender, EventArgs e)
+        private void RustTestBtn_Click(object sender, EventArgs e)
         {
             if (Tm.TestList.Count == 0)
                 return;
@@ -279,7 +341,7 @@ namespace Tractor
 
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                
+
             }
             else
             {
@@ -287,6 +349,7 @@ namespace Tractor
             }
         }
 
+        // Called when current tests are done running
         public void TestRunCallback()
         {
 
@@ -299,13 +362,40 @@ namespace Tractor
 
         private void DeleteBtn_Click(object sender, EventArgs e)
         {
-            if (treeView1.SelectedNode != null)
-                treeView1.Nodes.Remove(treeView1.SelectedNode);
+            Tm.TestList.RemoveAt(treeView1.SelectedNode.Index);
+            //if (treeView1.SelectedNode != null)
+            //    treeView1.Nodes.Remove(treeView1.SelectedNode);
+            RePopulateTreeView();
 
             SetTreeviewControls();
         }
 
-        private void saveTestProfileToolStripMenuItem_Click(object sender, EventArgs e)
+        //private void saveTestProfileToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+
+        //}
+
+
+
+        private void loadTestPlanToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.InitialDirectory = Constants.DataFilePath;
+            ofd.Filter = "Test Profile files (*.tp)|*.tp|All files (*.*)|*.*";
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                Tm.TestList = (List<TestBase>)SerDes.Deserialize(typeof(List<TestBase>), File.ReadAllText(ofd.FileName));
+
+                foreach (TestBase test in Tm.TestList)
+                {
+                    test.SetTestManager(Tm);
+                }
+                RePopulateTreeView();
+            }
+        }
+
+        private void saveTestPlanToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.InitialDirectory = Constants.DataFilePath;
@@ -317,9 +407,34 @@ namespace Tractor
             }
         }
 
-        private void loadTestProfileToolStripMenuItem1_Click(object sender, EventArgs e)
+        private void MoveUpBtn_Click(object sender, EventArgs e)
         {
+            if (SelectedTb != null)
+            {
+                int index = Tm.TestList.IndexOf(SelectedTb);
 
+                if (index == 0)
+                    return;
+
+                Tm.TestList.RemoveAt(index);
+                Tm.TestList.Insert(index - 1, SelectedTb);
+                RePopulateTreeView(SelectedTb.Name);
+            }
+        }
+
+        private void MoveDownBtn_Click(object sender, EventArgs e)
+        {
+            if (SelectedTb != null)
+            {
+                int index = Tm.TestList.IndexOf(SelectedTb);
+
+                if (index == Tm.TestList.Count - 1)
+                    return;
+
+                Tm.TestList.RemoveAt(index);
+                Tm.TestList.Insert(index + 1, SelectedTb);
+                RePopulateTreeView(SelectedTb.Name);
+            }
         }
     }
 }

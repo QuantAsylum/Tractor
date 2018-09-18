@@ -7,6 +7,7 @@ using Tractor.Com.QuantAsylum.Tractor.TestManagers;
 
 namespace Com.QuantAsylum.Tractor.Tests
 {
+    /*
     /// <summary>
     /// Interface class for each test
     /// </summary>
@@ -35,6 +36,7 @@ namespace Com.QuantAsylum.Tractor.Tests
         /// </summary>
         /// <param name="value"></param>
         /// <param name="pass"></param>
-        void DoTest(out float[] value, out bool pass);
+        void DoTest(out TestResult tr);
     }
+    */
 }
