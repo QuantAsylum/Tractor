@@ -60,7 +60,7 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
         public override void DutSetPowerState(bool powerEnable)
         {
-            QA450.SetDutPower(true);
+            QA450.SetDutPower(powerEnable);
         }
 
         public override bool DutGetPowerState()
@@ -68,9 +68,19 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             return QA450.GetDutPower();
         }
 
-        public override float DutGetCurrent()
+        public override float DutGetCurrent(int averages = 1)
         {
-            return QA450.GetCurrent();
+            float current = 0;
+
+            if (averages <= 0)
+                throw new InvalidDataException("Number of averages must be >= 1");
+
+            for (int i = 0; i < averages; i++)
+            {
+                current += QA450.GetCurrent();
+            }
+
+            return current / averages;
         }
 
         public override void DutSetVoltage(float voltage_V)

@@ -65,8 +65,11 @@ namespace Com.QuantAsylum.Tractor.Tests
     [System.Xml.Serialization.XmlInclude(typeof(IdInput01))]
     [System.Xml.Serialization.XmlInclude(typeof(Thd01))]
     [System.Xml.Serialization.XmlInclude(typeof(Thd02))]
+    [System.Xml.Serialization.XmlInclude(typeof(Thd03))]
     [System.Xml.Serialization.XmlInclude(typeof(Prompt01))]
     [System.Xml.Serialization.XmlInclude(typeof(Impedance01))]
+    [System.Xml.Serialization.XmlInclude(typeof(Power01))]
+    [System.Xml.Serialization.XmlInclude(typeof(Efficiency01))]
     public class TestBase
     {
 
@@ -253,7 +256,11 @@ namespace Com.QuantAsylum.Tractor.Tests
                 {
                     Form1.This.RePopulateTreeView(this.Name, true);
                 }
-            }            
+            }
+            else
+            {
+                Form1.This.RePopulateTreeView(this.Name, true);
+            }
         }
 
         public virtual bool CheckValues(out string s)

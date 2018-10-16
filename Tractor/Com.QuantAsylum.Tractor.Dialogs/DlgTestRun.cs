@@ -41,6 +41,8 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
         private void DlgReporting_Load(object sender, EventArgs e)
         {
+            dataGridView1.DefaultCellStyle.Font = new Font("Ariel", 12);
+            dataGridView1.RowTemplate.MinimumHeight= 25;
             dataGridView1.ReadOnly = true;
 
             dataGridView1.ColumnCount = Enum.GetValues(typeof(ColText)).Cast<int>().Max() + 1;
@@ -101,15 +103,9 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             dataGridView1.Refresh();
 
             // Set everthing to defaults by specifying an empty settings file
-            //string s = Tm.QA401.GetName();
-            //s = QATestManager.QA450.GetName();
-            Tm.AudioAnalyzerSetDefaults();
-            //Tm.QA401.SetLog(true);
-            Tm.SetInputRange(Tm.GetInputRanges()[0]);
-            Tm.AudioAnalyzerSetFftLength(16384);
-            //QATestManager.QA401.SetUnits(QA401.UnitsType.dBV);
+            Tm.DutSetPowerState(false);
 
-            Thread.Sleep(500);
+            Thread.Sleep(750);
 
             new Thread(() =>
             {

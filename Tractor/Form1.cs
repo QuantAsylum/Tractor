@@ -27,6 +27,10 @@ namespace Tractor
 
         TestBase SelectedTb;
 
+        /// <summary>
+        /// A workaround...sometimes we don't want programmatic changes to 
+        /// the treeview to trigger more code. So, we set this true.
+        /// </summary>
         bool IgnoreTreeViewBeforeSelects = false;
 
         public Form1()
@@ -44,19 +48,12 @@ namespace Tractor
             Directory.CreateDirectory(Constants.TestLogsPath);
 
 
-            Text = Constants.TitleBarText;
+            Text = Constants.TitleBarText + " " + Constants.Version.ToString("0.00") + Constants.VersionSuffix;
 
             DefaultTreeview();
 
             SetTreeviewControls();
         }
-
-        // This method is needed by treeview extensions
-        //void treeView1_DrawNode(object sender, DrawTreeNodeEventArgs e)
-        //{
-        //    if (e.Node.Level == 1) e.Node.HideCheckBox();
-        //    e.DrawDefault = true;
-        //}
 
         /// <summary>
         /// Sets treeview defaults
@@ -76,9 +73,6 @@ namespace Tractor
         {
             TreeNode root = new TreeNode();
             root.Text = testName + "   [" + (test as TestBase).GetTestName() + "]";
-            //TreeNode sub = new TreeNode();
-            //sub.Text = "Test: " + (test as ITest).GetTestName();
-            //root.Nodes.Add(sub);
 
             if ((test as TestBase).RunTest)
                 root.Checked = true;
@@ -147,7 +141,7 @@ namespace Tractor
 
         /// <summary>
         /// Called before a selection is made in the treeview. This routine can cancel it if needed.
-        /// Here, we use this as a way to determine if user changes need to be made
+        /// Here, we use this as a way to determine if user changes need to be saved
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -171,8 +165,7 @@ namespace Tractor
                         }
                         else
                         {
-                            //Form1.This.RePopulateTreeView(this.Name, true);
-                            
+                            // Nothing                            
                         }
                     }
                 }
@@ -187,7 +180,7 @@ namespace Tractor
 
         /// <summary>
         /// Called after a node has been selected. This will update the UI in the 
-        /// right panel
+        /// righthand panel
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -349,34 +342,40 @@ namespace Tractor
             }
         }
 
-        // Called when current tests are done running
+        // Called when current tests are done running. Right now, we don't use this.
         public void TestRunCallback()
         {
 
         }
 
+        /// <summary>
+        /// Called when user wants to exit app
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
         }
 
+        /// <summary>
+        /// Deletes the currently selected test
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DeleteBtn_Click(object sender, EventArgs e)
         {
             Tm.TestList.RemoveAt(treeView1.SelectedNode.Index);
-            //if (treeView1.SelectedNode != null)
-            //    treeView1.Nodes.Remove(treeView1.SelectedNode);
             RePopulateTreeView();
 
             SetTreeviewControls();
         }
 
-        //private void saveTestProfileToolStripMenuItem_Click(object sender, EventArgs e)
-        //{
-
-        //}
-
-
-
+        /// <summary>
+        /// Loads a test plan from the file system
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void loadTestPlanToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
@@ -395,6 +394,11 @@ namespace Tractor
             }
         }
 
+        /// <summary>
+        /// Saves a test plan to the file system
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void saveTestPlanToolStripMenuItem_Click(object sender, EventArgs e)
         {
             SaveFileDialog sfd = new SaveFileDialog();
@@ -407,6 +411,11 @@ namespace Tractor
             }
         }
 
+        /// <summary>
+        /// Moves a test up in the treeview
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MoveUpBtn_Click(object sender, EventArgs e)
         {
             if (SelectedTb != null)
@@ -422,6 +431,11 @@ namespace Tractor
             }
         }
 
+        /// <summary>
+        /// Moves a test down in the treeview
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MoveDownBtn_Click(object sender, EventArgs e)
         {
             if (SelectedTb != null)

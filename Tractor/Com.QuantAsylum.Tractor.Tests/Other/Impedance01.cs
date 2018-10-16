@@ -23,7 +23,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
         public int InputRange = 6;
 
         public float MinimumPassImpedance = 0.01f;
-        public float MaximumPassImpedance = 0.02f;
+        public float MaximumPassImpedance = 0.2f;
 
         public Impedance01() : base()
         {
@@ -43,7 +43,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
             Tm.SetInputRange(InputRange);
 
             // First, we make 8 ohm measurement
-            Tm.LoadSetImpedance(8); Thread.Sleep(200);
+            Tm.LoadSetImpedance(8); Thread.Sleep(Constants.QA450RelaySettle);
             Tm.AudioGenSetGen1(true, OutputLevel, Freq);
             Tm.AudioGenSetGen2(false, OutputLevel, Freq);
             Tm.RunSingle();
@@ -61,8 +61,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
                 vOut8[1] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f);
 
             // Now make 4 ohm meausrement
-            Tm.LoadSetImpedance(4);
-            Thread.Sleep(200);
+            Tm.LoadSetImpedance(4); Thread.Sleep(Constants.QA450RelaySettle);
 
             Tm.RunSingle();
 

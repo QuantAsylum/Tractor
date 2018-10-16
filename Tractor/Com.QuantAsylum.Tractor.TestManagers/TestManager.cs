@@ -21,7 +21,8 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
 
     /// <summary>
     /// Test managers are primarily focused on ensuring all the instruments required for a set of
-    /// tests are present and working
+    /// tests are present and working, as well as implementing the various abstract methods that made
+    /// sense.
     /// </summary>
     abstract public class TestManager
     {
@@ -104,7 +105,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
 
         abstract public void DutSetPowerState(bool powerEnable);
         abstract public bool DutGetPowerState();
-        abstract public float DutGetCurrent();
+        abstract public float DutGetCurrent(int averages = 1);
         abstract public void DutSetVoltage(float voltage_V);
         abstract public float DutGetVoltage();
         abstract public float DutGetTemperature();

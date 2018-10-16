@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Tractor;
 using Tractor.Com.QuantAsylum.Tractor.TestManagers;
 
 namespace Com.QuantAsylum.Tractor.Tests.GainTests
@@ -20,8 +21,8 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         public float OutputLevel = -30;
         public float ExtGain = 0;
 
-        public float MinimumOKGain = -10.5f;
-        public float MaximumOKGain = -9.5f;
+        public float MinimumPassGain = -10.5f;
+        public float MaximumPassGain = -9.5f;
 
         public int OutputImpedance = 8;
         public int InputRange = 6;
@@ -40,7 +41,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             Tm.SetInputRange(InputRange);
             Tm.AudioAnalyzerSetTitle(title);
 
-            Tm.LoadSetImpedance(OutputImpedance); Thread.Sleep(500);
+            Tm.LoadSetImpedance(OutputImpedance); Thread.Sleep(Constants.QA450RelaySettle);
 
             Tm.AudioGenSetGen1(true, OutputLevel, Freq);
             Tm.AudioGenSetGen2(false, OutputLevel, Freq);
@@ -55,9 +56,9 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             TestResultBitmap = Tm.GetBitmap();
 
             // Compute the total RMS around the freq of interest
-            tr.Value[0] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f);
+            tr.Value[0] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Left), Freq * 0.97f, Freq * 1.03f);
             tr.Value[0] = tr.Value[0] - OutputLevel - ExtGain;
-            tr.Value[1] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f);
+            tr.Value[1] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Right), Freq * 0.97f, Freq * 1.03f);
             tr.Value[1] = tr.Value[1] - OutputLevel - ExtGain;
 
             bool passLeft = true, passRight = true;
@@ -65,7 +66,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             if (LeftChannel)
             {
                 tr.StringValue[0] = tr.Value[0].ToString("0.00") + " dB";
-                if ((tr.Value[0] < MinimumOKGain) || (tr.Value[0] > MaximumOKGain))
+                if ((tr.Value[0] < MinimumPassGain) || (tr.Value[0] > MaximumPassGain))
                     passLeft = false;
             }
             else
@@ -74,7 +75,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             if (RightChannel)
             {
                 tr.StringValue[1] = tr.Value[1].ToString("0.00") + " dB";
-                if ((tr.Value[1] < MinimumOKGain) || (tr.Value[1] > MaximumOKGain))
+                if ((tr.Value[1] < MinimumPassGain) || (tr.Value[1] > MaximumPassGain))
                     passLeft = false;
             }
             else

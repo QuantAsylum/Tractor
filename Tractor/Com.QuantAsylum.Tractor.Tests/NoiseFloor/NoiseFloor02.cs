@@ -33,7 +33,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.NoiseFloors
 
             Tm.SetInstrumentsToDefault();
             Tm.AudioAnalyzerSetTitle(title);
-            Tm.LoadSetImpedance(OutputImpedance); Thread.Sleep(500);
+            Tm.LoadSetImpedance(OutputImpedance); Thread.Sleep(Constants.QA450RelaySettle);
 
             // Disable generators
             Tm.AudioGenSetGen1(false, -60, 1000);
@@ -51,12 +51,12 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.NoiseFloors
             tr.Value[1] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Right), 20, 20000);
 
             if (LeftChannel)
-                tr.StringValue[0] = tr.Value[0].ToString("0.0") + " dB";
+                tr.StringValue[0] = tr.Value[0].ToString("0.0") + " dBV";
             else
                 tr.StringValue[0] = "SKIP";
 
             if (RightChannel)
-                tr.StringValue[1] = tr.Value[1].ToString("0.0") + " dB";
+                tr.StringValue[1] = tr.Value[1].ToString("0.0") + " dBV";
             else
                 tr.StringValue[1] = "SKIP";
 

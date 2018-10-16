@@ -12,7 +12,7 @@ using Tractor.Com.QuantAsylum.Tractor.TestManagers;
 namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
 {
     [Serializable]
-    public class Thd02 : TestBase
+    public class Thd03 : TestBase
     {
         public float Freq = 1000;
         public float OutputLevel = -30;
@@ -20,12 +20,13 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
         public float MinimumOKThd = -110;
         public float MaximumOKThd = -100;
 
-        public int OutputImpedance = 8;
+        public int LoadImpedance = 8;
         public int InputRange = 6;
+        public int ExtGain = -6;
 
-        public Thd02() : base()
+        public Thd03() : base()
         {
-            Name = "THD02";
+            Name = "THD03";
             TestType = TestTypeEnum.Distortion;
         }
 
@@ -37,7 +38,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             Tm.SetInstrumentsToDefault();
             Tm.AudioAnalyzerSetTitle(title);
             Tm.SetInputRange(InputRange);
-            Tm.LoadSetImpedance(OutputImpedance); Thread.Sleep(Constants.QA450RelaySettle);
+            Tm.LoadSetImpedance(LoadImpedance); Thread.Sleep(Constants.QA450RelaySettle);
 
             Tm.AudioGenSetGen1(true, OutputLevel, Freq);
             Tm.AudioGenSetGen2(false, OutputLevel, Freq);
@@ -50,18 +51,28 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
 
             TestResultBitmap = Tm.GetBitmap();
 
-            tr.Value[0] = (float)Tm.ComputeThdPct(Tm.GetData(ChannelEnum.Left), Freq, 20000);
-            tr.Value[1] = (float)Tm.ComputeThdPct(Tm.GetData(ChannelEnum.Right), Freq, 20000);
+            
+            //tr.Value[1] = (float)Tm.ComputeThdPct(Tm.GetData(ChannelEnum.Right), Freq, 20000);
 
             // Convert to db
-            tr.Value[0] = 20 * (float)Math.Log10(tr.Value[0] / 100);
-            tr.Value[1] = 20 * (float)Math.Log10(tr.Value[1] / 100);
+            //tr.Value[0] = 20 * (float)Math.Log10(tr.Value[0] / 100);
+            //tr.Value[1] = 20 * (float)Math.Log10(tr.Value[1] / 100);
 
             bool passLeft = true, passRight = true;
 
             if (LeftChannel)
             {
-                tr.StringValue[0] = tr.Value[0].ToString("0.0") + " dB";
+                // Get dbV out
+                float wattsOut = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f) - ExtGain;
+                // Get volts out
+                wattsOut = (float)Math.Pow(10, wattsOut / 20);
+                // Get watts out
+                wattsOut = (wattsOut * wattsOut) / LoadImpedance;
+
+                tr.Value[0] = (float)Tm.ComputeThdPct(Tm.GetData(ChannelEnum.Left), Freq, 20000);
+                // Convert to dB
+                tr.Value[0] = 20 * (float)Math.Log10(tr.Value[0] / 100);
+                tr.StringValue[0] = string.Format("{0:N1} dB @ {1:N1}W", tr.Value[0], wattsOut);
                 if ((tr.Value[0] < MinimumOKThd) || (tr.Value[0] > MaximumOKThd))
                     passLeft = false;
             }
@@ -70,7 +81,17 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
 
             if (RightChannel)
             {
-                tr.StringValue[1] = tr.Value[1].ToString("0.0") + " dB";
+                // Get dbV out
+                float wattsOut = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f) - ExtGain;
+                // Get volts out
+                wattsOut = (float)Math.Pow(10, wattsOut / 20);
+                // Get watts out
+                wattsOut = (wattsOut * wattsOut) / LoadImpedance;
+
+                tr.Value[1] = (float)Tm.ComputeThdPct(Tm.GetData(ChannelEnum.Right), Freq, 20000);
+                // Convert to dB
+                tr.Value[1] = 20 * (float)Math.Log10(tr.Value[1] / 100);
+                tr.StringValue[1] = string.Format("{0:N1} dB @ {1:N1}W", tr.Value[1], wattsOut);
                 if ((tr.Value[1] < MinimumOKThd) || (tr.Value[1] > MaximumOKThd))
                     passLeft = false;
             }
@@ -90,7 +111,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
 
         public override string GetTestDescription()
         {
-            return "Measures THD at a given frequency and amplitude at a given load with power indicated";
+            return "Measures THD at a given frequency and amplitude at a given load";
         }
     }
 }

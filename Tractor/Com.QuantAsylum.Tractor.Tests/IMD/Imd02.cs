@@ -46,7 +46,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.IMDTests
             Tm.AudioAnalyzerSetTitle(title);
             Tm.SetInputRange(InputRange);
 
-            Tm.LoadSetImpedance(OutputImpedance); Thread.Sleep(500);
+            Tm.LoadSetImpedance(OutputImpedance); Thread.Sleep(Constants.QA450RelaySettle);
 
             Tm.AudioGenSetGen1(true, OutputLevelDBV - 6, 19000);
             Tm.AudioGenSetGen2(true, OutputLevelDBV - 6, 20000);

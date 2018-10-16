@@ -20,8 +20,8 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
 
         public float Offset = 0;
 
-        public float MinimumOKGain = -10.5f;
-        public float MaximumOKGain = -9.5f;
+        public float MinimumPassGain = -10.5f;
+        public float MaximumPassGain = -9.5f;
 
         public int InputRange = 6;
 
@@ -59,7 +59,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             if (LeftChannel)
             {
                 tr.StringValue[0] = tr.Value[0].ToString("0.00") + " dB";
-                if ((tr.Value[0] < MinimumOKGain) || (tr.Value[0] > MaximumOKGain))
+                if ((tr.Value[0] < MinimumPassGain) || (tr.Value[0] > MaximumPassGain))
                     passLeft = false;
             }
             else
@@ -68,7 +68,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             if (RightChannel)
             {
                 tr.StringValue[1] = tr.Value[1].ToString("0.00") + " dB";
-                if ((tr.Value[1] < MinimumOKGain) || (tr.Value[1] > MaximumOKGain))
+                if ((tr.Value[1] < MinimumPassGain) || (tr.Value[1] > MaximumPassGain))
                     passLeft = false;
             }
             else

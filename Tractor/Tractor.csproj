@@ -35,10 +35,13 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Tractor Icon.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="QAAnalyzer, Version=1.6.1.5, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="QAAnalyzer, Version=1.6.5.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Visual Studio 2010\Projects\QA401 GIT\Application\bin\Debug\QAAnalyzer.exe</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\QuantAsylum\QA401\QAAnalyzer.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -89,12 +92,15 @@
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Gain\Gain02.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\IMD\Imd02.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\NoiseFloor\NoiseFloor02.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\Efficiency01.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\Power01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\Impedance01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Prompt\Prompt01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\IdInput\IdInput01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Gain\Gain01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\IMD\Imd01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\ITest.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\THD\Thd03.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\THD\Thd02.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\THD\Thd01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\NoiseFloor\NoiseFloor01.cs" />
@@ -153,6 +159,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Tractor Icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
