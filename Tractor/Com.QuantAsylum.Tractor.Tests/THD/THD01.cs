@@ -69,11 +69,10 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             {
                 tr.StringValue[1] = tr.Value[1].ToString("0.0") + " dB";
                 if ((tr.Value[1] < MinimumOKTHD) || (tr.Value[1] > MaximumOKTHD))
-                    passLeft = false;
+                    passRight = false;
             }
             else
                 tr.StringValue[1] = "SKIP";
-
 
             if (LeftChannel && RightChannel)
                 tr.Pass = passLeft && passRight;
@@ -83,6 +82,11 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
                 tr.Pass = passRight;
 
             return;
+        }
+
+        public override string GetTestLimitsString()
+        {
+            return string.Format("{0:N1}...{1:N1} dB", MinimumOKTHD, MaximumOKTHD);
         }
 
         public override string GetTestDescription()

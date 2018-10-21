@@ -25,6 +25,11 @@ namespace Tractor
 
         TestManager Tm;
 
+        /// <summary>
+        /// Keeps track if the TestManager currently loaded has changed
+        /// </summary>
+        bool TmIsDirty = false;
+
         TestBase SelectedTb;
 
         /// <summary>
@@ -40,6 +45,45 @@ namespace Tractor
 
             label3.Text = "";
             Tm = new QATestManager();
+            Tm.SetCallbacks(StartEditing, DoneEditing, CancelEditing);
+        }
+
+        /// <summary>
+        /// Called when user begins editing a test
+        /// </summary>
+        internal void StartEditing()
+        {
+            RunTestsBtn.Enabled = false;
+            MoveUpBtn.Enabled = false;
+            MoveDownBtn.Enabled = false;
+            DeleteBtn.Enabled = false;
+            treeView1.Enabled = false;
+            menuStrip1.Enabled = false;
+            AddTestBtn.Enabled = false;
+        }
+
+        /// <summary>
+        /// Called when user finishes editing a test
+        /// </summary>
+        internal void DoneEditing()
+        {
+            treeView1.Enabled = true;
+            menuStrip1.Enabled = true;
+            AddTestBtn.Enabled = true;
+            TmIsDirty = true;
+            SetTreeviewControls();
+        }
+
+        /// <summary>
+        /// Called when user cancels editing a test
+        /// </summary>
+        internal void CancelEditing()
+        {
+            treeView1.Enabled = true;
+            menuStrip1.Enabled = true;
+            AddTestBtn.Enabled = true;
+            RePopulateTreeView();
+            SetTreeviewControls();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -53,6 +97,22 @@ namespace Tractor
             DefaultTreeview();
 
             SetTreeviewControls();
+        }
+
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // Make sure power is off
+            Tm.DutSetPowerState(false);
+
+            // Here, the data is clean. Check if we need to save the current TestManager data
+            if (TmIsDirty || ((SelectedTb != null) && SelectedTb.IsDirty == true))
+            {
+                if (MessageBox.Show("Do you want to save the current test plan?", "Changes not saved", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    saveTestPlanToolStripMenuItem_Click(null, null);
+                }
+            }
         }
 
         /// <summary>
@@ -81,13 +141,17 @@ namespace Tractor
         }
 
         /// <summary>
-        /// Populates the treeview based on the data in the TestManager
+        /// Populates the treeview based on the data in the TestManager. This tries to keep the current node
+        /// selected unless another ID to highlight is presented
         /// </summary>
         internal void RePopulateTreeView(string highlightId = "", bool ignoreBeforeSelects = false)
         {
-            bool oldIgnore = IgnoreTreeViewBeforeSelects;
+            if ((highlightId == "") && (treeView1.SelectedNode != null))
+            {
+                var tn = treeView1.Nodes.Cast<TreeNode>().First(o => o.Text.Contains(treeView1.SelectedNode.Text));
+                highlightId = tn.Text;
+            }
 
-            IgnoreTreeViewBeforeSelects = ignoreBeforeSelects;
             treeView1.Nodes.Clear();
 
             for (int i = 0; i < Tm.TestList.Count(); i++)
@@ -108,10 +172,6 @@ namespace Tractor
             {
                 treeView1.SelectedNode = treeView1.Nodes[0];
             }
-
-            IgnoreTreeViewBeforeSelects = oldIgnore;
-
-
         }
 
         /// <summary>
@@ -138,46 +198,6 @@ namespace Tractor
             return toks[1].Trim();
         }
 
-
-        /// <summary>
-        /// Called before a selection is made in the treeview. This routine can cancel it if needed.
-        /// Here, we use this as a way to determine if user changes need to be saved
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void treeView1_BeforeSelect(object sender, TreeViewCancelEventArgs e)
-        {
-            if (IgnoreTreeViewBeforeSelects)
-                return;
-
-            if (SelectedTb != null && SelectedTb.IsDirty)
-            {
-                IgnoreTreeViewBeforeSelects = true;
-
-                if (MessageBox.Show("The selected test profile has changed. Save changes to current Test?", "Unsaved Changes", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    string error;
-                    if (SelectedTb.SaveChanges(out error) == false)
-                    {
-                        if (MessageBox.Show("Incorrect data has been entered: " + error + Environment.NewLine + Environment.NewLine + "Press Retry to continue editing. Press Cancel to revert to previous values", "Invalid Data", MessageBoxButtons.RetryCancel) == DialogResult.Retry)
-                        {
-                            e.Cancel = true;
-                        }
-                        else
-                        {
-                            // Nothing                            
-                        }
-                    }
-                }
-                else
-                {
-                    SelectedTb.IsDirty = false;
-                }
-
-                IgnoreTreeViewBeforeSelects = false;
-            }
-        }
-
         /// <summary>
         /// Called after a node has been selected. This will update the UI in the 
         /// righthand panel
@@ -201,7 +221,7 @@ namespace Tractor
         }
 
         /// <summary>
-        /// Called after a checkbox has been checked (or unchecked)
+        /// Called after a checkbox in the treeview has been checked (or unchecked)
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -246,8 +266,6 @@ namespace Tractor
             {
                 MoveDownBtn.Enabled = true;
             }
-
-
         }
 
         /// <summary>
@@ -270,6 +288,7 @@ namespace Tractor
                 Tm.TestList.Add(testInst as TestBase);
 
                 TreeViewAdd(dlg.textBox1.Text, CreateTestInstance(className));
+                TmIsDirty = true;
             }
 
             SetTreeviewControls();
@@ -308,30 +327,20 @@ namespace Tractor
                 (Tm.TestList[0] as TestBase).PopulateUI(tableLayoutPanel1);
         }
 
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            File.WriteAllText("data.xml", SerDes.Serialize(Tm.TestList));
-        }
-
-        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Tm.TestList = (List<TestBase>)SerDes.Deserialize(typeof(List<TestBase>), File.ReadAllText("data.xml"));
-            RePopulateTreeView();
-        }
-
         /// <summary>
         /// Pops a modal dlg where the user is given a chance to review the tests and then execute them
         /// over and over if desired. This doesn't return until the user closes the dlg
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void RustTestBtn_Click(object sender, EventArgs e)
+        private void RunTestBtn_Click(object sender, EventArgs e)
         {
             if (Tm.TestList.Count == 0)
                 return;
 
             DlgTestRun dlg = new DlgTestRun(Tm, TestRunCallback, Constants.TestLogsPath);
 
+            this.Visible = false;
             if (dlg.ShowDialog() == DialogResult.OK)
             {
 
@@ -340,8 +349,9 @@ namespace Tractor
             {
 
             }
+            this.Visible = true;
         }
-
+      
         // Called when current tests are done running. Right now, we don't use this.
         public void TestRunCallback()
         {
@@ -355,6 +365,14 @@ namespace Tractor
         /// <param name="e"></param>
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //if (TmIsDirty)
+            //{
+            //    MessageBox.Show("Changes not saved", "Save data?", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            //    {
+
+            //    }
+            //}
+
             Close();
         }
 
@@ -366,6 +384,7 @@ namespace Tractor
         private void DeleteBtn_Click(object sender, EventArgs e)
         {
             Tm.TestList.RemoveAt(treeView1.SelectedNode.Index);
+            TmIsDirty = true;
             RePopulateTreeView();
 
             SetTreeviewControls();
@@ -385,6 +404,7 @@ namespace Tractor
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 Tm.TestList = (List<TestBase>)SerDes.Deserialize(typeof(List<TestBase>), File.ReadAllText(ofd.FileName));
+                TmIsDirty = false;
 
                 foreach (TestBase test in Tm.TestList)
                 {
@@ -408,6 +428,7 @@ namespace Tractor
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 File.WriteAllText(sfd.FileName, SerDes.Serialize(Tm.TestList));
+                TmIsDirty = false;
             }
         }
 
@@ -427,6 +448,7 @@ namespace Tractor
 
                 Tm.TestList.RemoveAt(index);
                 Tm.TestList.Insert(index - 1, SelectedTb);
+                TmIsDirty = true;
                 RePopulateTreeView(SelectedTb.Name);
             }
         }
@@ -447,6 +469,7 @@ namespace Tractor
 
                 Tm.TestList.RemoveAt(index);
                 Tm.TestList.Insert(index + 1, SelectedTb);
+                TmIsDirty = true;
                 RePopulateTreeView(SelectedTb.Name);
             }
         }

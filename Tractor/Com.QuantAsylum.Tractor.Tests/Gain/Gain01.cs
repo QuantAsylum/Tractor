@@ -69,7 +69,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             {
                 tr.StringValue[1] = tr.Value[1].ToString("0.00") + " dB";
                 if ((tr.Value[1] < MinimumPassGain) || (tr.Value[1] > MaximumPassGain))
-                    passLeft = false;
+                    passRight = false;
             }
             else
                 tr.StringValue[1] = "SKIP";
@@ -83,6 +83,11 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
                 tr.Pass = passRight;
 
             return;
+        }
+
+        public override string GetTestLimitsString()
+        {
+            return string.Format("{0:N1}...{1:N1} dB", MinimumPassGain, MaximumPassGain);
         }
 
         public override string GetTestDescription()

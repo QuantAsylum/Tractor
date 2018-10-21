@@ -19,7 +19,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
     {
         public bool PowerState;
 
-        public float MinimumPassCurrent = 0.01f;
+        public float MinimumPassCurrent = 0.005f;
         public float MaximumPassCurrent = 0.01f;
 
         public Power01() : base()
@@ -54,9 +54,12 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
         {
             s = "";
 
-           
- 
             return true;
+        }
+
+        public override string GetTestLimitsString()
+        {
+            return string.Format("{0:N1}...{1:N1}A", MinimumPassCurrent, MaximumPassCurrent);
         }
 
         public override string GetTestDescription()

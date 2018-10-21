@@ -88,7 +88,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.IMDTests
             {
                 tr.StringValue[1] = tr.Value[1].ToString("0.0") + " dB";
                 if ((tr.Value[1] < MinimumLevelDbc) || (tr.Value[1] > MaximumLevelDbc))
-                    passLeft = false;
+                    passRight = false;
             }
             else
                 tr.StringValue[1] = "SKIP";
@@ -102,6 +102,11 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.IMDTests
                 tr.Pass = passRight;
 
             return;
+        }
+
+        public override string GetTestLimitsString()
+        {
+            return string.Format("{0:N1}...{1:N1} dBc", MinimumLevelDbc, MaximumLevelDbc);
         }
 
         public override string GetTestDescription()

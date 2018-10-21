@@ -17,12 +17,17 @@ using System.Windows.Forms;
 
 namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
 {
-    public static class QAConnectionManager
+    /// <summary>
+    /// This class is responsible for handling connections to the QA401 and QA450. Most of the 
+    /// heavy lifting needs to be done for the QA401 because the QA450 is a REST interface. Once
+    /// the QA401 moves to REST interface, this class will mostly be in charge of making sure the
+    /// applications are running and can be seen by the Tractor app.
+    /// </summary>
+    internal static class QAConnectionManager
     {
         public enum Devices { QA401, QA450 };
 
         static List<string> InstallDirSearchPaths = new List<string>();
-
 
         // Bugbug: The first time the user runs the program, we want her to
         // browse to the location of each exe needed by the hardware layer
@@ -99,39 +104,6 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
             return null;
         }
 
-
-
-        public static Object ConnectTo(Devices device)
-        {
-            Assembly assembly;
-            Type type;
-
-            try
-            {
-                switch (device)
-                {
-                    case Devices.QA401:
-                        assembly = TryToLoadAssembly(QA401ExePath);
-                        type = assembly.GetType("Com.QuantAsylum.QA401Interface");
-                        return Activator.GetObject(type, "tcp://localhost:9401/QuantAsylumQA401Server");
-
-                    case Devices.QA450:
-                        assembly = TryToLoadAssembly(QA450ExePath);
-                        type = assembly.GetType("Com.QuantAsylum.IQA450");
-                        return Activator.GetObject(type, "tcp://localhost:9450/QuantAsylumQA450Server");
-
-                    default:
-                        throw new NotImplementedException("QAConnectionManager ConnectTo");
-                }
-            }
-            catch
-            {
-
-            }
-
-            return null;
-        }
-
         /// <summary>
         /// We only need to connect to QA401. The QA450 doesn't need a connection established
         /// </summary>
@@ -200,7 +172,6 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
         {
             foreach (string dir in InstallDirSearchPaths)
             {
-
                 string pathToExe = dir + name;
                 if (File.Exists(pathToExe))
                 {
@@ -210,6 +181,8 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
                         psi.WorkingDirectory = Path.GetDirectoryName(pathToExe);
                         psi.FileName = pathToExe;
                         System.Diagnostics.Process.Start(psi);
+
+                        // Bugbug: Wait on the named event rather than just sleep
                         Thread.Sleep(1000);
                         return true;
                     }

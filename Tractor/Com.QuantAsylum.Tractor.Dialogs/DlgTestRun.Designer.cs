@@ -31,6 +31,8 @@
             this.components = new System.ComponentModel.Container();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.AbortCB = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.PauseBtn = new System.Windows.Forms.Button();
             this.CloseBtn = new System.Windows.Forms.Button();
@@ -52,21 +54,46 @@
             this.dataGridView1.Location = new System.Drawing.Point(20, 20);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.dataGridView1.Size = new System.Drawing.Size(760, 361);
+            this.dataGridView1.Size = new System.Drawing.Size(719, 331);
             this.dataGridView1.TabIndex = 0;
             // 
             // panel2
             // 
+            this.panel2.Controls.Add(this.checkBox1);
+            this.panel2.Controls.Add(this.AbortCB);
             this.panel2.Controls.Add(this.label1);
             this.panel2.Controls.Add(this.PauseBtn);
             this.panel2.Controls.Add(this.CloseBtn);
             this.panel2.Controls.Add(this.StopBtn);
             this.panel2.Controls.Add(this.StartBtn);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel2.Location = new System.Drawing.Point(0, 401);
+            this.panel2.Location = new System.Drawing.Point(0, 371);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(800, 69);
+            this.panel2.Size = new System.Drawing.Size(759, 99);
             this.panel2.TabIndex = 1;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(20, 72);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(83, 17);
+            this.checkBox1.TabIndex = 7;
+            this.checkBox1.Text = "Transparent";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // AbortCB
+            // 
+            this.AbortCB.AutoSize = true;
+            this.AbortCB.Checked = true;
+            this.AbortCB.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.AbortCB.Location = new System.Drawing.Point(20, 49);
+            this.AbortCB.Name = "AbortCB";
+            this.AbortCB.Size = new System.Drawing.Size(128, 17);
+            this.AbortCB.TabIndex = 6;
+            this.AbortCB.Text = "Stop testing on failure";
+            this.AbortCB.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
@@ -91,9 +118,10 @@
             // 
             // CloseBtn
             // 
-            this.CloseBtn.Location = new System.Drawing.Point(705, 20);
+            this.CloseBtn.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.CloseBtn.Location = new System.Drawing.Point(672, 20);
             this.CloseBtn.Name = "CloseBtn";
-            this.CloseBtn.Size = new System.Drawing.Size(75, 23);
+            this.CloseBtn.Size = new System.Drawing.Size(75, 60);
             this.CloseBtn.TabIndex = 3;
             this.CloseBtn.Text = "Close";
             this.CloseBtn.UseVisualStyleBackColor = true;
@@ -101,6 +129,7 @@
             // 
             // StopBtn
             // 
+            this.StopBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.StopBtn.Enabled = false;
             this.StopBtn.Location = new System.Drawing.Point(182, 20);
             this.StopBtn.Name = "StopBtn";
@@ -127,7 +156,7 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
             this.panel1.Padding = new System.Windows.Forms.Padding(20);
-            this.panel1.Size = new System.Drawing.Size(800, 401);
+            this.panel1.Size = new System.Drawing.Size(759, 371);
             this.panel1.TabIndex = 2;
             // 
             // timer1
@@ -137,14 +166,17 @@
             // 
             // DlgTestRun
             // 
+            this.AcceptButton = this.StartBtn;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 470);
+            this.CancelButton = this.StopBtn;
+            this.ClientSize = new System.Drawing.Size(759, 470);
             this.ControlBox = false;
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel2);
+            this.MinimumSize = new System.Drawing.Size(650, 0);
             this.Name = "DlgTestRun";
-            this.Text = "DlgReporting";
+            this.Text = "Tractor Test Tasks";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DlgTestRun_FormClosing);
             this.Load += new System.EventHandler(this.DlgReporting_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
@@ -165,5 +197,7 @@
         private System.Windows.Forms.Button CloseBtn;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.CheckBox AbortCB;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }

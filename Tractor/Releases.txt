@@ -1,0 +1,14 @@
+﻿0.64
+- Add colorcoding for pass fail
+- Added final P/F dlg
+- Hide main window when running tests
+- Displayed limits in datagrid
+- More code to ensure power state is disabled upon operator stop/exception or otherwise abnormal termination
+- Added checkbox permit stopping a test on failure
+- Start button is Accept() behavior, Stop button is default cancel button
+- Added ability for the app to load QAAnalyzer.EXE assembly from default install locations
+- Clean up to internal code paths. Got rid of dependence on Form.This via some delegates to handle editing. 
+
+0.63
+- Fixed copy/paste bug on left/right channel pass/fail decode
+- Fixed name of font in datagrid

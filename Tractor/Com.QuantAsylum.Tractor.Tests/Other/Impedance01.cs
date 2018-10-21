@@ -96,7 +96,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
             {
                 tr.StringValue[1] = tr.Value[1].ToString("0.0000") + " ohms";
                 if ((tr.Value[1] < MinimumPassImpedance) || (tr.Value[1] > MaximumPassImpedance))
-                    passLeft = false;
+                    passRight = false;
             }
             else
                 tr.StringValue[1] = "SKIP";
@@ -147,6 +147,11 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
             }
 
             return true;
+        }
+
+        public override string GetTestLimitsString()
+        {
+            return string.Format("{0:N1}...{1:N1} Ohms", MinimumPassImpedance, MaximumPassImpedance);
         }
 
         public override string GetTestDescription()

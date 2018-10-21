@@ -107,7 +107,11 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
             return;
         }
 
-       
+        public override string GetTestLimitsString()
+        {
+            return string.Format("{0:N1}...{1:N1}%", MinimumPassEfficiency, MaximumPassEfficiency);
+        }
+
 
         public override bool CheckValues(out string s)
         {

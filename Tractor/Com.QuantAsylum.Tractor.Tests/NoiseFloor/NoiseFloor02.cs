@@ -70,6 +70,11 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.NoiseFloors
             return;
         }
 
+        public override string GetTestLimitsString()
+        {
+            return string.Format("{0:N1}...{1:N1} dBV", MinimumOKNoise, MaximumOKNoise);
+        }
+
         public override string GetTestDescription()
         {
             return "Measures the noise floor (residual noise) with A-Weighting applied. If the resulting measurement is " +

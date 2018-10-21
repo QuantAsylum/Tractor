@@ -16,6 +16,7 @@ using Tractor.Com.QuantAsylum.Tractor.Tests.IMDTests;
 using Tractor.Com.QuantAsylum.Tractor.Tests.NoiseFloors;
 using Tractor.Com.QuantAsylum.Tractor.Tests.THDs;
 using Tractor.Com.QuantAsylum.Tractor.Tests.Other;
+using static Tractor.Com.QuantAsylum.Tractor.TestManagers.TestManager;
 
 namespace Com.QuantAsylum.Tractor.Tests
 {
@@ -114,6 +115,20 @@ namespace Com.QuantAsylum.Tractor.Tests
         
         internal bool IsDirty = false;
         internal Button OkButton;
+        internal Button CancelButton;
+
+        /// <summary>
+        /// Called when user begings editing a test
+        /// </summary>
+        static internal StartEditing StartEditingCallback;
+        /// <summary>
+        /// Called when user has finished editing a test
+        /// </summary>
+        static internal DoneEditing DoneEditingCallback;
+        /// <summary>
+        /// Called when user has cancelled editing a test
+        /// </summary>
+        static internal CancelEditing CancelEditingCallback;
 
         public void SetTestManager(TestManager tm)
         {
@@ -174,33 +189,46 @@ namespace Com.QuantAsylum.Tractor.Tests
 
             OkButton = new Button() { Text = "Update", Anchor = (AnchorStyles.Top | AnchorStyles.Right), AutoSize = true, Enabled = false};
             OkButton.Click += UpdateBtn_Click;
-            p.Controls.Add(OkButton, 0, row++);
+            p.Controls.Add(OkButton, 0, row);
 
-            //Label label = new Label() { Text = this.GetTestDescription(), Size = new Size(TLPanel.Width / 2, 200) };
-            //p.Controls.Add(label, 0, row++);
-
+            CancelButton = new Button() { Text = "Cancel", Anchor = (AnchorStyles.Top | AnchorStyles.Left), AutoSize = true, Enabled = false };
+            CancelButton.Click += CancelBtn_Click;
+            p.Controls.Add(CancelButton, 1, row++);
         }
 
         private void Cb_CheckedChanged(object sender, EventArgs e)
         {
+            if (IsDirty == false)
+                StartEditingCallback?.Invoke();
+
             IsDirty = true;
             OkButton.Enabled = true;
+            CancelButton.Enabled = true;
         }
 
         private void Tb_TextChanged(object sender, EventArgs e)
         {
+            if (IsDirty == false)
+                StartEditingCallback?.Invoke();
+
             IsDirty = true;
             OkButton.Enabled = true;
+            CancelButton.Enabled = true;
         }
 
-        public bool SaveChanges(out string errorCode)
+        /// <summary>
+        /// Copies all user changes in UI back to data structure. Returns true if everything was 
+        /// successfully parsed
+        /// </summary>
+        /// <param name="errorCode"></param>
+        /// <returns></returns>
+        bool SaveChanges(out string errorCode)
         {
             Type t = GetType();
             errorCode = "";
 
             try
             {
-
                 for (int i = 0; i < TLPanel.RowCount; i++)
                 {
                     string fieldName = TLPanel.GetControlFromPosition(0, i).Text;
@@ -232,13 +260,6 @@ namespace Com.QuantAsylum.Tractor.Tests
                 return false;
             }
 
-            //string s;
-
-            //if (CheckValues(out s) == false)
-            //{
-            //    MessageBox.Show(s);
-            //}
-
             IsDirty = false;
             return true;
         }
@@ -248,25 +269,34 @@ namespace Com.QuantAsylum.Tractor.Tests
             string error;
             if (SaveChanges(out error) == false)
             {
-                if (MessageBox.Show("Incorrect data has been entered: " + error + Environment.NewLine + Environment.NewLine + "Press Retry to continue editing. Press Cancel to revert to previous values", "Invalid Data", MessageBoxButtons.RetryCancel) == DialogResult.Retry)
-                {
+                MessageBox.Show("Incorrect data has been entered: " + error + Environment.NewLine + Environment.NewLine + "Please correct the data", "Invalid Data", MessageBoxButtons.OK);
+                return;
+            }
 
-                }
-                else
-                {
-                    Form1.This.RePopulateTreeView(this.Name, true);
-                }
-            }
-            else
-            {
-                Form1.This.RePopulateTreeView(this.Name, true);
-            }
+            OkButton.Enabled = false;
+            CancelButton.Enabled = false;
+
+            DoneEditingCallback?.Invoke();
+        }
+
+        private void CancelBtn_Click(object sender, EventArgs e)
+        {
+            OkButton.Enabled = false;
+            CancelButton.Enabled = false;
+
+            CancelEditingCallback?.Invoke();
+            IsDirty = false;
         }
 
         public virtual bool CheckValues(out string s)
         {
             s = "";
             return true;
+        }
+
+        public virtual string GetTestLimitsString()
+        {
+            return "???";
         }
 
         public virtual string GetTestDescription()

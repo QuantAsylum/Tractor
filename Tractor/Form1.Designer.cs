@@ -99,7 +99,6 @@
             this.treeView1.Size = new System.Drawing.Size(308, 408);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
-            this.treeView1.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView1_BeforeSelect);
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
             // AddTestBtn
@@ -150,7 +149,7 @@
             this.RunTestsBtn.TabIndex = 5;
             this.RunTestsBtn.Text = "Run Tests";
             this.RunTestsBtn.UseVisualStyleBackColor = true;
-            this.RunTestsBtn.Click += new System.EventHandler(this.RustTestBtn_Click);
+            this.RunTestsBtn.Click += new System.EventHandler(this.RunTestBtn_Click);
             // 
             // MoveUpBtn
             // 
@@ -266,6 +265,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();

@@ -21,8 +21,8 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
 
     /// <summary>
     /// Test managers are primarily focused on ensuring all the instruments required for a set of
-    /// tests are present and working, as well as implementing the various abstract methods that made
-    /// sense.
+    /// tests are present and working, as well as implementing the various abstract methods that make
+    /// sense for that particular set of equipment. 
     /// </summary>
     abstract public class TestManager
     {
@@ -31,9 +31,20 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
         /// </summary>
         public List<TestBase> TestList { get; set; }
 
+        public delegate void StartEditing();
+        public delegate void DoneEditing();
+        public delegate void CancelEditing();
+
         public TestManager()
         {
             TestList = new List<TestBase>();
+        }
+
+        public void SetCallbacks(StartEditing startEditing, DoneEditing doneEditing, CancelEditing cancelEditing)
+        {
+            TestBase.StartEditingCallback = startEditing;
+            TestBase.DoneEditingCallback = doneEditing;
+            TestBase.CancelEditingCallback = cancelEditing;
         }
 
         /// <summary>
@@ -93,7 +104,25 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
         /// <returns></returns>
         abstract public string GetProfileName();
 
+        /// <summary>
+        /// Sets all instruments to their default state
+        /// </summary>
         abstract public void SetInstrumentsToDefault();
+
+        //
+        // Below, there are several entities that might be used to make
+        // and control measurements. They are:
+        // DUT: This is the device (amplifier) under test
+
+        
+        // VMP: This is a voltmeter used to measure the DUT positive supply rail
+        // VMN: This is a voltmeter used to the measure the DUT negative supply rail
+        // VMAC: This is the voltmeter used to measure the amplifer AC voltage
+
+        // IMP: This is the current meter used to measure the DUT postive rail current
+        // IMN: This is the current meter used to measure the DUT negative rail current
+        // IMAC: This is the current meter used to measure the DUT AC current
+
 
         // DUT power. This section controls the power provided to the DUT.
 

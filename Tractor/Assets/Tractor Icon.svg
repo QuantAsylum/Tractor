@@ -62,10 +62,14 @@
        width="256"
        height="256"
        x="-4.685391e-007"
-       y="752.55908" />
+       y="752.55908"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
     <g
        id="g10381"
-       transform="translate(1.1917007,47.668028)">
+       transform="translate(1.1917007,47.668028)"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96">
       <ellipse
          ry="41.553726"
          rx="49.497822"

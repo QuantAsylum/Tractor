@@ -12,6 +12,7 @@ using Com.QuantAsylum.Tractor.Tests;
 using System.Threading;
 using Tractor.Com.QuantAsylum.Tractor.HTML;
 using Tractor.Com.QuantAsylum.Tractor.TestManagers;
+using Tractor.Com.QuantAsylum.Tractor.Dialogs;
 
 namespace Com.QuantAsylum.Tractor.Dialogs
 {
@@ -21,6 +22,8 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
         bool Abort = false;
         bool Pause = false;
+
+        bool AbortOnFailure = false;
 
         string ReportDirectory = "";
 
@@ -41,14 +44,14 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
         private void DlgReporting_Load(object sender, EventArgs e)
         {
-            dataGridView1.DefaultCellStyle.Font = new Font("Ariel", 12);
+            dataGridView1.DefaultCellStyle.Font = new Font("Arial", 12);
             dataGridView1.RowTemplate.MinimumHeight= 25;
             dataGridView1.ReadOnly = true;
 
             dataGridView1.ColumnCount = Enum.GetValues(typeof(ColText)).Cast<int>().Max() + 1;
             dataGridView1.Columns[(int)ColText.TEST].HeaderText = "Test";
             dataGridView1.Columns[(int)ColText.ENABLED].HeaderText = "Enabled";
-            dataGridView1.Columns[(int)ColText.TARGET].HeaderText = "Target";
+            dataGridView1.Columns[(int)ColText.TARGET].HeaderText = "Limits";
             dataGridView1.Columns[(int)ColText.L].HeaderText = "Measured L";
             dataGridView1.Columns[(int)ColText.R].HeaderText = "Measured R";
             dataGridView1.Columns[(int)ColText.PASSFAIL].HeaderText = "Pass/Fail";
@@ -80,6 +83,9 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
         private void button1_Click(object sender, EventArgs e)
         {
+            AbortOnFailure = AbortCB.Checked;
+
+            AbortCB.Enabled = false;
             CloseBtn.Enabled = false;
             PauseBtn.Enabled = true;
             StartBtn.Enabled = false;
@@ -109,87 +115,130 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
             new Thread(() =>
             {
-                Thread.CurrentThread.Name = "Test Runner";
-
-                HtmlWriter html = new HtmlWriter(ReportDirectory);
-
-                for (int i = 0; i < Tm.TestList.Count; i++)
+                try
                 {
-                    //float[] value = new float[2] { float.NaN, float.NaN };
-                    //bool pass = false;
+                    Thread.CurrentThread.Name = "Test Runner";
 
-                    if (Abort)
+                    HtmlWriter html = new HtmlWriter(ReportDirectory);
+
+                    bool allPassed = true;
+
+                    for (int i = 0; i < Tm.TestList.Count; i++)
                     {
-                        dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.PASSFAIL, i].Value = "Aborted..."; });
-                        break;
-                    }
-                    else
-                    {
-                        dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.PASSFAIL, i].Value = "Running..."; });
+                        dataGridView1[(int)ColText.PASSFAIL, i].Style.BackColor = Color.White;
                     }
 
-                    while (Pause)
-                        Thread.Sleep(500);
-
-                    TestResult tr = null;
-
-                    for (int j = 0; j < Tm.TestList[i].RetryCount; j++)
+                    for (int i = 0; i < Tm.TestList.Count; i++)
                     {
-                        if (j > 0)
-                            dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.PASSFAIL, i].Value = "Retry: " + j.ToString(); });
-
-                        Tm.TestList[i].DoTest(Tm.TestList[i].Name, out tr);
-
-                        if (tr.Pass)
+                        if (Abort)
+                        {
+                            dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.PASSFAIL, i].Value = "Aborted..."; });
+                            allPassed = false;
                             break;
+                        }
+                        else
+                        {
+                            dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.PASSFAIL, i].Value = "Running..."; });
+                        }
+
+                        dataGridView1.Invoke((MethodInvoker)delegate 
+                        {
+                            dataGridView1[(int)ColText.TARGET, i].Value = Tm.TestList[i].GetTestLimitsString();
+                            dataGridView1.FirstDisplayedScrollingRowIndex = i > 2 ? i-2 : 0;
+                        });
+
+                        while (Pause)
+                        {
+                            Thread.Sleep(500);
+                        }
+
+                        TestResult tr = null;
+
+                        for (int j = 0; j < Tm.TestList[i].RetryCount; j++)
+                        {
+                            if (j > 0)
+                            {
+                                dataGridView1.Invoke((MethodInvoker)delegate
+                                {
+                                    dataGridView1[(int)ColText.PASSFAIL, i].Value = "Retry: " + j.ToString();
+                                });
+                            }
+
+                            Tm.TestList[i].DoTest(Tm.TestList[i].Name, out tr);
+
+                            if (tr.Pass)
+                                break;
+                        }
+
+                        if (AbortOnFailure && (tr.Pass == false) )
+                        {
+                            Abort = true;
+                        }
+
+                        if (tr.Pass == false)
+                            allPassed = false;
+
+                        dataGridView1.Invoke((MethodInvoker)delegate
+                        {
+                            dataGridView1[(int)ColText.L, i].Value = tr.StringValue[0];
+                            dataGridView1[(int)ColText.R, i].Value = tr.StringValue[1];
+                            dataGridView1[(int)ColText.PASSFAIL, i].Value = tr.Pass ? "PASS" : "FAIL";
+                            dataGridView1[(int)ColText.PASSFAIL, i].Style.BackColor = tr.Pass ? Color.Green : Color.Red;
+                            dataGridView1.Refresh();
+                        });
+
+                        // Delineate new tests
+                        if (i == 0)
+                        {
+                            html.AddParagraph("================================================");
+                            html.AddHeading2(string.Format("{0} {1}", DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString()));
+                        }
+
+                        // If new test AND first test is serial number, then print it larger
+                        if (i == 0 && (Tm.TestList[0] is IdInput01))
+                        {
+                            html.AddHeading2(string.Format("Device SN: {0}", tr.StringValue[0]));
+                        }
+
+                        html.AddParagraph(string.Format("<B>Test Name:</B> {0}  <B>Result L:</B> {1}   <B>Result R:</B> {2} <B>P/F</B>: {3} <B>Image:</B> {4}",
+                            Tm.TestList[i].Name,
+                            tr.StringValue[0],
+                            tr.StringValue[1],
+                            tr.Pass ? "PASS" : "<mark>FAIL</mark>",
+                            Tm.TestList[i].TestResultBitmap == null ? "[No Image]" : html.ImageLink("Screen", Tm.TestList[i].TestResultBitmap)
+                            ));
+
+                        if (IsConnected() == false) return;
                     }
+                    TimeSpan ts = DateTime.Now.Subtract(TestStartTime);
+                    html.AddParagraph(string.Format("Elapsed Time: {0:N1} sec", ts.TotalSeconds));
 
-                    dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.L, i].Value = tr.StringValue[0]; });
-                    dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.R, i].Value = tr.StringValue[1]; });
-                    dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.PASSFAIL, i].Value = tr.Pass ? "PASS" : "FAIL"; });
-                    dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1.Refresh(); });
-
-                    // Delineate new tests
-                    if (i == 0)
-                    {
-                        html.AddParagraph("================================================");
-                        html.AddHeading2(string.Format("{0} {1}", DateTime.Now.ToShortDateString(), DateTime.Now.ToShortTimeString()));
-                    }
-
-                    // If new test AND first test is serial number, then print it larger
-                    if (i == 0 && (Tm.TestList[0] is IdInput01))
-                    {
-                        html.AddHeading2(string.Format("Device SN: {0}", tr.StringValue[0]));
-                    }
-
-
-                    html.AddParagraph(string.Format("<B>Test Name:</B> {0}  <B>Result L:</B> {1}   <B>Result R:</B> {2} <B>P/F</B>: {3} <B>Image:</B> {4}",
-                        Tm.TestList[i].Name,
-                        tr.StringValue[0],
-                        tr.StringValue[1],
-                        tr.Pass ? "PASS" : "<mark>FAIL</mark>",
-                        Tm.TestList[i].TestResultBitmap == null ? "[No Image]" : html.ImageLink("Screen", Tm.TestList[i].TestResultBitmap)
-                        ));
-
-
-                    if (IsConnected() == false) return;
+                    html.Render();
+                    this.Invoke(((MethodInvoker)delegate { TestPassFinished(allPassed); }));
                 }
-                TimeSpan ts = DateTime.Now.Subtract(TestStartTime);
-                html.AddParagraph(string.Format("Elapsed Time: {0:N1} sec", ts.TotalSeconds));
+                catch (Exception ex)
+                {
+                    
+                }
 
-                html.Render();
-                this.Invoke(((MethodInvoker)delegate { TestPassFinished(); }));
+                Tm.DutSetPowerState(false);
 
             }).Start();
         }
 
-        private void TestPassFinished()
+        private void TestPassFinished(bool allTestPassed)
         {
+            Tm.DutSetPowerState(false);
+            timer1.Enabled = false;
+
+            DlgPassFail dlg = new DlgPassFail(allTestPassed ? "PASS" : "FAIL", allTestPassed);
+            dlg.ShowDialog();
+
+            AbortCB.Enabled = false;
             StartBtn.Enabled = true;
             PauseBtn.Enabled = false;
             StopBtn.Enabled = false;
             CloseBtn.Enabled = true;
-            timer1.Enabled = false;
             RunCompleteCallback?.Invoke();
         }
 
@@ -239,6 +288,14 @@ namespace Com.QuantAsylum.Tractor.Dialogs
         {
             TimeSpan ts = DateTime.Now.Subtract(TestStartTime);
             label1.Text = string.Format("Elapsed Time: {0:N1} sec", ts.TotalSeconds);
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked)
+                this.Opacity = 0.6;
+            else
+                this.Opacity = 1.0;
         }
     }
 }
