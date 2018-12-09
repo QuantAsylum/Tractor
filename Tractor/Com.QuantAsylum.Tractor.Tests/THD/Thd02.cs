@@ -34,24 +34,25 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             // Two channels of testing
             tr = new TestResult(2);
 
-            Tm.SetInstrumentsToDefault();
-            Tm.AudioAnalyzerSetTitle(title);
-            Tm.SetInputRange(InputRange);
-            Tm.LoadSetImpedance(OutputImpedance); Thread.Sleep(Constants.QA450RelaySettle);
+            ((IComposite)Tm.TestClass).SetToDefaults();
 
-            Tm.AudioGenSetGen1(true, OutputLevel, Freq);
-            Tm.AudioGenSetGen2(false, OutputLevel, Freq);
-            Tm.RunSingle();
+            ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(InputRange);
+            ((IProgrammableLoad)Tm.TestClass).SetImpedance(OutputImpedance);
 
-            while (Tm.AnalyzerIsBusy())
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, OutputLevel, Freq);
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, OutputLevel, Freq);
+            ((IAudioAnalyzer)Tm.TestClass).RunSingle();
+
+            while (((IAudioAnalyzer)Tm).AnalyzerIsBusy())
             {
                 Thread.Sleep(25);
             }
 
-            TestResultBitmap = Tm.GetBitmap();
+            TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
-            tr.Value[0] = (float)Tm.ComputeThdPct(Tm.GetData(ChannelEnum.Left), Freq, 20000);
-            tr.Value[1] = (float)Tm.ComputeThdPct(Tm.GetData(ChannelEnum.Right), Freq, 20000);
+            tr.Value[0] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeThdPct(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left), Freq, 20000);
+            tr.Value[1] = (float)((IAudioAnalyzer)Tm).ComputeThdPct(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right), Freq, 20000);
 
             // Convert to db
             tr.Value[0] = 20 * (float)Math.Log10(tr.Value[0] / 100);
@@ -96,6 +97,17 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
         public override string GetTestDescription()
         {
             return "Measures THD at a given frequency and amplitude at a given load with power indicated";
+        }
+
+        public override bool IsRunnable()
+        {
+            if ((Tm.TestClass is IAudioAnalyzer) &&
+                 (Tm.TestClass is IProgrammableLoad))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

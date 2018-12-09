@@ -15,7 +15,7 @@ using Tractor.Com.QuantAsylum.Tractor.TestManagers;
 
 namespace Tractor
 {
-    public partial class DlgAddTest : Form
+    partial class DlgAddTest : Form
     {
         class ComboItem
         {

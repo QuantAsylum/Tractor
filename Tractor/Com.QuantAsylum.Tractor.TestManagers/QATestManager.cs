@@ -10,12 +10,12 @@ using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Serialization.Formatters;
 using Tractor.Com.QuantAsylum.Tractor.TestManagers;
-using Tractor.Com.QuantAsylum.Hardware;
 using System.Drawing;
 using System.IO;
 
 namespace Com.QuantAsylum.Tractor.TestManagers
 {
+    /*
     class QATestManager : TestManager
     {
         QA401Interface QA401;
@@ -36,8 +36,8 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
         override public bool AllConnected()
         {
-            if (QA401 != null && QA401.IsConnected() && QA450.IsConnected())
-                return true;
+            //if (QA401 != null && QA401.IsConnected() && QA450.IsConnected())
+            //    return true;
 
             return false;
         }
@@ -50,7 +50,7 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         public override void SetInstrumentsToDefault()
         {
             QA401.SetToDefault("");
-            QA450.SetToDefault();
+            //QA450.SetToDefault();
         }
 
         public override void DutSetDefault()
@@ -60,12 +60,13 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
         public override void DutSetPowerState(bool powerEnable)
         {
-            QA450.SetDutPower(powerEnable);
+            //QA450.SetDutPower(powerEnable);
         }
 
         public override bool DutGetPowerState()
         {
-            return QA450.GetDutPower();
+            //return QA450.GetDutPower();
+            return true;
         }
 
         public override float DutGetCurrent(int averages = 1)
@@ -77,7 +78,7 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
             for (int i = 0; i < averages; i++)
             {
-                current += QA450.GetCurrent();
+                //current += QA450.GetCurrent();
             }
 
             return current / averages;
@@ -113,12 +114,13 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             if (GetImpedances().Contains(impedance) == false)
                 throw new ArgumentException("Impedance value is not supported");
 
-            QA450.SetImpedance(impedance);
+            //QA450.SetImpedance(impedance);
         }
 
         public override int LoadGetImpedance()
         {
-            return QA450.GetImpedance();
+            //return QA450.GetImpedance();
+            return 0;
         }
 
         public override float LoadGetTemperature()
@@ -245,5 +247,5 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
             return dataOut;
         }
-    }
+    }*/
 }

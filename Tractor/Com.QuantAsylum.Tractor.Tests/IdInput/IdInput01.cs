@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Tractor.Com.QuantAsylum.Tractor.Dialogs;
-using Tractor.Com.QuantAsylum.Tractor.TestManagers;
+using Com.QuantAsylum.Tractor.Dialogs;
+using Com.QuantAsylum.Tractor.TestManagers;
 
 namespace Com.QuantAsylum.Tractor.Tests
 {
@@ -48,6 +48,11 @@ namespace Com.QuantAsylum.Tractor.Tests
                    "If the user hit cancel or if the string is empty, then 'pass = false' is returned";
         }
 
-        
+        public override bool IsRunnable()
+        {
+            return true;
+        }
+
+
     }
 }

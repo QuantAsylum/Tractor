@@ -1,12 +1,9 @@
 ﻿using Com.QuantAsylum.Tractor.Tests;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
+namespace Com.QuantAsylum.Tractor.TestManagers
 {
     public enum ChannelEnum { Left, Right};
 
@@ -24,12 +21,14 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
     /// tests are present and working, as well as implementing the various abstract methods that make
     /// sense for that particular set of equipment. 
     /// </summary>
-    abstract public class TestManager
+    class TestManager
     {
+        public object TestClass = (object)new QA401_QA450();
+
         /// <summary>
         /// A list of tests we will run
         /// </summary>
-        public List<TestBase> TestList { get; set; }
+        public List<TestBase> TestList = new List<TestBase>();
 
         public delegate void StartEditing();
         public delegate void DoneEditing();
@@ -37,7 +36,11 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
 
         public TestManager()
         {
-            TestList = new List<TestBase>();
+        }
+
+        public void SetTestList(List<TestBase> testList)
+        {
+            TestList = testList;
         }
 
         public void SetCallbacks(StartEditing startEditing, DoneEditing doneEditing, CancelEditing cancelEditing)
@@ -84,101 +87,5 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
             // Here, we've found a unique name
             return newName;
         }
-
-        /// <summary>
-        /// Must be implemented by derived classes
-        /// </summary>
-        abstract public void ConnectToDevices();
-
-        /// <summary>
-        /// Must be implemented by derived classes
-        /// </summary>
-        /// <returns></returns>
-        abstract public bool AllConnected();
-
-        /// <summary>
-        /// Returns the friendly name of this hardware profile. This will convey to the user
-        /// that the measurement devices are a QA401 or a QA401 + QA450, or any other collection
-        /// of hardware.
-        /// </summary>
-        /// <returns></returns>
-        abstract public string GetProfileName();
-
-        /// <summary>
-        /// Sets all instruments to their default state
-        /// </summary>
-        abstract public void SetInstrumentsToDefault();
-
-        //
-        // Below, there are several entities that might be used to make
-        // and control measurements. They are:
-        // DUT: This is the device (amplifier) under test
-
-        
-        // VMP: This is a voltmeter used to measure the DUT positive supply rail
-        // VMN: This is a voltmeter used to the measure the DUT negative supply rail
-        // VMAC: This is the voltmeter used to measure the amplifer AC voltage
-
-        // IMP: This is the current meter used to measure the DUT postive rail current
-        // IMN: This is the current meter used to measure the DUT negative rail current
-        // IMAC: This is the current meter used to measure the DUT AC current
-
-
-        // DUT power. This section controls the power provided to the DUT.
-
-        
-        /// <summary>
-        /// Sets default options for the instrument
-        /// </summary>
-        abstract public void DutSetDefault();
-
-        abstract public void DutSetPowerState(bool powerEnable);
-        abstract public bool DutGetPowerState();
-        abstract public float DutGetCurrent(int averages = 1);
-        abstract public void DutSetVoltage(float voltage_V);
-        abstract public float DutGetVoltage();
-        abstract public float DutGetTemperature();
-
-        // Programmable Load 
-        abstract public void LoadSetDefault();
-        /// <summary>
-        /// Returns a list of impedances supported by the programmable load. The value '0' is 
-        /// reserved to indicate the load is disconnected
-        /// </summary>
-        /// <returns></returns>
-        abstract public int[] GetImpedances();
-        abstract public void LoadSetImpedance(int impedance);
-        abstract public int LoadGetImpedance();
-        abstract public float LoadGetTemperature();
-
-        abstract public void AudioAnalyzerSetDefaults();
-
-        abstract public void AudioAnalyzerSetFftLength(uint length);
-
-        abstract public void AudioAnalyzerSetTitle(string s);
-
-        // Audio Generators
-        abstract public void AudioGenSetGen1(bool isOn, float ampLevel_dBV, float freq_Hz);
-        abstract public void AudioGenSetGen2(bool isOn, float ampLevel_dBV, float freq_Hz);
-
-        // Audio Input Attenuators
-        /// <summary>
-        /// Returns a list of supported max intput values
-        /// </summary>
-        /// <returns></returns>
-        abstract public int[] GetInputRanges();
-        abstract public void SetInputRange(int inputRange_dB);
-
-        // Audio measurement control
-        abstract public void RunSingle();
-        abstract public bool AnalyzerIsBusy();
-
-        abstract public PointD[] GetData(ChannelEnum channel);
-
-
-        abstract public double ComputeRms(PointD[] data, float startFreq, float stopFreq);
-        abstract public double ComputeThdPct(PointD[] data, float freq, float stopFreq);
-
-        abstract public Bitmap GetBitmap();
     }
 }

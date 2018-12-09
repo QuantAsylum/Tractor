@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Tractor.Com.QuantAsylum.Tractor.Dialogs
+namespace Com.QuantAsylum.Tractor.Dialogs
 {
     public partial class DlgPassFail : Form
     {

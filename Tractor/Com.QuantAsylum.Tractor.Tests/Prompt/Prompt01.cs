@@ -5,8 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Tractor.Com.QuantAsylum.Tractor.Dialogs;
-using Tractor.Com.QuantAsylum.Tractor.TestManagers;
+using Com.QuantAsylum.Tractor.Dialogs;
+using Com.QuantAsylum.Tractor.TestManagers;
 
 namespace Com.QuantAsylum.Tractor.Tests
 {

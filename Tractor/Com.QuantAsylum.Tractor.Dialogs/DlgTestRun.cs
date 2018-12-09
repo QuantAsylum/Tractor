@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Com.QuantAsylum.Tractor.TestManagers;
 using Com.QuantAsylum.Tractor.Tests;
 using System.Threading;
 using Tractor.Com.QuantAsylum.Tractor.HTML;
-using Tractor.Com.QuantAsylum.Tractor.TestManagers;
-using Tractor.Com.QuantAsylum.Tractor.Dialogs;
+
 
 namespace Com.QuantAsylum.Tractor.Dialogs
 {
@@ -98,8 +93,8 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
         private void Start()
         {
-            if (Tm.AllConnected() == false)
-                Tm.ConnectToDevices();
+            if (((IComposite)Tm.TestClass).IsConnected() == false)
+                ((IComposite)Tm.TestClass).ConnectToDevices();
 
             ClearPassFailResultColumn();
 
@@ -109,7 +104,10 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             dataGridView1.Refresh();
 
             // Set everthing to defaults by specifying an empty settings file
-            Tm.DutSetPowerState(false);
+            if (Tm.TestClass is IPowerSupply)
+            {
+                (Tm as IPowerSupply).SetSupplyState(false);
+            }
 
             Thread.Sleep(750);
 
@@ -221,14 +219,21 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                     
                 }
 
-                Tm.DutSetPowerState(false);
+                if (Tm.TestClass is IPowerSupply)
+                {
+                    (Tm.TestClass as IPowerSupply).SetSupplyState(false);
+                }
 
             }).Start();
         }
 
         private void TestPassFinished(bool allTestPassed)
         {
-            Tm.DutSetPowerState(false);
+            if (Tm.TestClass is IPowerSupply)
+            {
+                (Tm.TestClass as IPowerSupply).SetSupplyState(false);
+            }
+
             timer1.Enabled = false;
 
             DlgPassFail dlg = new DlgPassFail(allTestPassed ? "PASS" : "FAIL", allTestPassed);
@@ -244,7 +249,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
         private bool IsConnected()
         {
-            if (Tm.AllConnected() == false)
+            if (((IComposite)Tm.TestClass).IsConnected() == false)
             {
                 MessageBox.Show("Unable to connect to the equipment. Is it connected and the QA40x application running?");
                 return false;

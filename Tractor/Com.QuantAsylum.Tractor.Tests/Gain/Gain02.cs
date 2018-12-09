@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Tractor;
-using Tractor.Com.QuantAsylum.Tractor.TestManagers;
+using Com.QuantAsylum.Tractor.TestManagers;
 
 namespace Com.QuantAsylum.Tractor.Tests.GainTests
 {
@@ -37,28 +37,28 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             // Two channels of testing
             tr = new TestResult(2);
 
-            Tm.SetInstrumentsToDefault();
-            Tm.SetInputRange(InputRange);
-            Tm.AudioAnalyzerSetTitle(title);
+            ((IComposite)Tm.TestClass).SetToDefaults();
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(InputRange);
+            ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
 
-            Tm.LoadSetImpedance(OutputImpedance); Thread.Sleep(Constants.QA450RelaySettle);
+            ((IProgrammableLoad)Tm.TestClass).SetImpedance(OutputImpedance);
 
-            Tm.AudioGenSetGen1(true, OutputLevel, Freq);
-            Tm.AudioGenSetGen2(false, OutputLevel, Freq);
-            Tm.RunSingle();
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, OutputLevel, Freq);
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, OutputLevel, Freq);
+            ((IAudioAnalyzer)Tm.TestClass).RunSingle();
 
-            while (Tm.AnalyzerIsBusy())
+            while (((IAudioAnalyzer)Tm.TestClass).AnalyzerIsBusy())
             {
-                float current = Tm.DutGetCurrent();
-                Debug.WriteLine("Current: " + current);
+                float current = ((ICurrentMeter)Tm.TestClass).GetDutCurrent();
+                Log.WriteLine(LogType.General, "Current: " + current);
             }
 
-            TestResultBitmap = Tm.GetBitmap();
+            TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
             // Compute the total RMS around the freq of interest
-            tr.Value[0] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Left), Freq * 0.97f, Freq * 1.03f);
+            tr.Value[0] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left), Freq * 0.97f, Freq * 1.03f);
             tr.Value[0] = tr.Value[0] - OutputLevel - ExtGain;
-            tr.Value[1] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Right), Freq * 0.97f, Freq * 1.03f);
+            tr.Value[1] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right), Freq * 0.97f, Freq * 1.03f);
             tr.Value[1] = tr.Value[1] - OutputLevel - ExtGain;
 
             bool passLeft = true, passRight = true;
@@ -95,15 +95,15 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         public override bool CheckValues(out string s)
         {
             s = "";
-            if (Tm.GetImpedances().Contains(OutputImpedance) == false)
+            if (((IProgrammableLoad)Tm).GetSupportedImpedances().Contains(OutputImpedance) == false)
             {
-                s = "Output impedance must be: " + string.Join(" ", Tm.GetImpedances());
+                s = "Output impedance must be: " + string.Join(" ", ((IProgrammableLoad)Tm).GetSupportedImpedances());
                 return false;
             }
 
-            if (Tm.GetInputRanges().Contains(InputRange) == false)
+            if (((IAudioAnalyzer)Tm).GetInputRanges().Contains(InputRange) == false)
             {
-                s = "Input range not supported. Must be: " + string.Join(" ", Tm.GetInputRanges());
+                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm).GetInputRanges());
                 return false;
             }
 
@@ -118,6 +118,18 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         public override string GetTestDescription()
         {
             return "Measures the gain at a specified frequency and amplitude at a specified impedance level. Results must be within a given window to 'pass'.";
+        }
+
+        public override bool IsRunnable()
+        {
+            if ((Tm.TestClass is IAudioAnalyzer) &&
+                (Tm.TestClass is ICurrentMeter) &&
+                (Tm.TestClass is IProgrammableLoad))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

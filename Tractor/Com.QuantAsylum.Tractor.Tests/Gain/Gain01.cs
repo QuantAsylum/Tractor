@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Tractor.Com.QuantAsylum.Tractor.TestManagers;
+using Com.QuantAsylum.Tractor.TestManagers;
 
 namespace Com.QuantAsylum.Tractor.Tests.GainTests
 {
@@ -35,24 +35,24 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             // Two channels
             tr = new TestResult(2);
 
-            Tm.SetInstrumentsToDefault();
-            Tm.AudioAnalyzerSetTitle(title);
-            Tm.SetInputRange(InputRange);
+            ((IComposite)Tm).SetToDefaults();
+            ((IAudioAnalyzer)Tm).AudioAnalyzerSetTitle(title);
+            ((IAudioAnalyzer)Tm).SetInputRange(InputRange);
 
-            Tm.AudioGenSetGen1(true, OutputLevel, Freq);
-            Tm.AudioGenSetGen2(false, OutputLevel, Freq);
-            Tm.RunSingle();
+            ((IAudioAnalyzer)Tm).AudioGenSetGen1(true, OutputLevel, Freq);
+            ((IAudioAnalyzer)Tm).AudioGenSetGen2(false, OutputLevel, Freq);
+            ((IAudioAnalyzer)Tm).RunSingle();
 
-            while (Tm.AnalyzerIsBusy())
+            while (((IAudioAnalyzer)Tm).AnalyzerIsBusy())
             {
                 Thread.Sleep(50);
             }
 
-            TestResultBitmap = Tm.GetBitmap();
+            TestResultBitmap = ((IAudioAnalyzer)Tm).GetBitmap();
 
             // Compute the total RMS around the freq of interest
-            tr.Value[0] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f ) + Offset - OutputLevel;
-            tr.Value[1] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f) + Offset - OutputLevel;
+            tr.Value[0] = (float)((IAudioAnalyzer)Tm).ComputeRms(((IAudioAnalyzer)Tm).GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f ) + Offset - OutputLevel;
+            tr.Value[1] = (float)((IAudioAnalyzer)Tm).ComputeRms(((IAudioAnalyzer)Tm).GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f) + Offset - OutputLevel;
 
             bool passLeft = true, passRight = true;
 
@@ -92,7 +92,17 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
 
         public override string GetTestDescription()
         {
-            return "Measures the gain at a specified frequency and amplitude and impedance. Results must be within a given window to 'pass'.";
+            return "Measures the gain at a specified frequency and amplitude. Results must be within a given window to 'pass'.";
+        }
+
+        public override bool IsRunnable()
+        {
+            if (Tm.TestClass is IAudioAnalyzer)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

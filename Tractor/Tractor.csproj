@@ -83,6 +83,12 @@
     <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgPassFail.Designer.cs">
       <DependentUpon>DlgPassFail.cs</DependentUpon>
     </Compile>
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgSettings.Designer.cs">
+      <DependentUpon>DlgSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgTestRun.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -92,8 +98,18 @@
     <Compile Include="Com.QuantAsylum.Tractor.Dialogs\Histogram.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.HTML\Html.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Settings\SerDes.cs" />
-    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\TestManager.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Settings\AppSettings.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\IAudioAnalyzer.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\IComposite.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\ICurrentMeter.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\IInstrument.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\IPowerSupply.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\IProgrammableLoad.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA401.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA401_QA450.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA450.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QAConnectionManager.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\TestManager.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QATestManager.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Gain\Gain02.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\IMD\Imd02.cs" />
@@ -124,6 +140,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Log.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgAddTest.resx">
@@ -137,6 +154,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgPassFail.resx">
       <DependentUpon>DlgPassFail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgSettings.resx">
+      <DependentUpon>DlgSettings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgTestRun.resx">
       <DependentUpon>DlgTestRun.cs</DependentUpon>

@@ -1,4 +1,8 @@
-﻿0.64
+﻿0.7
+- Major re-structuring for implementing test hardware. They are now a collection of interfaces, and you group interfaces
+  based on instrument availability and functionality. Options may be supersetted or subsetted.
+
+0.64
 - Add colorcoding for pass fail
 - Added final P/F dlg
 - Hide main window when running tests

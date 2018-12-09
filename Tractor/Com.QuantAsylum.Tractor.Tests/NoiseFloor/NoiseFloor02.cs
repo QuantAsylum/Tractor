@@ -7,9 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Tractor.Com.QuantAsylum.Tractor.TestManagers;
+using Com.QuantAsylum.Tractor.TestManagers;
+using Tractor;
 
-namespace Tractor.Com.QuantAsylum.Tractor.Tests.NoiseFloors
+namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
 {
     /// <summary>
     /// Measures the noise floor without any weighting applied, from 20 to 20KHz
@@ -31,24 +32,24 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.NoiseFloors
             // Two channels of testing
             tr = new TestResult(2);
 
-            Tm.SetInstrumentsToDefault();
-            Tm.AudioAnalyzerSetTitle(title);
-            Tm.LoadSetImpedance(OutputImpedance); Thread.Sleep(Constants.QA450RelaySettle);
+            ((IComposite)Tm.TestClass).SetToDefaults();
+            ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
+            ((IProgrammableLoad)Tm.TestClass).SetImpedance(OutputImpedance);
 
             // Disable generators
-            Tm.AudioGenSetGen1(false, -60, 1000);
-            Tm.AudioGenSetGen1(false, -60, 1000);
-            Tm.RunSingle();
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(false, -60, 1000);
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(false, -60, 1000);
+            ((IAudioAnalyzer)Tm.TestClass).RunSingle();
 
-            while (Tm.AnalyzerIsBusy())
+            while (((IAudioAnalyzer)Tm.TestClass).AnalyzerIsBusy())
             {
                 Thread.Sleep(20);
             }
 
-            TestResultBitmap = Tm.GetBitmap();
+            TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
-            tr.Value[0] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Left), 20, 20000);
-            tr.Value[1] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Right), 20, 20000);
+            tr.Value[0] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left), 20, 20000);
+            tr.Value[1] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right), 20, 20000);
 
             if (LeftChannel)
                 tr.StringValue[0] = tr.Value[0].ToString("0.0") + " dBV";
@@ -79,6 +80,17 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.NoiseFloors
         {
             return "Measures the noise floor (residual noise) with A-Weighting applied. If the resulting measurement is " +
                    "within the specified limits, then 'pass = true' is returned.";
+        }
+
+        public override bool IsRunnable()
+        {
+            if ((Tm.TestClass is IAudioAnalyzer) &&
+                 (Tm.TestClass is IProgrammableLoad))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

@@ -1,22 +1,17 @@
 ﻿using Com.QuantAsylum.Tractor.Tests.GainTests;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using Tractor;
-using Tractor.Com.QuantAsylum.Tractor.TestManagers;
-using Tractor.Com.QuantAsylum.Tractor.Tests.IMDTests;
-using Tractor.Com.QuantAsylum.Tractor.Tests.NoiseFloors;
+using Com.QuantAsylum.Tractor.Tests.IMDTests;
+using Com.QuantAsylum.Tractor.Tests.NoiseFloors;
 using Tractor.Com.QuantAsylum.Tractor.Tests.THDs;
-using Tractor.Com.QuantAsylum.Tractor.Tests.Other;
-using static Tractor.Com.QuantAsylum.Tractor.TestManagers.TestManager;
+using Com.QuantAsylum.Tractor.Tests.Other;
+using Com.QuantAsylum.Tractor.TestManagers;
+using static Com.QuantAsylum.Tractor.TestManagers.TestManager;
 
 namespace Com.QuantAsylum.Tractor.Tests
 {
@@ -130,7 +125,7 @@ namespace Com.QuantAsylum.Tractor.Tests
         /// </summary>
         static internal CancelEditing CancelEditingCallback;
 
-        public void SetTestManager(TestManager tm)
+        internal void SetTestManager(TestManager tm)
         {
             Tm = tm;
         }
@@ -315,6 +310,15 @@ namespace Com.QuantAsylum.Tractor.Tests
         }
 
         public virtual void DoTest(string title, out TestResult testResult)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Allows test to determine if all the required pieces are present
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool IsRunnable()
         {
             throw new NotImplementedException();
         }

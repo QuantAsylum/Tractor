@@ -7,9 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Tractor.Com.QuantAsylum.Tractor.TestManagers;
+using Com.QuantAsylum.Tractor.TestManagers;
+using Tractor;
 
-namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
+namespace Com.QuantAsylum.Tractor.Tests.Other
 {
     /// <summary>
     /// This test will check the gain at a given impedance level
@@ -36,26 +37,26 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
             // Two channels of testing
             tr = new TestResult(2);
 
-            Tm.SetInstrumentsToDefault();
-            Tm.LoadSetImpedance(LoadImpedance); Thread.Sleep(Constants.QA450RelaySettle);
+            ((IComposite)Tm).SetToDefaults();
+            ((IProgrammableLoad)Tm).SetImpedance(LoadImpedance);
 
-            Tm.AudioAnalyzerSetTitle(title);
-            Tm.SetInputRange(InputRange);
-            Tm.AudioAnalyzerSetFftLength(8192);
-            Tm.AudioGenSetGen1(true, OutputLevel, Freq);
-            Tm.AudioGenSetGen2(false, OutputLevel, Freq);
-            Tm.RunSingle();
+            ((IAudioAnalyzer)Tm).AudioAnalyzerSetTitle(title);
+            ((IAudioAnalyzer)Tm).SetInputRange(InputRange);
+            ((IAudioAnalyzer)Tm).SetFftLength(8192);
+            ((IAudioAnalyzer)Tm).AudioGenSetGen1(true, OutputLevel, Freq);
+            ((IAudioAnalyzer)Tm).AudioGenSetGen2(false, OutputLevel, Freq);
+            ((IAudioAnalyzer)Tm).RunSingle();
 
             float current = 0;
-            while (Tm.AnalyzerIsBusy())
+            while (((IAudioAnalyzer)Tm).AnalyzerIsBusy())
             {
-                float c = Tm.DutGetCurrent();
+                float c = ((ICurrentMeter)Tm).GetDutCurrent();
                 if (c > current)
                     current = c;
                 Debug.WriteLine("Current: " + current);
             }
 
-            TestResultBitmap = Tm.GetBitmap();
+            TestResultBitmap = ((IAudioAnalyzer)Tm).GetBitmap();
 
 
             bool passLeft = true, passRight = true;
@@ -63,7 +64,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
             if (LeftChannel)
             {
                 // Get dbV out
-                float wattsOut = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f) - ExtGain;
+                float wattsOut = (float)((IAudioAnalyzer)Tm).ComputeRms(((IAudioAnalyzer)Tm).GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f) - ExtGain;
                 // Get volts out
                 wattsOut = (float)Math.Pow(10, wattsOut / 20);
                 // Get watts out
@@ -81,7 +82,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
             if (RightChannel)
             {
                 // Get dbV out
-                float wattsOut = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f) - ExtGain;
+                float wattsOut = (float)((IAudioAnalyzer)Tm).ComputeRms(((IAudioAnalyzer)Tm).GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f) - ExtGain;
                 // Get volts out
                 wattsOut = (float)Math.Pow(10, wattsOut / 20);
                 // Get watts out
@@ -116,15 +117,15 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
         public override bool CheckValues(out string s)
         {
             s = "";
-            if (Tm.GetImpedances().Contains(LoadImpedance) == false)
+            if (((IProgrammableLoad)Tm).GetSupportedImpedances().Contains(LoadImpedance) == false)
             {
-                s = "Output impedance must be: " + string.Join(" ", Tm.GetImpedances());
+                s = "Output impedance must be: " + string.Join(" ", ((IProgrammableLoad)Tm).GetSupportedImpedances());
                 return false;
             }
 
-            if (Tm.GetInputRanges().Contains(InputRange) == false)
+            if (((IAudioAnalyzer)Tm).GetInputRanges().Contains(InputRange) == false)
             {
-                s = "Input range not supported. Must be: " + string.Join(" ", Tm.GetInputRanges());
+                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm).GetInputRanges());
                 return false;
             }
 
@@ -134,6 +135,18 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
         public override string GetTestDescription()
         {
             return "Sets the power state of the QA450 and measures the current";
+        }
+
+        public override bool IsRunnable()
+        {
+            if ((Tm.TestClass is IAudioAnalyzer) &&
+                (Tm.TestClass is ICurrentMeter) &&
+                (Tm.TestClass is IProgrammableLoad))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

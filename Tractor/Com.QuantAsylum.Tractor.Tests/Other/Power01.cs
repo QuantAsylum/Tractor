@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Tractor.Com.QuantAsylum.Tractor.TestManagers;
+using Com.QuantAsylum.Tractor.TestManagers;
 
-namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
+namespace Com.QuantAsylum.Tractor.Tests.Other
 {
     /// <summary>
     /// This test will check the gain at a given impedance level
@@ -32,10 +32,10 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
             // Two channels of testing
             tr = new TestResult(2);
 
-            Tm.SetInstrumentsToDefault();
-            Tm.DutSetPowerState(PowerState);
+            ((IComposite)Tm.TestClass).SetToDefaults();
+            ((IPowerSupply)Tm.TestClass).SetSupplyState(PowerState);
             Thread.Sleep(1200);
-            float current = Tm.DutGetCurrent(3);
+            float current = ((ICurrentMeter)Tm.TestClass).GetDutCurrent(3);
 
 
             if ((current > MinimumPassCurrent) && (current < MaximumPassCurrent))
@@ -65,6 +65,17 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
         public override string GetTestDescription()
         {
             return "Sets the power state of the QA450 and measures the current";
+        }
+
+        public override bool IsRunnable()
+        {
+            if ((Tm.TestClass is ICurrentMeter) &&
+                (Tm.TestClass is IPowerSupply))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

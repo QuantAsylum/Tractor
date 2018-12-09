@@ -1,15 +1,10 @@
 ﻿using Com.QuantAsylum.Tractor.TestManagers;
-using Com.QuantAsylum.Tractor.Tests;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using Tractor.Com.QuantAsylum.Tractor.TestManagers;
+using Tractor;
 
-namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
+namespace Com.QuantAsylum.Tractor.Tests.Other
 {
     /// <summary>
     /// This test will check the gain at a given impedance level
@@ -38,41 +33,41 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
             float[] vOut4 = new float[2] { float.NaN, float.NaN };
             float[] vOut8 = new float[2] { float.NaN, float.NaN };
 
-            Tm.SetInstrumentsToDefault();
-            Tm.AudioAnalyzerSetTitle(title);
-            Tm.SetInputRange(InputRange);
+            ((IComposite)Tm.TestClass).SetToDefaults();
+            ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(InputRange);
 
             // First, we make 8 ohm measurement
-            Tm.LoadSetImpedance(8); Thread.Sleep(Constants.QA450RelaySettle);
-            Tm.AudioGenSetGen1(true, OutputLevel, Freq);
-            Tm.AudioGenSetGen2(false, OutputLevel, Freq);
-            Tm.RunSingle();
+            ((IProgrammableLoad)Tm.TestClass).SetImpedance(8);
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, OutputLevel, Freq);
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, OutputLevel, Freq);
+            ((IAudioAnalyzer)Tm.TestClass).RunSingle();
 
-            while (Tm.AnalyzerIsBusy())
+            while (((IAudioAnalyzer)Tm.TestClass).AnalyzerIsBusy())
             {
                 Thread.Sleep(30);
             }
 
             // Grab the 8 ohm levels
             if (LeftChannel)
-                vOut8[0] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f );
+                vOut8[0] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f );
 
             if (RightChannel)
-                vOut8[1] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f);
+                vOut8[1] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f);
 
             // Now make 4 ohm meausrement
-            Tm.LoadSetImpedance(4); Thread.Sleep(Constants.QA450RelaySettle);
+            ((IProgrammableLoad)Tm.TestClass).SetImpedance(4);
 
-            Tm.RunSingle();
+            ((IAudioAnalyzer)Tm.TestClass).RunSingle();
 
-            while (Tm.AnalyzerIsBusy())
+            while (((IAudioAnalyzer)Tm.TestClass).AnalyzerIsBusy())
             {
                 Thread.Sleep(30);
             }
 
             // Grab the 4 ohm circuit levels
-            vOut4[0] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f);
-            vOut4[1] = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f);
+            vOut4[0] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f);
+            vOut4[1] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f);
 
             // Compute impedance
             for (int i = 0; i < 2; i++)
@@ -140,9 +135,9 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
         {
             s = "";
 
-            if (Tm.GetInputRanges().Contains(InputRange) == false)
+            if (((IAudioAnalyzer)Tm).GetInputRanges().Contains(InputRange) == false)
             {
-                s = "Input range not supported. Must be: " + string.Join(" ", Tm.GetInputRanges());
+                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm).GetInputRanges());
                 return false;
             }
 
@@ -159,6 +154,17 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.Other
             return "Measures the output impedance of an amplifier using an " +
                    "open-circuit measurement and a measurement at a " +
                    "specified load.";
+        }
+
+        public override bool IsRunnable()
+        {
+            if ((Tm.TestClass is IAudioAnalyzer) &&
+                 (Tm.TestClass is IProgrammableLoad))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

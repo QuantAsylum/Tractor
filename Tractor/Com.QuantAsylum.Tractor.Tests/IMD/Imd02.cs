@@ -7,9 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Tractor.Com.QuantAsylum.Tractor.TestManagers;
+using Com.QuantAsylum.Tractor.TestManagers;
+using Tractor;
 
-namespace Tractor.Com.QuantAsylum.Tractor.Tests.IMDTests
+namespace Com.QuantAsylum.Tractor.Tests.IMDTests
 {
     /// <summary>
     /// This test performs an ITU IMD test. The user may select an output level. Each generator will
@@ -42,35 +43,35 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.IMDTests
             // Two channels of testing
             tr = new TestResult(2);
 
-            Tm.SetInstrumentsToDefault();
-            Tm.AudioAnalyzerSetTitle(title);
-            Tm.SetInputRange(InputRange);
+            ((IComposite)Tm).SetToDefaults();
+            ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(InputRange);
 
-            Tm.LoadSetImpedance(OutputImpedance); Thread.Sleep(Constants.QA450RelaySettle);
+            ((IProgrammableLoad)Tm.TestClass).SetImpedance(OutputImpedance);
 
-            Tm.AudioGenSetGen1(true, OutputLevelDBV - 6, 19000);
-            Tm.AudioGenSetGen2(true, OutputLevelDBV - 6, 20000);
-            Tm.RunSingle();
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, OutputLevelDBV - 6, 19000);
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(true, OutputLevelDBV - 6, 20000);
+            ((IAudioAnalyzer)Tm.TestClass).RunSingle();
 
-            while (Tm.AnalyzerIsBusy())
+            while (((IAudioAnalyzer)Tm.TestClass).AnalyzerIsBusy())
             {
                 Thread.Sleep(20);
             }
 
-            TestResultBitmap = Tm.GetBitmap();
+            TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
             if (LeftChannel)
             {
-                PointD[] data = Tm.GetData(ChannelEnum.Left);
-                tr.Value[0] = Tm.ComputeRms(data, 18995, 19005);
-                tr.Value[0] = Tm.ComputeRms(data, 995, 1005) - tr.Value[0];
+                PointD[] data = ((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left);
+                tr.Value[0] = ((IAudioAnalyzer)Tm.TestClass).ComputeRms(data, 18995, 19005);
+                tr.Value[0] = ((IAudioAnalyzer)Tm.TestClass).ComputeRms(data, 995, 1005) - tr.Value[0];
             }
 
             if (RightChannel)
             {
-                PointD[] data = Tm.GetData(ChannelEnum.Right);
-                tr.Value[1] = Tm.ComputeRms(data, 18995, 19005);
-                tr.Value[1] = Tm.ComputeRms(data, 995, 1005) - tr.Value[1];
+                PointD[] data = ((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right);
+                tr.Value[1] = ((IAudioAnalyzer)Tm.TestClass).ComputeRms(data, 18995, 19005);
+                tr.Value[1] = ((IAudioAnalyzer)Tm.TestClass).ComputeRms(data, 995, 1005) - tr.Value[1];
             }
 
             bool passLeft = true, passRight = true;
@@ -115,6 +116,17 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.IMDTests
                    "The combined amplitude of the tones will be the value specified in the test parameters. The resultant mixing product at 1 KHz " +
                    "is measured, and the amplitude below the specified output amplitude is computed. If that amplitude relative to the output amplitude " +
                    "is within the specified window limits, then 'pass = true' is returned. ";
+        }
+
+        public override bool IsRunnable()
+        {
+            if ((Tm.TestClass is IAudioAnalyzer) &&
+                 (Tm.TestClass is IProgrammableLoad))
+            {
+                return true;
+            }
+
+            return false;
         }
 
     }

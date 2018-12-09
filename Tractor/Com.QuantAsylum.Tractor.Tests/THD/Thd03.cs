@@ -35,21 +35,21 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             // Two channels of testing
             tr = new TestResult(2);
 
-            Tm.SetInstrumentsToDefault();
-            Tm.AudioAnalyzerSetTitle(title);
-            Tm.SetInputRange(InputRange);
-            Tm.LoadSetImpedance(LoadImpedance); Thread.Sleep(Constants.QA450RelaySettle);
+            ((IComposite)Tm.TestClass).SetToDefaults();
+            ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(InputRange);
+            ((IProgrammableLoad)Tm.TestClass).SetImpedance(LoadImpedance);
 
-            Tm.AudioGenSetGen1(true, OutputLevel, Freq);
-            Tm.AudioGenSetGen2(false, OutputLevel, Freq);
-            Tm.RunSingle();
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, OutputLevel, Freq);
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, OutputLevel, Freq);
+            ((IAudioAnalyzer)Tm.TestClass).RunSingle();
 
-            while (Tm.AnalyzerIsBusy())
+            while (((IAudioAnalyzer)Tm.TestClass).AnalyzerIsBusy())
             {
                 Thread.Sleep(25);
             }
 
-            TestResultBitmap = Tm.GetBitmap();
+            TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
             
             //tr.Value[1] = (float)Tm.ComputeThdPct(Tm.GetData(ChannelEnum.Right), Freq, 20000);
@@ -63,13 +63,13 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             if (LeftChannel)
             {
                 // Get dbV out
-                float wattsOut = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f) - ExtGain;
+                float wattsOut = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f) - ExtGain;
                 // Get volts out
                 wattsOut = (float)Math.Pow(10, wattsOut / 20);
                 // Get watts out
                 wattsOut = (wattsOut * wattsOut) / LoadImpedance;
 
-                tr.Value[0] = (float)Tm.ComputeThdPct(Tm.GetData(ChannelEnum.Left), Freq, 20000);
+                tr.Value[0] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeThdPct(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left), Freq, 20000);
                 // Convert to dB
                 tr.Value[0] = 20 * (float)Math.Log10(tr.Value[0] / 100);
                 tr.StringValue[0] = string.Format("{0:N1} dB @ {1:N1}W", tr.Value[0], wattsOut);
@@ -82,13 +82,13 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             if (RightChannel)
             {
                 // Get dbV out
-                float wattsOut = (float)Tm.ComputeRms(Tm.GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f) - ExtGain;
+                float wattsOut = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f) - ExtGain;
                 // Get volts out
                 wattsOut = (float)Math.Pow(10, wattsOut / 20);
                 // Get watts out
                 wattsOut = (wattsOut * wattsOut) / LoadImpedance;
 
-                tr.Value[1] = (float)Tm.ComputeThdPct(Tm.GetData(ChannelEnum.Right), Freq, 20000);
+                tr.Value[1] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeThdPct(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right), Freq, 20000);
                 // Convert to dB
                 tr.Value[1] = 20 * (float)Math.Log10(tr.Value[1] / 100);
                 tr.StringValue[1] = string.Format("{0:N1} dB @ {1:N1}W", tr.Value[1], wattsOut);
@@ -117,6 +117,17 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
         public override string GetTestDescription()
         {
             return "Measures THD at a given frequency and amplitude at a given load";
+        }
+
+        public override bool IsRunnable()
+        {
+            if ((Tm.TestClass is IAudioAnalyzer) &&
+                 (Tm.TestClass is IProgrammableLoad))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

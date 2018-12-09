@@ -1,29 +1,25 @@
-﻿using System;
+﻿using Com.QuantAsylum.Tractor.TestManagers;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 
-namespace Tractor.Com.QuantAsylum.HardwareXXXXXXXXX
+namespace Com.QuantAsylum.Tractor.TestManagers
 {
-    /// <summary>
-    /// Implents a simple REST interface to the QA450
-    /// </summary>
-    static class Qa450Hw
+    class QA450 : IInstrument, IProgrammableLoad, ICurrentMeter, IPowerSupply
     {
         static HttpClient Client = new HttpClient();
 
         static string RootUrl;
 
-        static Qa450Hw()
+        public QA450()
         {
             SetRootUrl("http://localhost:9450");
         }
 
-        static void SetRootUrl(string rootUrl)
+        void SetRootUrl(string rootUrl)
         {
             RootUrl = rootUrl;
             Client = new HttpClient
@@ -32,7 +28,49 @@ namespace Tractor.Com.QuantAsylum.HardwareXXXXXXXXX
             };
         }
 
-        static public void SetImpedance(int impedance)
+        public bool ConnectToDevice()
+        {
+            // Nothing special to do for REST device
+            return true;
+        }
+
+        public bool IsConnected()
+        {
+            // Do a current read to see if you got anything back
+            try
+            {
+                float current = GetDutCurrent();
+                return true;
+            }
+            catch
+            {
+
+            }
+
+            return false;
+        }
+
+        public bool IsRunning()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void LaunchApplication()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void SetToDefaults()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public int[] GetSupportedImpedances()
+        {
+            return new int[] { 0, 4, 8 };
+        }
+
+        public void SetImpedance(int impedance)
         {
             if (impedance == 4)
             {
@@ -50,33 +88,24 @@ namespace Tractor.Com.QuantAsylum.HardwareXXXXXXXXX
                 throw new NotImplementedException("Bad value in SetImpedance()");
         }
 
-        static public int GetImpedance()
+        public int GetImpedance()
         {
             string result = GetSync(RootUrl + "/impedance", "Value");
             return Convert.ToInt32(result);
         }
 
-        static public float GetCurrent()
+        public float GetLoadTemperature()
         {
-            string result = GetSync(RootUrl + "/current", "Value");
-            return Convert.ToSingle(result);
+            throw new NotImplementedException();
         }
 
-        static public bool IsConnected()
+        public bool GetSupplyState()
         {
-            string result = GetSync(RootUrl + "/connection", "Value");
+            string result = GetSync(RootUrl + "/dutpower", "Value");
             return Convert.ToBoolean(result);
         }
 
-        /// <summary>
-        /// Sets the QA450 to a known state
-        /// </summary>
-        static public void SetToDefault()
-        {
-            PutSync("/default");
-        }
-
-        static public void SetDutPower(bool powerEnable)
+        public void SetSupplyState(bool powerEnable)
         {
             if (powerEnable)
                 PutSync("/dutpower", "Value", 1);
@@ -84,13 +113,29 @@ namespace Tractor.Com.QuantAsylum.HardwareXXXXXXXXX
                 PutSync("/dutpower", "Value", 0);
         }
 
-        static public bool GetDutPower()
+        float Voltage;
+        public void SetSupplyVoltage(float voltage)
         {
-            string result = GetSync(RootUrl + "/dutpower", "Value");
-            return Convert.ToBoolean(result);
+            // Doesn't do anything on QA450. Fake it.
+            Voltage = voltage;
         }
 
-        static private void PutSync(string url)
+        public float GetSupplyVoltage()
+        {
+            return Voltage;
+        }
+
+        public float GetDutCurrent(int averages = 1)
+        {
+            string result = GetSync(RootUrl + "/current", "Value");
+            return Convert.ToSingle(result);
+        }
+
+        /*******************************************************************/
+        /*********************** HELPERS for REST **************************/
+        /*******************************************************************/
+
+        private void PutSync(string url)
         {
             PutSync(url, "", 0);
         }
@@ -101,7 +146,7 @@ namespace Tractor.Com.QuantAsylum.HardwareXXXXXXXXX
         /// <param name="url"></param>
         /// <param name="token"></param>
         /// <param name="value"></param>
-        static private void PutSync(string url, string token, int value)
+        private void PutSync(string url, string token, int value)
         {
             string json;
 
@@ -125,7 +170,7 @@ namespace Tractor.Com.QuantAsylum.HardwareXXXXXXXXX
         /// <param name="url"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        static private string GetSync(string url, string token)
+        private string GetSync(string url, string token)
         {
             string content;
 
@@ -140,5 +185,7 @@ namespace Tractor.Com.QuantAsylum.HardwareXXXXXXXXX
 
             return dict[token].ToString();
         }
+
+      
     }
 }

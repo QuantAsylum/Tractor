@@ -28,15 +28,11 @@ namespace Tractor
         /// <summary>
         /// Keeps track if the TestManager currently loaded has changed
         /// </summary>
-        bool TmIsDirty = false;
+        bool AppSettingsDirty = false;
 
         TestBase SelectedTb;
 
-        /// <summary>
-        /// A workaround...sometimes we don't want programmatic changes to 
-        /// the treeview to trigger more code. So, we set this true.
-        /// </summary>
-        bool IgnoreTreeViewBeforeSelects = false;
+        AppSettings AppSettings;
 
         public Form1()
         {
@@ -44,8 +40,29 @@ namespace Tractor
             InitializeComponent();
 
             label3.Text = "";
-            Tm = new QATestManager();
+            Tm = new TestManager();
             Tm.SetCallbacks(StartEditing, DoneEditing, CancelEditing);
+
+            if (File.Exists(Constants.DefaultSettingsFile))
+            {
+                try
+                {
+                    AppSettings = AppSettings.Deserialize(File.ReadAllText(Constants.DefaultSettingsFile));
+                }
+                catch
+                {
+                    // Failed to load. Delete the file and create a new one
+                    MessageBox.Show("The default settings could not be loaded. A new default settings will be created");
+                    AppSettings = new AppSettings();
+                    File.Delete(Constants.DefaultSettingsFile);
+                    File.WriteAllText(Constants.DefaultSettingsFile, AppSettings.Serialize());
+                }
+            }
+            else
+            {
+                AppSettings = new AppSettings();
+                File.WriteAllText(Constants.DefaultSettingsFile, AppSettings.Serialize());
+            }
         }
 
         /// <summary>
@@ -70,7 +87,7 @@ namespace Tractor
             treeView1.Enabled = true;
             menuStrip1.Enabled = true;
             AddTestBtn.Enabled = true;
-            TmIsDirty = true;
+            AppSettingsDirty = true;
             SetTreeviewControls();
         }
 
@@ -102,11 +119,18 @@ namespace Tractor
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // Make sure power is off
-            Tm.DutSetPowerState(false);
+            // Make sure power is off. If we've never run anything, this may fail. 
+            try
+            {
+               ((IPowerSupply)Tm.TestClass).SetSupplyState(false);
+            }
+            catch
+            {
+
+            }
 
             // Here, the data is clean. Check if we need to save the current TestManager data
-            if (TmIsDirty || ((SelectedTb != null) && SelectedTb.IsDirty == true))
+            if (AppSettingsDirty || ((SelectedTb != null) && SelectedTb.IsDirty == true))
             {
                 if (MessageBox.Show("Do you want to save the current test plan?", "Changes not saved", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
@@ -154,9 +178,9 @@ namespace Tractor
 
             treeView1.Nodes.Clear();
 
-            for (int i = 0; i < Tm.TestList.Count(); i++)
+            for (int i = 0; i < AppSettings.TestList.Count(); i++)
             {
-                TreeViewAdd((Tm.TestList[i] as TestBase).Name, Tm.TestList[i]);
+                TreeViewAdd((AppSettings.TestList[i] as TestBase).Name, AppSettings.TestList[i]);
             }
 
             treeView1.ExpandAll();
@@ -212,7 +236,7 @@ namespace Tractor
                 return;
 
             ClearEditFields();
-            TestBase tb = Tm.TestList.Find(o => o.Name == GetTestName(e.Node.Text));
+            TestBase tb = AppSettings.TestList.Find(o => o.Name == GetTestName(e.Node.Text));
             SelectedTb = tb;
             tb.PopulateUI(tableLayoutPanel1);
             label3.Text = tb.GetTestDescription();
@@ -227,7 +251,7 @@ namespace Tractor
         /// <param name="e"></param>
         private void treeView1_AfterCheck(object sender, TreeViewEventArgs e)
         {
-            TestBase tb = Tm.TestList.Find(o => o.Name == GetTestName(e.Node.Text));
+            TestBase tb = AppSettings.TestList.Find(o => o.Name == GetTestName(e.Node.Text));
             SelectedTb = tb;
             tb.RunTest = e.Node.Checked;
         }
@@ -285,10 +309,10 @@ namespace Tractor
                 TestBase testInst = CreateTestInstance(className);
                 testInst.Tm = Tm;
                 (testInst as TestBase).Name = dlg.textBox1.Text;
-                Tm.TestList.Add(testInst as TestBase);
+                AppSettings.TestList.Add(testInst as TestBase);
 
                 TreeViewAdd(dlg.textBox1.Text, CreateTestInstance(className));
-                TmIsDirty = true;
+                AppSettingsDirty = true;
             }
 
             SetTreeviewControls();
@@ -323,8 +347,8 @@ namespace Tractor
         {
             ClearEditFields();
 
-            if (Tm.TestList.Count > 0)
-                (Tm.TestList[0] as TestBase).PopulateUI(tableLayoutPanel1);
+            if (AppSettings.TestList.Count > 0)
+                (AppSettings.TestList[0] as TestBase).PopulateUI(tableLayoutPanel1);
         }
 
         /// <summary>
@@ -335,7 +359,7 @@ namespace Tractor
         /// <param name="e"></param>
         private void RunTestBtn_Click(object sender, EventArgs e)
         {
-            if (Tm.TestList.Count == 0)
+            if (AppSettings.TestList.Count == 0)
                 return;
 
             DlgTestRun dlg = new DlgTestRun(Tm, TestRunCallback, Constants.TestLogsPath);
@@ -383,15 +407,15 @@ namespace Tractor
         /// <param name="e"></param>
         private void DeleteBtn_Click(object sender, EventArgs e)
         {
-            Tm.TestList.RemoveAt(treeView1.SelectedNode.Index);
-            TmIsDirty = true;
+            AppSettings.TestList.RemoveAt(treeView1.SelectedNode.Index);
+            AppSettingsDirty = true;
             RePopulateTreeView();
 
             SetTreeviewControls();
         }
 
         /// <summary>
-        /// Loads a test plan from the file system
+        /// Loads settings from file system
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -403,10 +427,11 @@ namespace Tractor
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                Tm.TestList = (List<TestBase>)SerDes.Deserialize(typeof(List<TestBase>), File.ReadAllText(ofd.FileName));
-                TmIsDirty = false;
+                AppSettings = AppSettings.Deserialize(File.ReadAllText(ofd.FileName));
+                //AppSettings.TestList = (List<TestBase>)SerDes.Deserialize(typeof(List<TestBase>), File.ReadAllText(ofd.FileName));
+                AppSettingsDirty = false;
 
-                foreach (TestBase test in Tm.TestList)
+                foreach (TestBase test in AppSettings.TestList)
                 {
                     test.SetTestManager(Tm);
                 }
@@ -415,7 +440,7 @@ namespace Tractor
         }
 
         /// <summary>
-        /// Saves a test plan to the file system
+        /// Saves settings to file system
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -427,8 +452,8 @@ namespace Tractor
 
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-                File.WriteAllText(sfd.FileName, SerDes.Serialize(Tm.TestList));
-                TmIsDirty = false;
+                File.WriteAllText(sfd.FileName, AppSettings.Serialize());
+                AppSettingsDirty = false;
             }
         }
 
@@ -441,14 +466,14 @@ namespace Tractor
         {
             if (SelectedTb != null)
             {
-                int index = Tm.TestList.IndexOf(SelectedTb);
+                int index = AppSettings.TestList.IndexOf(SelectedTb);
 
                 if (index == 0)
                     return;
 
-                Tm.TestList.RemoveAt(index);
-                Tm.TestList.Insert(index - 1, SelectedTb);
-                TmIsDirty = true;
+                AppSettings.TestList.RemoveAt(index);
+                AppSettings.TestList.Insert(index - 1, SelectedTb);
+                AppSettingsDirty = true;
                 RePopulateTreeView(SelectedTb.Name);
             }
         }
@@ -462,15 +487,25 @@ namespace Tractor
         {
             if (SelectedTb != null)
             {
-                int index = Tm.TestList.IndexOf(SelectedTb);
+                int index = AppSettings.TestList.IndexOf(SelectedTb);
 
-                if (index == Tm.TestList.Count - 1)
+                if (index == AppSettings.TestList.Count - 1)
                     return;
 
-                Tm.TestList.RemoveAt(index);
-                Tm.TestList.Insert(index + 1, SelectedTb);
-                TmIsDirty = true;
+                AppSettings.TestList.RemoveAt(index);
+                AppSettings.TestList.Insert(index + 1, SelectedTb);
+                AppSettingsDirty = true;
                 RePopulateTreeView(SelectedTb.Name);
+            }
+        }
+
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DlgSettings dlg = new DlgSettings(AppSettings);
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+
             }
         }
     }

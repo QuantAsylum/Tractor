@@ -1,4 +1,4 @@
-﻿namespace Tractor.Com.QuantAsylum.Tractor.Dialogs
+﻿namespace Com.QuantAsylum.Tractor.Dialogs
 {
     partial class DlgPassFail
     {
