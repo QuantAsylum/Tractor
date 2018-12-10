@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Tractor
 {
-    enum LogType { General = 0, Http = 0x1, Analyzer = 0x2, Usb = 3, Error = 0x4 }
+    enum LogType { General = 0, Http = 0x1, Analyzer = 0x2, Usb = 3, Database = 0x4, Error = 0x4 }
 
     static class Log
     {

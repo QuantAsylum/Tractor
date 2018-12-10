@@ -39,9 +39,9 @@
     <ApplicationIcon>Tractor Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="QAAnalyzer, Version=1.6.5.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="QAAnalyzer, Version=1.7.0.4, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\QuantAsylum\QA401\QAAnalyzer.exe</HintPath>
+      <HintPath>..\..\..\Visual Studio 2010\Projects\QA401 GIT\Application\bin\Debug\QAAnalyzer.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -64,12 +64,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Com.QuantAsylum.Hardware\QA450.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Database\Db.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Database\DataSchema.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgAnalysis.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgAnalysis.Designer.cs">
       <DependentUpon>DlgAnalysis.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgAudition.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgAudition.Designer.cs">
+      <DependentUpon>DlgAudition.cs</DependentUpon>
     </Compile>
     <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgInput.cs">
       <SubType>Form</SubType>
@@ -82,6 +89,12 @@
     </Compile>
     <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgPassFail.Designer.cs">
       <DependentUpon>DlgPassFail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgPrompt.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgPrompt.Designer.cs">
+      <DependentUpon>DlgPrompt.cs</DependentUpon>
     </Compile>
     <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgSettings.cs">
       <SubType>Form</SubType>
@@ -97,7 +110,6 @@
     </Compile>
     <Compile Include="Com.QuantAsylum.Tractor.Dialogs\Histogram.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.HTML\Html.cs" />
-    <Compile Include="Com.QuantAsylum.Tractor.Settings\SerDes.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Settings\AppSettings.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\IAudioAnalyzer.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\IComposite.cs" />
@@ -114,6 +126,7 @@
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Gain\Gain02.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\IMD\Imd02.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\NoiseFloor\NoiseFloor02.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\Audition01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\Efficiency01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\Power01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\Impedance01.cs" />
@@ -149,11 +162,17 @@
     <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgAnalysis.resx">
       <DependentUpon>DlgAnalysis.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgAudition.resx">
+      <DependentUpon>DlgAudition.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgInput.resx">
       <DependentUpon>DlgInput.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgPassFail.resx">
       <DependentUpon>DlgPassFail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgPrompt.resx">
+      <DependentUpon>DlgPrompt.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgSettings.resx">
       <DependentUpon>DlgSettings.cs</DependentUpon>

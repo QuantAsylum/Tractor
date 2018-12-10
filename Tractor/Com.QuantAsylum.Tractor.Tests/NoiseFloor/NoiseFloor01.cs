@@ -17,8 +17,10 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
     [Serializable]
     public class NoiseFloor01 : TestBase
     {
-        public float MinimumOKNoise = -200;
-        public float MaximumOKNoise = -105;
+        public float MinimumPassLevel = -200;
+        public float MaximumPassLevel = -105;
+
+        public int AnalyzerInputRange = 6;
 
         public NoiseFloor01() : base()
         {
@@ -31,7 +33,7 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
             tr = new TestResult(2);
 
             ((IComposite)Tm.TestClass).SetToDefaults();
-            ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
 
             // Disable generators
@@ -59,19 +61,32 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
             else
                 tr.StringValue[1] = "SKIP";
 
-            if (LeftChannel && tr.Value[0] > MinimumOKNoise && tr.Value[0] < MaximumOKNoise && RightChannel && tr.Value[1] > MinimumOKNoise && tr.Value[1] < MaximumOKNoise)
+            if (LeftChannel && tr.Value[0] > MinimumPassLevel && tr.Value[0] < MaximumPassLevel && RightChannel && tr.Value[1] > MinimumPassLevel && tr.Value[1] < MaximumPassLevel)
                 tr.Pass = true;
-            else if (!LeftChannel && RightChannel && tr.Value[1] > MinimumOKNoise && tr.Value[1] < MaximumOKNoise)
+            else if (!LeftChannel && RightChannel && tr.Value[1] > MinimumPassLevel && tr.Value[1] < MaximumPassLevel)
                 tr.Pass = true;
-            else if (!RightChannel && LeftChannel && tr.Value[0] > MinimumOKNoise && tr.Value[0] < MaximumOKNoise)
+            else if (!RightChannel && LeftChannel && tr.Value[0] > MinimumPassLevel && tr.Value[0] < MaximumPassLevel)
                 tr.Pass = true;
 
             return;
         }
 
+        public override bool CheckValues(out string s)
+        {
+            s = "";
+
+            if (((IAudioAnalyzer)Tm).GetInputRanges().Contains(AnalyzerInputRange) == false)
+            {
+                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm).GetInputRanges());
+                return false;
+            }
+
+            return true;
+        }
+
         public override string GetTestLimitsString()
         {
-            return string.Format("{0:N1}...{1:N1} dBV", MinimumOKNoise, MaximumOKNoise);
+            return string.Format("{0:N1}...{1:N1} dBV", MinimumPassLevel, MaximumPassLevel);
         }
 
         public override string GetTestDescription()

@@ -12,6 +12,7 @@ using Com.QuantAsylum.Tractor.TestManagers;
 using Com.QuantAsylum.Tractor.Tests;
 using static Com.QuantAsylum.Tractor.Tests.TestBase;
 using Tractor.Com.QuantAsylum.Tractor.TestManagers;
+using Com.QuantAsylum.Tractor.Settings;
 
 namespace Tractor
 {
@@ -71,7 +72,7 @@ namespace Tractor
         private void comboBox1_SelectedValueChanged(object sender, EventArgs e)
         {
             string s = comboBox1.Items[comboBox1.SelectedIndex].ToString();
-            textBox1.Text = Tm.FindUniqueName(s);
+            textBox1.Text = Form1.AppSettings.FindUniqueName(s);
 
             ComboItem ci = (ComboItem)comboBox1.Items[comboBox1.SelectedIndex];
             label4.Text = ci.Description;

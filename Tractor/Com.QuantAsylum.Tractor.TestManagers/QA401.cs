@@ -35,12 +35,17 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
         public void SetToDefaults()
         {
-            throw new NotImplementedException();
+            Qa401.SetToDefault("");
         }
 
         public bool ConnectToDevice()
         {
             Qa401 = null;
+
+            if (IsAppAlreadyRunning() == false)
+            {
+                LaunchApplication();
+            }
 
             try
             {
@@ -65,7 +70,19 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
         public bool IsConnected()
         {
-            return Qa401.IsConnected();
+            if (Qa401 == null)
+                return false;
+
+            try
+            {
+                return Qa401.IsConnected();
+            }
+            catch
+            {
+
+            }
+
+            return false;
         }
 
         public void SetFftLength(uint length)
@@ -118,6 +135,22 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         public bool AnalyzerIsBusy()
         {
             return (Qa401.GetAcquisitionState() == AcquisitionState.Busy);
+        }
+
+
+        public void AuditionStart(string fileName, double volume, bool repeat)
+        {
+            Qa401.AuditionStart(fileName, volume, repeat);
+        }
+
+        public void AuditionSetVolume(double volume)
+        {
+            Qa401.AuditionSetVolume(volume);
+        }
+
+        public void AuditionStop()
+        {
+            Qa401.AuditionStop();
         }
 
         public PointD[] GetData(ChannelEnum channel)
@@ -204,6 +237,8 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             {
                 // Release ownership
                 AlreadyRunningMutex.ReleaseMutex();
+                AlreadyRunningMutex.Dispose();
+                AlreadyRunningMutex = null;
                 return false;
             }
 
@@ -262,5 +297,6 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
             return false;
         }
+
     }
 }

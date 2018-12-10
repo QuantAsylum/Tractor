@@ -18,14 +18,14 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
     [Serializable]
     public class Efficiency01 : TestBase
     {
-        public float AmpVoltage = 51;
+        public float AmplifierSupplyVoltage = 51;
         public float MinimumPassEfficiency = 80;
         public float MaximumPassEfficiency = 90;
-        public float Freq = 1000;
-        public float OutputLevel = -15;
-        public float ExtGain = -6;
-        public int LoadImpedance = 8;
-        public int InputRange = 26;
+        public float TestFrequency = 1000;
+        public float AnalyzerOutputLevel = -15;
+        public float ExternalAnalyzerInputGain = -6;
+        public int ProgrammableLoadImpedance = 8;
+        public int AnalyzerInputRange = 26;
 
         public Efficiency01() : base()
         {
@@ -38,13 +38,13 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             tr = new TestResult(2);
 
             ((IComposite)Tm).SetToDefaults();
-            ((IProgrammableLoad)Tm).SetImpedance(LoadImpedance);
+            ((IProgrammableLoad)Tm).SetImpedance(ProgrammableLoadImpedance);
 
             ((IAudioAnalyzer)Tm).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm).SetInputRange(InputRange);
+            ((IAudioAnalyzer)Tm).SetInputRange(AnalyzerInputRange);
             ((IAudioAnalyzer)Tm).SetFftLength(8192);
-            ((IAudioAnalyzer)Tm).AudioGenSetGen1(true, OutputLevel, Freq);
-            ((IAudioAnalyzer)Tm).AudioGenSetGen2(false, OutputLevel, Freq);
+            ((IAudioAnalyzer)Tm).AudioGenSetGen1(true, AnalyzerOutputLevel, TestFrequency);
+            ((IAudioAnalyzer)Tm).AudioGenSetGen2(false, AnalyzerOutputLevel, TestFrequency);
             ((IAudioAnalyzer)Tm).RunSingle();
 
             float current = 0;
@@ -64,13 +64,13 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             if (LeftChannel)
             {
                 // Get dbV out
-                float wattsOut = (float)((IAudioAnalyzer)Tm).ComputeRms(((IAudioAnalyzer)Tm).GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f) - ExtGain;
+                float wattsOut = (float)((IAudioAnalyzer)Tm).ComputeRms(((IAudioAnalyzer)Tm).GetData(ChannelEnum.Left), TestFrequency * 0.98f, TestFrequency * 1.02f) - ExternalAnalyzerInputGain;
                 // Get volts out
                 wattsOut = (float)Math.Pow(10, wattsOut / 20);
                 // Get watts out
-                wattsOut = (wattsOut * wattsOut) / LoadImpedance;
+                wattsOut = (wattsOut * wattsOut) / ProgrammableLoadImpedance;
                 // Since two channels are active, we must divide current by 2
-                float wattsIn = AmpVoltage * current/2;
+                float wattsIn = AmplifierSupplyVoltage * current/2;
                 tr.Value[0] = 100 * wattsOut / wattsIn;
                 tr.StringValue[0] = string.Format("{0:N1}% @ {1:N2} W out", tr.Value[0], wattsOut);
                 if ((tr.Value[0] < MinimumPassEfficiency) || (tr.Value[0] > MaximumPassEfficiency))
@@ -82,13 +82,13 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             if (RightChannel)
             {
                 // Get dbV out
-                float wattsOut = (float)((IAudioAnalyzer)Tm).ComputeRms(((IAudioAnalyzer)Tm).GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f) - ExtGain;
+                float wattsOut = (float)((IAudioAnalyzer)Tm).ComputeRms(((IAudioAnalyzer)Tm).GetData(ChannelEnum.Right), TestFrequency * 0.98f, TestFrequency * 1.02f) - ExternalAnalyzerInputGain;
                 // Get volts out
                 wattsOut = (float)Math.Pow(10, wattsOut / 20);
                 // Get watts out
-                wattsOut = (wattsOut * wattsOut) / LoadImpedance;
+                wattsOut = (wattsOut * wattsOut) / ProgrammableLoadImpedance;
                 // Since two channels are active, we must divide current by 2
-                float wattsIn = AmpVoltage * current/2;
+                float wattsIn = AmplifierSupplyVoltage * current/2;
                 tr.Value[1] = 100 * wattsOut / wattsIn;
                 tr.StringValue[1] = string.Format("{0:N1}% @ {1:N2} W out", tr.Value[1], wattsOut);
                 if ((tr.Value[1] < MinimumPassEfficiency) || (tr.Value[1] > MaximumPassEfficiency))
@@ -113,19 +113,18 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             return string.Format("{0:N1}...{1:N1}%", MinimumPassEfficiency, MaximumPassEfficiency);
         }
 
-
         public override bool CheckValues(out string s)
         {
             s = "";
-            if (((IProgrammableLoad)Tm).GetSupportedImpedances().Contains(LoadImpedance) == false)
+            if (((IProgrammableLoad)Tm.TestClass).GetSupportedImpedances().Contains(ProgrammableLoadImpedance) == false)
             {
-                s = "Output impedance must be: " + string.Join(" ", ((IProgrammableLoad)Tm).GetSupportedImpedances());
+                s = "Output impedance must be: " + string.Join(" ", ((IProgrammableLoad)Tm.TestClass).GetSupportedImpedances());
                 return false;
             }
 
-            if (((IAudioAnalyzer)Tm).GetInputRanges().Contains(InputRange) == false)
+            if (((IAudioAnalyzer)Tm.TestClass).GetInputRanges().Contains(AnalyzerInputRange) == false)
             {
-                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm).GetInputRanges());
+                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm.TestClass).GetInputRanges());
                 return false;
             }
 
@@ -134,7 +133,9 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 
         public override string GetTestDescription()
         {
-            return "Sets the power state of the QA450 and measures the current";
+            return "Measures the efficiency of the amplifier under test. This is done by measuring amplifier output power " +
+                "and measuring amplifier input power (supply voltage and supply current). The ratio of these measurements " +
+                "is the efficiency.";
         }
 
         public override bool IsRunnable()

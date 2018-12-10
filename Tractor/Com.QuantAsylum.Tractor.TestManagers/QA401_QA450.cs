@@ -137,6 +137,21 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             return Qa401.ComputeRms(data, fundamental, stopFreq);
         }
 
+        public void AuditionStart(string fileName, double volume, bool repeat)
+        {
+            Qa401.AuditionStart(fileName, volume, repeat);
+        }
+
+        public void AuditionSetVolume(double volume)
+        {
+            Qa401.AuditionSetVolume(volume);
+        }
+
+        public void AuditionStop()
+        {
+            Qa401.AuditionStop();
+        }
+
         public Bitmap GetBitmap()
         {
             return Qa401.GetBitmap();
@@ -176,5 +191,7 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
             return false;
         }
+
+       
     }
 }

@@ -30,39 +30,25 @@ namespace Tractor
         /// </summary>
         bool AppSettingsDirty = false;
 
+        string SettingsFile = "";
+
+        bool HasRun = false;
+
         TestBase SelectedTb;
 
-        AppSettings AppSettings;
+        static internal AppSettings AppSettings;
 
         public Form1()
         {
             This = this;
             InitializeComponent();
 
+            AppSettings = new AppSettings();
             label3.Text = "";
             Tm = new TestManager();
             Tm.SetCallbacks(StartEditing, DoneEditing, CancelEditing);
-
-            if (File.Exists(Constants.DefaultSettingsFile))
-            {
-                try
-                {
-                    AppSettings = AppSettings.Deserialize(File.ReadAllText(Constants.DefaultSettingsFile));
-                }
-                catch
-                {
-                    // Failed to load. Delete the file and create a new one
-                    MessageBox.Show("The default settings could not be loaded. A new default settings will be created");
-                    AppSettings = new AppSettings();
-                    File.Delete(Constants.DefaultSettingsFile);
-                    File.WriteAllText(Constants.DefaultSettingsFile, AppSettings.Serialize());
-                }
-            }
-            else
-            {
-                AppSettings = new AppSettings();
-                File.WriteAllText(Constants.DefaultSettingsFile, AppSettings.Serialize());
-            }
+            Type t = Type.GetType(AppSettings.TestClass);
+            Tm.TestClass = Activator.CreateInstance(t);
         }
 
         /// <summary>
@@ -88,7 +74,9 @@ namespace Tractor
             menuStrip1.Enabled = true;
             AddTestBtn.Enabled = true;
             AppSettingsDirty = true;
+            RePopulateTreeView();
             SetTreeviewControls();
+            UpdateTestConcerns(SelectedTb);
         }
 
         /// <summary>
@@ -119,14 +107,17 @@ namespace Tractor
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // Make sure power is off. If we've never run anything, this may fail. 
-            try
+            // If we have run anything, make sure power is off. 
+            if (HasRun)
             {
-               ((IPowerSupply)Tm.TestClass).SetSupplyState(false);
-            }
-            catch
-            {
+                try
+                {
+                    ((IPowerSupply)Tm.TestClass).SetSupplyState(false);
+                }
+                catch
+                {
 
+                }
             }
 
             // Here, the data is clean. Check if we need to save the current TestManager data
@@ -168,7 +159,7 @@ namespace Tractor
         /// Populates the treeview based on the data in the TestManager. This tries to keep the current node
         /// selected unless another ID to highlight is presented
         /// </summary>
-        internal void RePopulateTreeView(string highlightId = "", bool ignoreBeforeSelects = false)
+        internal void RePopulateTreeView(string highlightId = "")
         {
             if ((highlightId == "") && (treeView1.SelectedNode != null))
             {
@@ -239,9 +230,26 @@ namespace Tractor
             TestBase tb = AppSettings.TestList.Find(o => o.Name == GetTestName(e.Node.Text));
             SelectedTb = tb;
             tb.PopulateUI(tableLayoutPanel1);
-            label3.Text = tb.GetTestDescription();
+
+            UpdateTestConcerns(tb);
 
             SetTreeviewControls();
+        }
+
+        private void UpdateTestConcerns(TestBase tb)
+        {
+            string s;
+            if (tb.IsRunnable())
+            {
+                tb.CheckValues(out string values);
+                s = string.Format("Description: {0}\n\nRunnable: Yes\n\nIssues:{1}", tb.GetTestDescription(), values == "" ? "None" : values);
+            }
+            else
+            {
+                s = string.Format("Description: {0}\n\nRunnable: No. The selected test class does not support this test.", tb.GetTestDescription());
+
+            }
+            label3.Text = s;
         }
 
         /// <summary>
@@ -313,6 +321,10 @@ namespace Tractor
 
                 TreeViewAdd(dlg.textBox1.Text, CreateTestInstance(className));
                 AppSettingsDirty = true;
+
+                SelectedTb = AppSettings.TestList.Last();
+                RePopulateTreeView(SelectedTb.Name);
+                UpdateTestConcerns(SelectedTb);
             }
 
             SetTreeviewControls();
@@ -365,6 +377,7 @@ namespace Tractor
             DlgTestRun dlg = new DlgTestRun(Tm, TestRunCallback, Constants.TestLogsPath);
 
             this.Visible = false;
+            HasRun = true;
             if (dlg.ShowDialog() == DialogResult.OK)
             {
 
@@ -427,8 +440,10 @@ namespace Tractor
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
+                SettingsFile = ofd.FileName;
                 AppSettings = AppSettings.Deserialize(File.ReadAllText(ofd.FileName));
-                //AppSettings.TestList = (List<TestBase>)SerDes.Deserialize(typeof(List<TestBase>), File.ReadAllText(ofd.FileName));
+                Type t = Type.GetType(AppSettings.TestClass);
+                Tm.TestClass = Activator.CreateInstance(t);
                 AppSettingsDirty = false;
 
                 foreach (TestBase test in AppSettings.TestList)
@@ -505,7 +520,8 @@ namespace Tractor
 
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-
+                Type t = Type.GetType(AppSettings.TestClass);
+                Tm.TestClass = Activator.CreateInstance(t);
             }
         }
     }

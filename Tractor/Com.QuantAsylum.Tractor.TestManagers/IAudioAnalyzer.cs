@@ -24,6 +24,10 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         double ComputeRms(PointD[] data, float startFreq, float stopFreq);
         double ComputeThdPct(PointD[] data, float fundamental, float stopFreq);
 
+        void AuditionStart(string fileName, double volume, bool repeat);
+        void AuditionSetVolume(double volume);
+        void AuditionStop();
+
         PointD[] GetData(ChannelEnum channel);
         Bitmap GetBitmap();
     }

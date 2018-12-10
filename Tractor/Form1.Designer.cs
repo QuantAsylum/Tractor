@@ -33,6 +33,7 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadTestPlanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveTestPlanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.AddTestBtn = new System.Windows.Forms.Button();
@@ -45,30 +46,57 @@
             this.DeleteBtn2 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
-            this.panel2 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.panel4 = new System.Windows.Forms.Panel();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.panel5 = new System.Windows.Forms.Panel();
+            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+            this.newTestPlanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.panel3.SuspendLayout();
+            this.panel4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.panel2.SuspendLayout();
+            this.panel5.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
             // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { fileToolStripMenuItem, settingsToolStripMenuItem, helpToolStripMenuItem });
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] 
+            {   fileToolStripMenuItem,
+                settingsToolStripMenuItem,
+                helpToolStripMenuItem });
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(781, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(784, 24);
             this.menuStrip1.TabIndex = 11;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
-            // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.loadTestPlanToolStripMenuItem,
-            this.saveTestPlanToolStripMenuItem});
+            //
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[]
+            {
+                newTestPlanToolStripMenuItem,
+                toolStripMenuItem1,
+                loadTestPlanToolStripMenuItem,
+                toolStripMenuItem2,
+                saveTestPlanToolStripMenuItem,
+                saveAsToolStripMenuItem,
+                toolStripMenuItem3,
+                exitToolStripMenuItem
+            });
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -76,16 +104,23 @@
             // loadTestPlanToolStripMenuItem
             // 
             this.loadTestPlanToolStripMenuItem.Name = "loadTestPlanToolStripMenuItem";
-            this.loadTestPlanToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.loadTestPlanToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.loadTestPlanToolStripMenuItem.Text = "Load Test Plan";
             this.loadTestPlanToolStripMenuItem.Click += new System.EventHandler(this.loadTestPlanToolStripMenuItem_Click);
             // 
             // saveTestPlanToolStripMenuItem
             // 
             this.saveTestPlanToolStripMenuItem.Name = "saveTestPlanToolStripMenuItem";
-            this.saveTestPlanToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
-            this.saveTestPlanToolStripMenuItem.Text = "Save Test Plan";
+            this.saveTestPlanToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveTestPlanToolStripMenuItem.Text = "Save...";
             this.saveTestPlanToolStripMenuItem.Click += new System.EventHandler(this.saveTestPlanToolStripMenuItem_Click);
+            // 
+            // settingsToolStripMenuItem
+            // 
+            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.settingsToolStripMenuItem.Text = "Settings";
+            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -95,16 +130,17 @@
             // 
             // treeView1
             // 
-            this.treeView1.Location = new System.Drawing.Point(40, 54);
+            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView1.Location = new System.Drawing.Point(20, 42);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(308, 408);
+            this.treeView1.Size = new System.Drawing.Size(358, 415);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
             // AddTestBtn
             // 
-            this.AddTestBtn.Location = new System.Drawing.Point(3, 3);
+            this.AddTestBtn.Location = new System.Drawing.Point(23, 14);
             this.AddTestBtn.Name = "AddTestBtn";
             this.AddTestBtn.Size = new System.Drawing.Size(100, 23);
             this.AddTestBtn.TabIndex = 1;
@@ -116,9 +152,10 @@
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel1.Controls.Add(this.tableLayoutPanel1);
-            this.panel1.Location = new System.Drawing.Point(365, 54);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(20, 42);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(386, 408);
+            this.panel1.Size = new System.Drawing.Size(342, 415);
             this.panel1.TabIndex = 3;
             // 
             // tableLayoutPanel1
@@ -126,7 +163,8 @@
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(14, 12);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 10;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -139,12 +177,12 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(358, 380);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(340, 413);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // RunTestsBtn
             // 
-            this.RunTestsBtn.Location = new System.Drawing.Point(608, 3);
+            this.RunTestsBtn.Location = new System.Drawing.Point(628, 14);
             this.RunTestsBtn.Name = "RunTestsBtn";
             this.RunTestsBtn.Size = new System.Drawing.Size(100, 23);
             this.RunTestsBtn.TabIndex = 5;
@@ -154,7 +192,7 @@
             // 
             // MoveUpBtn
             // 
-            this.MoveUpBtn.Location = new System.Drawing.Point(260, 3);
+            this.MoveUpBtn.Location = new System.Drawing.Point(280, 14);
             this.MoveUpBtn.Name = "MoveUpBtn";
             this.MoveUpBtn.Size = new System.Drawing.Size(75, 23);
             this.MoveUpBtn.TabIndex = 6;
@@ -164,7 +202,7 @@
             // 
             // MoveDownBtn
             // 
-            this.MoveDownBtn.Location = new System.Drawing.Point(353, 3);
+            this.MoveDownBtn.Location = new System.Drawing.Point(373, 14);
             this.MoveDownBtn.Name = "MoveDownBtn";
             this.MoveDownBtn.Size = new System.Drawing.Size(75, 23);
             this.MoveDownBtn.TabIndex = 7;
@@ -174,7 +212,7 @@
             // 
             // DeleteBtn
             // 
-            this.DeleteBtn.Location = new System.Drawing.Point(117, 3);
+            this.DeleteBtn.Location = new System.Drawing.Point(137, 14);
             this.DeleteBtn.Name = "DeleteBtn";
             this.DeleteBtn.Size = new System.Drawing.Size(100, 23);
             this.DeleteBtn.TabIndex = 8;
@@ -210,23 +248,11 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.AddButton_Click);
             // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.AddTestBtn);
-            this.panel2.Controls.Add(this.RunTestsBtn);
-            this.panel2.Controls.Add(this.MoveUpBtn);
-            this.panel2.Controls.Add(this.DeleteBtn);
-            this.panel2.Controls.Add(this.MoveDownBtn);
-            this.panel2.Location = new System.Drawing.Point(40, 487);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(711, 32);
-            this.panel2.TabIndex = 10;
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(36, 31);
+            this.label1.Location = new System.Drawing.Point(4, 12);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(75, 20);
             this.label1.TabIndex = 12;
@@ -236,7 +262,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(361, 31);
+            this.label2.Location = new System.Drawing.Point(3, 12);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(93, 20);
             this.label2.TabIndex = 13;
@@ -244,33 +270,121 @@
             // 
             // label3
             // 
-            this.label3.Location = new System.Drawing.Point(119, 522);
+            this.label3.AutoEllipsis = true;
+            this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label3.Location = new System.Drawing.Point(20, 20);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(527, 131);
+            this.label3.Size = new System.Drawing.Size(744, 85);
             this.label3.TabIndex = 14;
             this.label3.Text = "label3";
             // 
-            // settingsToolStripMenuItem
+            // panel3
             // 
-            this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.settingsToolStripMenuItem.Text = "Settings";
-            this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+            this.panel3.Controls.Add(this.label3);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel3.Location = new System.Drawing.Point(0, 536);
+            this.panel3.Name = "panel3";
+            this.panel3.Padding = new System.Windows.Forms.Padding(20);
+            this.panel3.Size = new System.Drawing.Size(784, 125);
+            this.panel3.TabIndex = 15;
+            // 
+            // panel4
+            // 
+            this.panel4.Controls.Add(this.AddTestBtn);
+            this.panel4.Controls.Add(this.RunTestsBtn);
+            this.panel4.Controls.Add(this.MoveDownBtn);
+            this.panel4.Controls.Add(this.MoveUpBtn);
+            this.panel4.Controls.Add(this.DeleteBtn);
+            this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel4.Location = new System.Drawing.Point(0, 481);
+            this.panel4.Name = "panel4";
+            this.panel4.Size = new System.Drawing.Size(784, 55);
+            this.panel4.TabIndex = 16;
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 24);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.treeView1);
+            this.splitContainer1.Panel1.Controls.Add(this.panel2);
+            this.splitContainer1.Panel1.Padding = new System.Windows.Forms.Padding(20, 0, 20, 0);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.panel1);
+            this.splitContainer1.Panel2.Controls.Add(this.panel5);
+            this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(20, 0, 20, 0);
+            this.splitContainer1.Size = new System.Drawing.Size(784, 457);
+            this.splitContainer1.SplitterDistance = 398;
+            this.splitContainer1.TabIndex = 17;
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.label1);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel2.Location = new System.Drawing.Point(20, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(358, 42);
+            this.panel2.TabIndex = 13;
+            // 
+            // panel5
+            // 
+            this.panel5.Controls.Add(this.label2);
+            this.panel5.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel5.Location = new System.Drawing.Point(20, 0);
+            this.panel5.Name = "panel5";
+            this.panel5.Size = new System.Drawing.Size(342, 42);
+            this.panel5.TabIndex = 14;
+            // 
+            // saveAsToolStripMenuItem
+            // 
+            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsToolStripMenuItem.Text = "Save As...";
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(177, 6);
+            // 
+            // newTestPlanToolStripMenuItem
+            // 
+            this.newTestPlanToolStripMenuItem.Name = "newTestPlanToolStripMenuItem";
+            this.newTestPlanToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newTestPlanToolStripMenuItem.Text = "New Test Plan";
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(177, 6);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(781, 662);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.panel1);
-            this.Controls.Add(this.treeView1);
-            this.Controls.Add(this.panel2);
+            this.ClientSize = new System.Drawing.Size(784, 661);
+            this.Controls.Add(this.splitContainer1);
+            this.Controls.Add(this.panel4);
+            this.Controls.Add(this.panel3);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
+            this.MinimumSize = new System.Drawing.Size(800, 500);
             this.Name = "Form1";
             this.Text = "Form1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
@@ -278,7 +392,16 @@
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.panel1.ResumeLayout(false);
+            this.panel3.ResumeLayout(false);
+            this.panel4.ResumeLayout(false);
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
+            this.panel5.ResumeLayout(false);
+            this.panel5.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -302,11 +425,21 @@
         private System.Windows.Forms.Button DeleteBtn2;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Panel panel5;
+        private System.Windows.Forms.ToolStripMenuItem newTestPlanToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem3;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
     }
 }
 

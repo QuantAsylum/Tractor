@@ -32,7 +32,6 @@
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.panel2 = new System.Windows.Forms.Panel();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.AbortCB = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.PauseBtn = new System.Windows.Forms.Button();
             this.CloseBtn = new System.Windows.Forms.Button();
@@ -60,7 +59,6 @@
             // panel2
             // 
             this.panel2.Controls.Add(this.checkBox1);
-            this.panel2.Controls.Add(this.AbortCB);
             this.panel2.Controls.Add(this.label1);
             this.panel2.Controls.Add(this.PauseBtn);
             this.panel2.Controls.Add(this.CloseBtn);
@@ -82,18 +80,6 @@
             this.checkBox1.Text = "Transparent";
             this.checkBox1.UseVisualStyleBackColor = true;
             this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
-            // 
-            // AbortCB
-            // 
-            this.AbortCB.AutoSize = true;
-            this.AbortCB.Checked = true;
-            this.AbortCB.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.AbortCB.Location = new System.Drawing.Point(20, 49);
-            this.AbortCB.Name = "AbortCB";
-            this.AbortCB.Size = new System.Drawing.Size(128, 17);
-            this.AbortCB.TabIndex = 6;
-            this.AbortCB.Text = "Stop testing on failure";
-            this.AbortCB.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
@@ -174,7 +160,7 @@
             this.ControlBox = false;
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.panel2);
-            this.MinimumSize = new System.Drawing.Size(650, 0);
+            this.MinimumSize = new System.Drawing.Size(650, 39);
             this.Name = "DlgTestRun";
             this.Text = "Tractor Test Tasks";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DlgTestRun_FormClosing);
@@ -197,7 +183,6 @@
         private System.Windows.Forms.Button CloseBtn;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.CheckBox AbortCB;
         private System.Windows.Forms.CheckBox checkBox1;
     }
 }

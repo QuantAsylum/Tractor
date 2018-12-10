@@ -35,6 +35,7 @@ namespace Com.QuantAsylum.Tractor.Tests
                 Id = dlg.Result;
                 if (Id != "")
                 {
+                    Tm.LocalStash.Add("SerialNumber", Id);
                     tr.Pass = true;
                     tr.StringValue[0] = Id;
                 }

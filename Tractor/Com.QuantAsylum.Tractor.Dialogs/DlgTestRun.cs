@@ -7,7 +7,9 @@ using Com.QuantAsylum.Tractor.TestManagers;
 using Com.QuantAsylum.Tractor.Tests;
 using System.Threading;
 using Tractor.Com.QuantAsylum.Tractor.HTML;
-
+using Tractor;
+using Com.QuantAsylum.Tractor.Database;
+using System.Collections.Generic;
 
 namespace Com.QuantAsylum.Tractor.Dialogs
 {
@@ -17,8 +19,6 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
         bool Abort = false;
         bool Pause = false;
-
-        bool AbortOnFailure = false;
 
         string ReportDirectory = "";
 
@@ -51,12 +51,12 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             dataGridView1.Columns[(int)ColText.R].HeaderText = "Measured R";
             dataGridView1.Columns[(int)ColText.PASSFAIL].HeaderText = "Pass/Fail";
 
-            dataGridView1.RowCount = Tm.TestList.Count;
+            dataGridView1.RowCount = Form1.AppSettings.TestList.Count;
 
-            for (int i = 0; i < Tm.TestList.Count; i++)
+            for (int i = 0; i < Form1.AppSettings.TestList.Count; i++)
             {
-                dataGridView1[(int)ColText.TEST, i].Value = Tm.TestList[i].Name;
-                dataGridView1[(int)ColText.ENABLED, i].Value = Tm.TestList[i].RunTest;
+                dataGridView1[(int)ColText.TEST, i].Value = Form1.AppSettings.TestList[i].Name;
+                dataGridView1[(int)ColText.ENABLED, i].Value = Form1.AppSettings.TestList[i].RunTest;
             }
 
             dataGridView1.Refresh();
@@ -78,9 +78,6 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
         private void button1_Click(object sender, EventArgs e)
         {
-            AbortOnFailure = AbortCB.Checked;
-
-            AbortCB.Enabled = false;
             CloseBtn.Enabled = false;
             PauseBtn.Enabled = true;
             StartBtn.Enabled = false;
@@ -93,8 +90,17 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
         private void Start()
         {
-            if (((IComposite)Tm.TestClass).IsConnected() == false)
-                ((IComposite)Tm.TestClass).ConnectToDevices();
+            if (Tm.TestClass is IComposite)
+            {
+                if (((IComposite)Tm.TestClass).IsConnected() == false)
+                    ((IComposite)Tm.TestClass).ConnectToDevices();
+            }
+            else if (Tm.TestClass is IInstrument)
+            {
+                if (((IInstrument)Tm.TestClass).IsConnected() == false)
+                    ((IInstrument)Tm.TestClass).ConnectToDevice();
+            }
+           
 
             ClearPassFailResultColumn();
 
@@ -121,12 +127,14 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
                     bool allPassed = true;
 
-                    for (int i = 0; i < Tm.TestList.Count; i++)
+                    for (int i = 0; i < Form1.AppSettings.TestList.Count; i++)
                     {
                         dataGridView1[(int)ColText.PASSFAIL, i].Style.BackColor = Color.White;
                     }
 
-                    for (int i = 0; i < Tm.TestList.Count; i++)
+                    Tm.LocalStash = new Dictionary<string, string>();
+
+                    for (int i = 0; i < Form1.AppSettings.TestList.Count; i++)
                     {
                         if (Abort)
                         {
@@ -141,7 +149,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
                         dataGridView1.Invoke((MethodInvoker)delegate 
                         {
-                            dataGridView1[(int)ColText.TARGET, i].Value = Tm.TestList[i].GetTestLimitsString();
+                            dataGridView1[(int)ColText.TARGET, i].Value = Form1.AppSettings.TestList[i].GetTestLimitsString();
                             dataGridView1.FirstDisplayedScrollingRowIndex = i > 2 ? i-2 : 0;
                         });
 
@@ -152,7 +160,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
                         TestResult tr = null;
 
-                        for (int j = 0; j < Tm.TestList[i].RetryCount; j++)
+                        for (int j = 0; j < Form1.AppSettings.TestList[i].RetryCount; j++)
                         {
                             if (j > 0)
                             {
@@ -162,13 +170,13 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                                 });
                             }
 
-                            Tm.TestList[i].DoTest(Tm.TestList[i].Name, out tr);
+                            Form1.AppSettings.TestList[i].DoTest(Form1.AppSettings.TestList[i].Name, out tr);
 
                             if (tr.Pass)
                                 break;
                         }
 
-                        if (AbortOnFailure && (tr.Pass == false) )
+                        if (Form1.AppSettings.AbortOnFailure && (tr.Pass == false) )
                         {
                             Abort = true;
                         }
@@ -193,18 +201,35 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                         }
 
                         // If new test AND first test is serial number, then print it larger
-                        if (i == 0 && (Tm.TestList[0] is IdInput01))
+                        if (i == 0 && (Form1.AppSettings.TestList[0] is IdInput01))
                         {
                             html.AddHeading2(string.Format("Device SN: {0}", tr.StringValue[0]));
                         }
 
                         html.AddParagraph(string.Format("<B>Test Name:</B> {0}  <B>Result L:</B> {1}   <B>Result R:</B> {2} <B>P/F</B>: {3} <B>Image:</B> {4}",
-                            Tm.TestList[i].Name,
+                            Form1.AppSettings.TestList[i].Name,
                             tr.StringValue[0],
                             tr.StringValue[1],
                             tr.Pass ? "PASS" : "<mark>FAIL</mark>",
-                            Tm.TestList[i].TestResultBitmap == null ? "[No Image]" : html.ImageLink("Screen", Tm.TestList[i].TestResultBitmap)
+                            Form1.AppSettings.TestList[i].TestResultBitmap == null ? "[No Image]" : html.ImageLink("Screen", Form1.AppSettings.TestList[i].TestResultBitmap)
                             ));
+
+                        // Add to database if needed
+                        if (Form1.AppSettings.UseDb)
+                        {
+                            TestRowItem tri = new TestRowItem()
+                            {
+                                SerialNumber = Tm.LocalStash.ContainsKey("SerialNumer") ? Tm.LocalStash["SerialNumber"] : "0",
+                                SessionName = Form1.AppSettings.DbSessionName,
+                                Name = Form1.AppSettings.TestList[i].Name,
+                                Time = DateTime.Now,
+                                PassFail = tr.Pass,
+                                Result = tr.StringValue,
+                                LowerLimit = 0,
+                                UpperLimit = 0,
+                                ImageArray = TestResultDatabase.BmpToBytes(Form1.AppSettings.TestList[i].TestResultBitmap)
+                            };
+                        }
 
                         if (IsConnected() == false) return;
                     }
@@ -216,7 +241,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                 }
                 catch (Exception ex)
                 {
-                    
+                    Log.WriteLine(LogType.Error, ex.Message);
                 }
 
                 if (Tm.TestClass is IPowerSupply)
@@ -239,7 +264,6 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             DlgPassFail dlg = new DlgPassFail(allTestPassed ? "PASS" : "FAIL", allTestPassed);
             dlg.ShowDialog();
 
-            AbortCB.Enabled = false;
             StartBtn.Enabled = true;
             PauseBtn.Enabled = false;
             StopBtn.Enabled = false;
@@ -249,7 +273,17 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
         private bool IsConnected()
         {
-            if (((IComposite)Tm.TestClass).IsConnected() == false)
+            bool connected = false;
+            if (Tm.TestClass is IInstrument)
+            {
+                connected = ((IInstrument)Tm.TestClass).IsConnected();
+            }
+            else if (Tm.TestClass is IComposite)
+            {
+                connected = ((IComposite)Tm.TestClass).IsConnected();
+            }
+
+            if (connected == false)
             {
                 MessageBox.Show("Unable to connect to the equipment. Is it connected and the QA40x application running?");
                 return false;

@@ -15,15 +15,15 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
     [Serializable]
     public class Gain01 : TestBase
     {           
-        public float Freq = 1000;
-        public float OutputLevel = -30;
+        public float TestFrequency = 1000;
+        public float AnalyzerOutputLevel = -30;
 
-        public float Offset = 0;
+        public float ExternalAnalyzerInputGain = 0;
 
         public float MinimumPassGain = -10.5f;
         public float MaximumPassGain = -9.5f;
 
-        public int InputRange = 6;
+        public int AnalyzerInputRange = 6;
 
         public Gain01() : base()
         {
@@ -37,10 +37,10 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
 
             ((IComposite)Tm).SetToDefaults();
             ((IAudioAnalyzer)Tm).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm).SetInputRange(InputRange);
+            ((IAudioAnalyzer)Tm).SetInputRange(AnalyzerInputRange);
 
-            ((IAudioAnalyzer)Tm).AudioGenSetGen1(true, OutputLevel, Freq);
-            ((IAudioAnalyzer)Tm).AudioGenSetGen2(false, OutputLevel, Freq);
+            ((IAudioAnalyzer)Tm).AudioGenSetGen1(true, AnalyzerOutputLevel, TestFrequency);
+            ((IAudioAnalyzer)Tm).AudioGenSetGen2(false, AnalyzerOutputLevel, TestFrequency);
             ((IAudioAnalyzer)Tm).RunSingle();
 
             while (((IAudioAnalyzer)Tm).AnalyzerIsBusy())
@@ -51,8 +51,8 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             TestResultBitmap = ((IAudioAnalyzer)Tm).GetBitmap();
 
             // Compute the total RMS around the freq of interest
-            tr.Value[0] = (float)((IAudioAnalyzer)Tm).ComputeRms(((IAudioAnalyzer)Tm).GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f ) + Offset - OutputLevel;
-            tr.Value[1] = (float)((IAudioAnalyzer)Tm).ComputeRms(((IAudioAnalyzer)Tm).GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f) + Offset - OutputLevel;
+            tr.Value[0] = (float)((IAudioAnalyzer)Tm).ComputeRms(((IAudioAnalyzer)Tm).GetData(ChannelEnum.Left), TestFrequency * 0.98f, TestFrequency * 1.02f ) + ExternalAnalyzerInputGain - AnalyzerOutputLevel;
+            tr.Value[1] = (float)((IAudioAnalyzer)Tm).ComputeRms(((IAudioAnalyzer)Tm).GetData(ChannelEnum.Right), TestFrequency * 0.98f, TestFrequency * 1.02f) + ExternalAnalyzerInputGain - AnalyzerOutputLevel;
 
             bool passLeft = true, passRight = true;
 

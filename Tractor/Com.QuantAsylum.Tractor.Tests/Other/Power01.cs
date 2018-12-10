@@ -48,8 +48,6 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             return;
         }
 
-       
-
         public override bool CheckValues(out string s)
         {
             s = "";

@@ -12,10 +12,10 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
     [Serializable]
     public class Impedance01 : TestBase
     {           
-        public float Freq = 1000;
-        public float OutputLevel = -30;
+        public float TestFrequency = 1000;
+        public float AnalyzerOutputLevel = -30;
 
-        public int InputRange = 6;
+        public int AnalyzerInputRange = 6;
 
         public float MinimumPassImpedance = 0.01f;
         public float MaximumPassImpedance = 0.2f;
@@ -35,12 +35,12 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 
             ((IComposite)Tm.TestClass).SetToDefaults();
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(InputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
 
             // First, we make 8 ohm measurement
             ((IProgrammableLoad)Tm.TestClass).SetImpedance(8);
-            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, OutputLevel, Freq);
-            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, OutputLevel, Freq);
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, AnalyzerOutputLevel, TestFrequency);
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, AnalyzerOutputLevel, TestFrequency);
             ((IAudioAnalyzer)Tm.TestClass).RunSingle();
 
             while (((IAudioAnalyzer)Tm.TestClass).AnalyzerIsBusy())
@@ -50,10 +50,10 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 
             // Grab the 8 ohm levels
             if (LeftChannel)
-                vOut8[0] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f );
+                vOut8[0] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left), TestFrequency * 0.98f, TestFrequency * 1.02f );
 
             if (RightChannel)
-                vOut8[1] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f);
+                vOut8[1] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right), TestFrequency * 0.98f, TestFrequency * 1.02f);
 
             // Now make 4 ohm meausrement
             ((IProgrammableLoad)Tm.TestClass).SetImpedance(4);
@@ -66,8 +66,8 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             }
 
             // Grab the 4 ohm circuit levels
-            vOut4[0] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f);
-            vOut4[1] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f);
+            vOut4[0] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left), TestFrequency * 0.98f, TestFrequency * 1.02f);
+            vOut4[1] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right), TestFrequency * 0.98f, TestFrequency * 1.02f);
 
             // Compute impedance
             for (int i = 0; i < 2; i++)
@@ -135,9 +135,9 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
         {
             s = "";
 
-            if (((IAudioAnalyzer)Tm).GetInputRanges().Contains(InputRange) == false)
+            if (((IAudioAnalyzer)Tm.TestClass).GetInputRanges().Contains(AnalyzerInputRange) == false)
             {
-                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm).GetInputRanges());
+                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm.TestClass).GetInputRanges());
                 return false;
             }
 

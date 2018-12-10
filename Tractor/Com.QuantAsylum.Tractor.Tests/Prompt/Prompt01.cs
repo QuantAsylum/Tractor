@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Com.QuantAsylum.Tractor.Dialogs;
 using Com.QuantAsylum.Tractor.TestManagers;
+using Com.QuantAsylum.Tractor.Dialogs;
+using System.Drawing;
 
 namespace Com.QuantAsylum.Tractor.Tests
 {
@@ -19,10 +21,13 @@ namespace Com.QuantAsylum.Tractor.Tests
         public string Id { get; set; }
 
         public string PromptMessage = "???";
+        public string BitmapFile = "";
+        public bool ShowFailButton = true;
 
         public Prompt01() : base()
         {
             Name = "Prompt";
+            RetryCount = 1;
             TestType = TestTypeEnum.User;
         }
 
@@ -31,15 +36,34 @@ namespace Com.QuantAsylum.Tractor.Tests
             // Two channels of testing
             tr = new TestResult(2);
 
-            MessageBox.Show(PromptMessage);
+            Bitmap bmp = null;
+            try
+            {
+                bmp = new Bitmap(BitmapFile);
+            }
+            catch
+            {
 
-            tr.Pass = true;
+            }
+
+            DlgPrompt dlg = new DlgPrompt(PromptMessage, ShowFailButton, bmp);
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                tr.Pass = true;
+            }
+
+            
             return;
         }
 
         public override string GetTestDescription()
         {
             return "Instructs the user to complete an action. 'Pass = true' is always returned.";
+        }
+
+        public override bool IsRunnable()
+        {
+            return true;
         }
     }
 }

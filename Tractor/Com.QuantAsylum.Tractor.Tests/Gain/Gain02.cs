@@ -17,15 +17,15 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
     [Serializable]
     public class Gain02 : TestBase
     {           
-        public float Freq = 1000;
-        public float OutputLevel = -30;
-        public float ExtGain = 0;
+        public float TestFrequency = 1000;
+        public float AnalyzerOutputLevel = -30;
+        public float ExternalAnalyzerInputGain = 0;
 
         public float MinimumPassGain = -10.5f;
         public float MaximumPassGain = -9.5f;
 
-        public int OutputImpedance = 8;
-        public int InputRange = 6;
+        public int ProgrammableLoadImpedance = 8;
+        public int AnalyzerInputRange = 6;
 
         public Gain02() : base()
         {
@@ -38,13 +38,13 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             tr = new TestResult(2);
 
             ((IComposite)Tm.TestClass).SetToDefaults();
-            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(InputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
 
-            ((IProgrammableLoad)Tm.TestClass).SetImpedance(OutputImpedance);
+            ((IProgrammableLoad)Tm.TestClass).SetImpedance(ProgrammableLoadImpedance);
 
-            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, OutputLevel, Freq);
-            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, OutputLevel, Freq);
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, AnalyzerOutputLevel, TestFrequency);
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, AnalyzerOutputLevel, TestFrequency);
             ((IAudioAnalyzer)Tm.TestClass).RunSingle();
 
             while (((IAudioAnalyzer)Tm.TestClass).AnalyzerIsBusy())
@@ -56,10 +56,10 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
             // Compute the total RMS around the freq of interest
-            tr.Value[0] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left), Freq * 0.97f, Freq * 1.03f);
-            tr.Value[0] = tr.Value[0] - OutputLevel - ExtGain;
-            tr.Value[1] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right), Freq * 0.97f, Freq * 1.03f);
-            tr.Value[1] = tr.Value[1] - OutputLevel - ExtGain;
+            tr.Value[0] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left), TestFrequency * 0.97f, TestFrequency * 1.03f);
+            tr.Value[0] = tr.Value[0] - AnalyzerOutputLevel - ExternalAnalyzerInputGain;
+            tr.Value[1] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right), TestFrequency * 0.97f, TestFrequency * 1.03f);
+            tr.Value[1] = tr.Value[1] - AnalyzerOutputLevel - ExternalAnalyzerInputGain;
 
             bool passLeft = true, passRight = true;
 
@@ -95,13 +95,13 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         public override bool CheckValues(out string s)
         {
             s = "";
-            if (((IProgrammableLoad)Tm).GetSupportedImpedances().Contains(OutputImpedance) == false)
+            if (((IProgrammableLoad)Tm).GetSupportedImpedances().Contains(ProgrammableLoadImpedance) == false)
             {
                 s = "Output impedance must be: " + string.Join(" ", ((IProgrammableLoad)Tm).GetSupportedImpedances());
                 return false;
             }
 
-            if (((IAudioAnalyzer)Tm).GetInputRanges().Contains(InputRange) == false)
+            if (((IAudioAnalyzer)Tm).GetInputRanges().Contains(AnalyzerInputRange) == false)
             {
                 s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm).GetInputRanges());
                 return false;
@@ -117,7 +117,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
 
         public override string GetTestDescription()
         {
-            return "Measures the gain at a specified frequency and amplitude at a specified impedance level. Results must be within a given window to 'pass'.";
+            return "Measures the gain at a specified frequency and amplitude at a specified load impedance. Results must be within a given window to 'pass'.";
         }
 
         public override bool IsRunnable()

@@ -13,9 +13,53 @@ namespace Com.QuantAsylum.Tractor.Settings
     {
         public List<TestBase> TestList = new List<TestBase>();
 
-        public string TestClass = "";
+        public string TestClass = "Com.QuantAsylum.Tractor.TestManagers.QA401_QA450";
 
-        public bool AbortOnFailure;
+        public bool AbortOnFailure = true;
+
+        public string DbConnectString = "Server=MyPc\\SQLEXPRESS;Integrated security = SSPI; Initial Catalog = QATestDB; User ID = sa; Password=password";
+
+        public bool UseDb = false;
+
+        public string DbSessionName = "";
+
+        /// <summary>
+        /// Finds a unique name in the TestList given a root. For example, if
+        /// the root is "THD" and the list is empty, then "THD-1" will be returned, 
+        /// and then "THD-2" will be returned, etc. 
+        /// </summary>
+        /// <param name="nameRoot"></param>
+        /// <returns></returns>
+        public string FindUniqueName(string nameRoot)
+        {
+            nameRoot += "-";
+            string newName = "";
+
+            // Bounded search for unique names
+            for (int i = 0; i < 10000; i++)
+            {
+                newName = nameRoot + i.ToString();
+
+                if (TestList.Count == 0)
+                    return newName;
+
+                try
+                {
+                    if (TestList.First(o => o.Name == newName) != null)
+                    {
+                        // This name is already being used. Keep going
+                    }
+                }
+                catch
+                {
+                    // Nothing matched. We found our unique name
+                    break;
+                }
+            }
+
+            // Here, we've found a unique name
+            return newName;
+        }
 
         public string Serialize()
         {

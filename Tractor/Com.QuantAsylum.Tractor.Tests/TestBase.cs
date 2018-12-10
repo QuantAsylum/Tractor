@@ -66,6 +66,7 @@ namespace Com.QuantAsylum.Tractor.Tests
     [System.Xml.Serialization.XmlInclude(typeof(Impedance01))]
     [System.Xml.Serialization.XmlInclude(typeof(Power01))]
     [System.Xml.Serialization.XmlInclude(typeof(Efficiency01))]
+    [System.Xml.Serialization.XmlInclude(typeof(Audition01))]
     public class TestBase
     {
 

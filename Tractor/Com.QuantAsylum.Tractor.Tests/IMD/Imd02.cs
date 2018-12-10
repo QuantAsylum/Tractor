@@ -22,16 +22,16 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
     [Serializable]
     public class Imd02 : TestBase
     {
-        public float MinimumLevelDbc = -200;
-        public float MaximumLevelDbc = -105;
+        public float MinimumPassLevel = -200;
+        public float MaximumPassLevel = -105;
 
-        public int InputRange = 6;
-        public int OutputImpedance = 8;
+        public int AnalyzerInputRange = 6;
+        public int ProgrammableLoadImpedance = 8;
 
         /// <summary>
         /// This is the output level for each tone.
         /// </summary>
-        public float OutputLevelDBV = -10;
+        public float AnalyzerOutputLevel = -10;
 
         public Imd02() : base()
         {
@@ -45,12 +45,12 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
 
             ((IComposite)Tm).SetToDefaults();
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(InputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
 
-            ((IProgrammableLoad)Tm.TestClass).SetImpedance(OutputImpedance);
+            ((IProgrammableLoad)Tm.TestClass).SetImpedance(ProgrammableLoadImpedance);
 
-            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, OutputLevelDBV - 6, 19000);
-            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(true, OutputLevelDBV - 6, 20000);
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, AnalyzerOutputLevel - 6, 19000);
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(true, AnalyzerOutputLevel - 6, 20000);
             ((IAudioAnalyzer)Tm.TestClass).RunSingle();
 
             while (((IAudioAnalyzer)Tm.TestClass).AnalyzerIsBusy())
@@ -79,7 +79,7 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
             if (LeftChannel)
             {
                 tr.StringValue[0] = tr.Value[0].ToString("0.0") + " dB";
-                if ((tr.Value[0] < MinimumLevelDbc) || (tr.Value[0] > MaximumLevelDbc))
+                if ((tr.Value[0] < MinimumPassLevel) || (tr.Value[0] > MaximumPassLevel))
                     passLeft = false;
             }
             else
@@ -88,7 +88,7 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
             if (RightChannel)
             {
                 tr.StringValue[1] = tr.Value[1].ToString("0.0") + " dB";
-                if ((tr.Value[1] < MinimumLevelDbc) || (tr.Value[1] > MaximumLevelDbc))
+                if ((tr.Value[1] < MinimumPassLevel) || (tr.Value[1] > MaximumPassLevel))
                     passRight = false;
             }
             else
@@ -105,17 +105,35 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
             return;
         }
 
+        public override bool CheckValues(out string s)
+        {
+            s = "";
+            if (((IProgrammableLoad)Tm).GetSupportedImpedances().Contains(ProgrammableLoadImpedance) == false)
+            {
+                s = "Output impedance must be: " + string.Join(" ", ((IProgrammableLoad)Tm).GetSupportedImpedances());
+                return false;
+            }
+
+            if (((IAudioAnalyzer)Tm).GetInputRanges().Contains(AnalyzerInputRange) == false)
+            {
+                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm).GetInputRanges());
+                return false;
+            }
+
+            return true;
+        }
+
         public override string GetTestLimitsString()
         {
-            return string.Format("{0:N1}...{1:N1} dBc", MinimumLevelDbc, MaximumLevelDbc);
+            return string.Format("{0:N1}...{1:N1} dBc", MinimumPassLevel, MaximumPassLevel);
         }
 
         public override string GetTestDescription()
         {
-            return "Performs IMD ITU Test. This test generates dual tones at 19 and 20 KHz, each with a level 6 dB below the specified amplitude. " +
+            return "Performs IMD ITU Test. This test generates dual tones at 19 and 20 KHz, each with a level 6 dB below the specified amplitude and at the specified load. " +
                    "The combined amplitude of the tones will be the value specified in the test parameters. The resultant mixing product at 1 KHz " +
-                   "is measured, and the amplitude below the specified output amplitude is computed. If that amplitude relative to the output amplitude " +
-                   "is within the specified window limits, then 'pass = true' is returned. ";
+                   "is measured, and the amplitude relative to the specified amplitude is computed. If the amplitude relative to the specified output amplitude " +
+                   "is within the specified window limits, then the test is considered to pass.";
         }
 
         public override bool IsRunnable()
