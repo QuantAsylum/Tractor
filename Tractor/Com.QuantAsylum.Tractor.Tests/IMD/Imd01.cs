@@ -114,7 +114,7 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
             return true;
         }
 
-        public override string GetTestLimitsString()
+        public override string GetTestLimits()
         {
             return string.Format("{0:N1}...{1:N1} dBc", MinimumPassLevel, MaximumPassLevel);
         }

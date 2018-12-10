@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using Com.QuantAsylum.Tractor.TestManagers;
 using Com.QuantAsylum.Tractor.Tests;
 using System.Threading;
-using Tractor.Com.QuantAsylum.Tractor.HTML;
+using Com.QuantAsylum.Tractor.HTML;
 using Tractor;
 using Com.QuantAsylum.Tractor.Database;
 using System.Collections.Generic;
@@ -109,19 +109,24 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             dataGridView1[(int)ColText.PASSFAIL, 0].Value = "Starting...";
             dataGridView1.Refresh();
 
-            // Set everthing to defaults by specifying an empty settings file
             if (Tm.TestClass is IPowerSupply)
             {
                 (Tm as IPowerSupply).SetSupplyState(false);
+                Thread.Sleep(750);
             }
-
-            Thread.Sleep(750);
 
             new Thread(() =>
             {
                 try
                 {
                     Thread.CurrentThread.Name = "Test Runner";
+                    Log.WriteLine(LogType.General, "Test thread started.");
+
+                    if (Form1.AppSettings.UseDb)
+                    {
+                        Db.OpenExisting(Form1.AppSettings.DbConnectString);
+                        Log.WriteLine(LogType.General, "Database opened");
+                    }
 
                     HtmlWriter html = new HtmlWriter(ReportDirectory);
 
@@ -149,7 +154,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
                         dataGridView1.Invoke((MethodInvoker)delegate 
                         {
-                            dataGridView1[(int)ColText.TARGET, i].Value = Form1.AppSettings.TestList[i].GetTestLimitsString();
+                            dataGridView1[(int)ColText.TARGET, i].Value = Form1.AppSettings.TestList[i].GetTestLimits();
                             dataGridView1.FirstDisplayedScrollingRowIndex = i > 2 ? i-2 : 0;
                         });
 
@@ -217,21 +222,29 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                         // Add to database if needed
                         if (Form1.AppSettings.UseDb)
                         {
-                            TestRowItem tri = new TestRowItem()
+                            Test tri = new Test()
                             {
                                 SerialNumber = Tm.LocalStash.ContainsKey("SerialNumer") ? Tm.LocalStash["SerialNumber"] : "0",
                                 SessionName = Form1.AppSettings.DbSessionName,
                                 Name = Form1.AppSettings.TestList[i].Name,
                                 Time = DateTime.Now,
                                 PassFail = tr.Pass,
-                                Result = tr.StringValue,
-                                LowerLimit = 0,
-                                UpperLimit = 0,
-                                ImageArray = TestResultDatabase.BmpToBytes(Form1.AppSettings.TestList[i].TestResultBitmap)
+                                Result = tr.StringValue[0] + " " + tr.StringValue[1],
+                                TestFile = "",
+                                TestFileMD5 = "",
+                                TestLimits = Form1.AppSettings.TestList[i].GetTestLimits(),
+                                ImageArray = Form1.AppSettings.TestList[i].TestResultBitmap != null ? TestResultDatabase.BmpToBytes(Form1.AppSettings.TestList[i].TestResultBitmap) : null
                             };
+
+                            Db.InsertTest(tri);
                         }
 
-                        if (IsConnected() == false) return;
+                        if (IsConnected() == false)
+                        {
+                            Log.WriteLine(LogType.Error, "Equipment is no longer connected.Testing will now stop.");
+                            dataGridView1[(int)ColText.PASSFAIL, i].Value = "ERROR";
+                            throw new InvalidOperationException("Equipment is no longer connected. Testing will now stop.");
+                        }
                     }
                     TimeSpan ts = DateTime.Now.Subtract(TestStartTime);
                     html.AddParagraph(string.Format("Elapsed Time: {0:N1} sec", ts.TotalSeconds));
@@ -242,6 +255,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                 catch (Exception ex)
                 {
                     Log.WriteLine(LogType.Error, ex.Message);
+                    this.Invoke(((MethodInvoker)delegate { TestPassFinished(false); }));
                 }
 
                 if (Tm.TestClass is IPowerSupply)
@@ -286,6 +300,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             if (connected == false)
             {
                 MessageBox.Show("Unable to connect to the equipment. Is it connected and the QA40x application running?");
+                Log.WriteLine(LogType.Error, "Unable to connect to the equipment. Is it connected and the QA40x application running?");
                 return false;
             }
 

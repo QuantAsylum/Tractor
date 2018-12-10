@@ -59,38 +59,32 @@ namespace Com.QuantAsylum.Tractor.Dialogs
         {
             label5.Text = "Wait...";
             label5.Update();
-
-            try
-            {
-                if (Db.OpenExisting(textBox2.Text) == false)
-                {
-                    label5.Text = "Connection failed.";
-                }
-                else
-                {
-                    label5.Text = "OK.";
-                }
-            }
-            catch
-            {
-                label5.Text = "Connection failed.";
-            }
+            if (Db.OpenExisting(textBox2.Text))
+                label5.Text = "OK";
+            else
+                label5.Text = "Error";
         }
 
+        // Delete database
         private void button4_Click(object sender, EventArgs e)
         {
             label5.Text = "Wait...";
             label5.Update();
+            if (Db.DeleteExisting(textBox2.Text))
+                label5.Text = "OK";
+            else
+                label5.Text = "Error";
+        }
 
-            try
-            {
-                Db.CreateNew(textBox2.Text, out string outMsg);
-                label5.Text = outMsg;
-            }
-            catch
-            {
-                label5.Text = "Connection failed.";
-            }
+        // Create database
+        private void button5_Click(object sender, EventArgs e)
+        {
+            label5.Text = "Wait...";
+            label5.Update();
+            if (Db.CreateNew(textBox2.Text))
+                label5.Text = "OK";
+            else
+                label5.Text = "Error";
         }
     }
 }

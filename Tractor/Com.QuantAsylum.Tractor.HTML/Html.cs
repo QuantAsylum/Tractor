@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Tractor.Com.QuantAsylum.Tractor.HTML
+namespace Com.QuantAsylum.Tractor.HTML
 {
     class HtmlWriter
     {

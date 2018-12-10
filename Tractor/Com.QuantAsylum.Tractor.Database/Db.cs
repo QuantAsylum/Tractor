@@ -12,25 +12,36 @@ namespace Com.QuantAsylum.Tractor.Database
     {
         static TestResultDatabase TrDb;
 
-        static public void CreateNew(string connectString, out string resultMsg)
+        static public bool CreateNew(string connectString)
         {
-            resultMsg = "???";
-
-            TrDb = new TestResultDatabase(connectString);
-
-            if (TrDb.DatabaseExists())
+            try
             {
-                if (MessageBox.Show("Database already exists. Overwrite?", "Conflict", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    resultMsg = "Old database deleted.";
-                    Log.WriteLine(LogType.Database, resultMsg);
-                    TrDb.DeleteDatabase();
-                }
+                TrDb = new TestResultDatabase(connectString);
+                TrDb.CreateDatabase();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.WriteLine(LogType.Database, ex.Message);
             }
 
-            resultMsg = "New database created.";
-            Log.WriteLine(LogType.Database, resultMsg);
-            TrDb.CreateDatabase();
+            return false;
+        }
+
+        static public bool DeleteExisting(string connectString)
+        {
+            try
+            {
+                TrDb = new TestResultDatabase(connectString);
+                TrDb.DeleteDatabase();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.WriteLine(LogType.Database, ex.Message);
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -40,16 +51,20 @@ namespace Com.QuantAsylum.Tractor.Database
         /// <returns></returns>
         static public bool OpenExisting(string connectString)
         {
-            TrDb = new TestResultDatabase(connectString);
-            if (TrDb.DatabaseExists())
+            try
             {
+                TrDb = new TestResultDatabase(connectString);
                 return true;
+            }
+            catch (Exception ex)
+            {
+                Log.WriteLine(LogType.Database, ex.Message);
             }
 
             return false;
         }
 
-        static public bool InsertTest(TestRowItem tri)
+        static public bool InsertTest(Test tri)
         {
             TrDb.Tests.InsertOnSubmit(tri);
 

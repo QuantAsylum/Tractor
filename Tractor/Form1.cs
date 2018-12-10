@@ -15,7 +15,6 @@ using Com.QuantAsylum.Tractor.Tests;
 using Com.QuantAsylum.Tractor.Tests.GainTests;
 using Com.QuantAsylum.Tractor.Ui.Extensions;
 using Com.QuantAsylum.Tractor.Dialogs;
-using Tractor.Com.QuantAsylum.Tractor.TestManagers;
 
 namespace Tractor
 {

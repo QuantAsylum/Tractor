@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Tractor.Com.QuantAsylum.Tractor.TestManagers;
 
 namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
 {
@@ -84,7 +83,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             return;
         }
 
-        public override string GetTestLimitsString()
+        public override string GetTestLimits()
         {
             return string.Format("{0:N1}...{1:N1} dB", MinimumOKTHD, MaximumOKTHD);
         }

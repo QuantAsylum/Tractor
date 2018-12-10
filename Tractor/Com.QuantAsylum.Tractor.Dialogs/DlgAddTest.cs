@@ -11,7 +11,6 @@ using System.Windows.Forms;
 using Com.QuantAsylum.Tractor.TestManagers;
 using Com.QuantAsylum.Tractor.Tests;
 using static Com.QuantAsylum.Tractor.Tests.TestBase;
-using Tractor.Com.QuantAsylum.Tractor.TestManagers;
 using Com.QuantAsylum.Tractor.Settings;
 
 namespace Tractor

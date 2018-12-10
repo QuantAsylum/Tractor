@@ -290,7 +290,7 @@ namespace Com.QuantAsylum.Tractor.Tests
             return true;
         }
 
-        public virtual string GetTestLimitsString()
+        public virtual string GetTestLimits()
         {
             return "???";
         }

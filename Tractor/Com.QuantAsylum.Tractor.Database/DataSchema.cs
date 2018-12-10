@@ -14,9 +14,10 @@ namespace Com.QuantAsylum.Tractor.Database
     // See https://www.codeproject.com/Articles/43025/A-LINQ-Tutorial-Mapping-Tables-to-Objects
     // See https://docs.microsoft.com/en-us/dotnet/framework/data/adonet/sql/linq/how-to-dynamically-create-a-database
 
+    [Database]
     public class TestResultDatabase : DataContext
     {
-        public Table<TestRowItem> Tests;
+        public Table<Test> Tests;
         public TestResultDatabase(string connection) : base(connection) { }
 
         /// <summary>
@@ -50,8 +51,8 @@ namespace Com.QuantAsylum.Tractor.Database
         }
     }
 
-    [Table(Name = "TestTable")]
-    public class TestRowItem
+    [Table(Name = "Tests")]
+    public class Test
     {
         /// <summary>
         /// Unique ID for the test. This is the key. It has nothing to do with
@@ -105,22 +106,16 @@ namespace Com.QuantAsylum.Tractor.Database
         public bool PassFail { get; set; }
 
         /// <summary>
-        /// The result of the test
+        /// The result of the test. 
         /// </summary>
         [Column]
-        public string[] Result { get; set; }
+        public string Result { get; set; }
 
         /// <summary>
-        /// The upper limit (more positive) for the test
+        /// The limits of the test required for PASS
         /// </summary>
         [Column]
-        public double UpperLimit { get; set; }
-
-        /// <summary>
-        /// The lower limit (more negative) for the test
-        /// </summary>
-        [Column]
-        public double LowerLimit { get; set; }
+        public string TestLimits { get; set; }
 
         /// <summary>
         /// Any image, graph, etc associated with this test
