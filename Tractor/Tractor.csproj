@@ -120,9 +120,7 @@
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA401.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA401_QA450.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA450.cs" />
-    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QAConnectionManager.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\TestManager.cs" />
-    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QATestManager.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Gain\Gain02.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\IMD\Imd02.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\NoiseFloor\NoiseFloor02.cs" />

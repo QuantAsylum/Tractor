@@ -42,7 +42,7 @@ namespace Com.QuantAsylum.Tractor.Tests
 
             for (int i=0; i<count; i++)
             {
-                Value[i] = double.NaN;
+                Value[i] = 0;
                 StringValue[i] = "---";
             }
         }

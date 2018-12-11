@@ -222,26 +222,51 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                         // Add to database if needed
                         if (Form1.AppSettings.UseDb)
                         {
-                            Test tri = new Test()
+         
+                            // Left channel
+                            if (Form1.AppSettings.TestList[i].LeftChannel)
                             {
-                                SerialNumber = Tm.LocalStash.ContainsKey("SerialNumer") ? Tm.LocalStash["SerialNumber"] : "0",
-                                SessionName = Form1.AppSettings.DbSessionName,
-                                Name = Form1.AppSettings.TestList[i].Name,
-                                Time = DateTime.Now,
-                                PassFail = tr.Pass,
-                                Result = tr.StringValue[0] + " " + tr.StringValue[1],
-                                TestFile = "",
-                                TestFileMD5 = "",
-                                TestLimits = Form1.AppSettings.TestList[i].GetTestLimits(),
-                                ImageArray = Form1.AppSettings.TestList[i].TestResultBitmap != null ? TestResultDatabase.BmpToBytes(Form1.AppSettings.TestList[i].TestResultBitmap) : null
-                            };
+                                Test tri = new Test()
+                                {
+                                    SerialNumber = Tm.LocalStash.ContainsKey("SerialNumber") ? Tm.LocalStash["SerialNumber"] : "0",
+                                    SessionName = Form1.AppSettings.DbSessionName,
+                                    Name = Form1.AppSettings.TestList[i].Name,
+                                    Time = DateTime.Now,
+                                    PassFail = tr.Pass,
+                                    ResultString = tr.StringValue[0],
+                                    Result = (float)tr.Value[0],
+                                    TestFile = "",
+                                    TestFileMD5 = "",
+                                    TestLimits = Form1.AppSettings.TestList[i].GetTestLimits(),
+                                    ImageArray = Form1.AppSettings.TestList[i].TestResultBitmap != null ? TestResultDatabase.BmpToBytes(Form1.AppSettings.TestList[i].TestResultBitmap) : null
+                                };
+                                Db.InsertTest(tri);
+                            }
 
-                            Db.InsertTest(tri);
+                            // Right channel
+                            if (Form1.AppSettings.TestList[i].RightChannel)
+                            {
+                                Test tri = new Test()
+                                {
+                                    SerialNumber = Tm.LocalStash.ContainsKey("SerialNumber") ? Tm.LocalStash["SerialNumber"] : "0",
+                                    SessionName = Form1.AppSettings.DbSessionName,
+                                    Name = Form1.AppSettings.TestList[i].Name,
+                                    Time = DateTime.Now,
+                                    PassFail = tr.Pass,
+                                    ResultString = tr.StringValue[1],
+                                    Result = (float)tr.Value[1],
+                                    TestFile = "",
+                                    TestFileMD5 = "",
+                                    TestLimits = Form1.AppSettings.TestList[i].GetTestLimits(),
+                                    ImageArray = Form1.AppSettings.TestList[i].TestResultBitmap != null ? TestResultDatabase.BmpToBytes(Form1.AppSettings.TestList[i].TestResultBitmap) : null
+                                };
+                                Db.InsertTest(tri);
+                            }
                         }
 
                         if (IsConnected() == false)
                         {
-                            Log.WriteLine(LogType.Error, "Equipment is no longer connected.Testing will now stop.");
+                            Log.WriteLine(LogType.Error, "Equipment is no longer connected. Testing will now stop.");
                             dataGridView1[(int)ColText.PASSFAIL, i].Value = "ERROR";
                             throw new InvalidOperationException("Equipment is no longer connected. Testing will now stop.");
                         }

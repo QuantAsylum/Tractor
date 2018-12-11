@@ -13,6 +13,8 @@ using Tractor;
 using static Com.QuantAsylum.QA401;
 using System.Diagnostics;
 using System.Threading;
+using System.Runtime.Serialization.Formatters;
+using System.Collections;
 
 namespace Com.QuantAsylum.Tractor.TestManagers
 {
@@ -222,24 +224,22 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
 
 
-        System.Threading.Mutex AlreadyRunningMutex;
+
         bool IsAppAlreadyRunning()
         {
+            System.Threading.Mutex mutex;
             bool createdNew;
 
             // Try to create a named mutex. All we really care about is whether or not we were
             // able to create it. If another app was running, then the mutex would already exist
             // and we would fail to create it. 
-            AlreadyRunningMutex = new System.Threading.Mutex(true, MutexName, out createdNew);
+            mutex = new System.Threading.Mutex(false, MutexName, out createdNew);
 
-            // If we were able to create a new mutex, then we also own it given the 
-            // 'true' parameter in the c'tor
             if (createdNew)
             {
                 // Release ownership
-                AlreadyRunningMutex.ReleaseMutex();
-                AlreadyRunningMutex.Dispose();
-                AlreadyRunningMutex = null;
+                mutex.Dispose();
+                mutex = null;
                 return false;
             }
 
@@ -297,6 +297,30 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// This class is only needed IF we want to connect to multiple devices
+        /// </summary>
+        public class Helper
+        {
+            public static IChannel GetChannel(int tcpPort, bool isSecure)
+            {
+                BinaryServerFormatterSinkProvider serverProv =
+                    new BinaryServerFormatterSinkProvider();
+                serverProv.TypeFilterLevel = TypeFilterLevel.Full;
+                IDictionary propBag = new Hashtable();
+                propBag["port"] = tcpPort;
+                propBag["typeFilterLevel"] = TypeFilterLevel.Full;
+                propBag["name"] = Guid.NewGuid().ToString();
+                if (isSecure)
+                {
+                    propBag["secure"] = isSecure;
+                    propBag["impersonate"] = false;
+                }
+                return new TcpChannel(
+                    propBag, null, serverProv);
+            }
         }
 
     }

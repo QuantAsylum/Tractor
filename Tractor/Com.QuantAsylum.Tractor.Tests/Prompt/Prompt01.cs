@@ -36,6 +36,7 @@ namespace Com.QuantAsylum.Tractor.Tests
             // Two channels of testing
             tr = new TestResult(2);
 
+
             Bitmap bmp = null;
             try
             {

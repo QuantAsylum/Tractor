@@ -92,7 +92,6 @@ namespace Com.QuantAsylum.Tractor.Database
         [Column]
         public string Name { get; set; }
 
-
         /// <summary>
         /// Time time of the particular test
         /// </summary>
@@ -109,7 +108,13 @@ namespace Com.QuantAsylum.Tractor.Database
         /// The result of the test. 
         /// </summary>
         [Column]
-        public string Result { get; set; }
+        public string ResultString { get; set; }
+
+        /// <summary>
+        /// The result of the test. 
+        /// </summary>
+        [Column]
+        public float Result { get; set; }
 
         /// <summary>
         /// The limits of the test required for PASS
@@ -120,7 +125,7 @@ namespace Com.QuantAsylum.Tractor.Database
         /// <summary>
         /// Any image, graph, etc associated with this test
         /// </summary>
-        [Column]
+        [Column(DbType = "varbinary(max)")]
         public byte[] ImageArray { get; set; }
     }
 }
