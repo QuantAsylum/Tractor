@@ -15,5 +15,6 @@ namespace Tractor
         public static string DataFilePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\QuantAsylum\Tractor\";
         static public string DefaultSettingsFile = DataFilePath + "Default.Settings";
         public static string TestLogsPath = DataFilePath + @"\TestLogs\";
+        public static string LogFileName = "index.html";
     }
 }

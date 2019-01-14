@@ -33,7 +33,7 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             float[] vOut4 = new float[2] { float.NaN, float.NaN };
             float[] vOut8 = new float[2] { float.NaN, float.NaN };
 
-            ((IComposite)Tm.TestClass).SetToDefaults();
+            Tm.SetToDefaults();
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
 

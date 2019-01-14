@@ -35,7 +35,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             // Two channels
             tr = new TestResult(2);
 
-            ((IInstrument)Tm.TestClass).SetToDefaults();
+            Tm.SetToDefaults();
             ((IAudioAnalyzer)Tm.TestClass).SetFftLength(4096);
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);

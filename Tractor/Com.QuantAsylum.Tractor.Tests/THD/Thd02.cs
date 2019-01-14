@@ -33,7 +33,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             // Two channels of testing
             tr = new TestResult(2);
 
-            ((IComposite)Tm.TestClass).SetToDefaults();
+            Tm.SetToDefaults();
 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(InputRange);

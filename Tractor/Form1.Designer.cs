@@ -31,8 +31,14 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newTestPlanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.loadTestPlanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.saveTestPlanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView1 = new System.Windows.Forms.TreeView();
@@ -54,12 +60,8 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
-            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
-            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
-            this.newTestPlanToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openLogInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -74,9 +76,10 @@
             // 
             // menuStrip1
             // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[]
             {   fileToolStripMenuItem,
                 settingsToolStripMenuItem,
+                toolsToolStripMenuItem,
                 helpToolStripMenuItem });
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -97,23 +100,66 @@
                 toolStripMenuItem3,
                 exitToolStripMenuItem
             });
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newTestPlanToolStripMenuItem,
+            this.toolStripMenuItem1,
+            this.loadTestPlanToolStripMenuItem,
+            this.toolStripMenuItem2,
+            this.saveTestPlanToolStripMenuItem,
+            this.saveAsToolStripMenuItem,
+            this.toolStripMenuItem3,
+            this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
+            // newTestPlanToolStripMenuItem
+            // 
+            this.newTestPlanToolStripMenuItem.Name = "newTestPlanToolStripMenuItem";
+            this.newTestPlanToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.newTestPlanToolStripMenuItem.Text = "New Test Plan";
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(147, 6);
+            // 
             // loadTestPlanToolStripMenuItem
             // 
             this.loadTestPlanToolStripMenuItem.Name = "loadTestPlanToolStripMenuItem";
-            this.loadTestPlanToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadTestPlanToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.loadTestPlanToolStripMenuItem.Text = "Load Test Plan";
             this.loadTestPlanToolStripMenuItem.Click += new System.EventHandler(this.loadTestPlanToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(147, 6);
             // 
             // saveTestPlanToolStripMenuItem
             // 
             this.saveTestPlanToolStripMenuItem.Name = "saveTestPlanToolStripMenuItem";
-            this.saveTestPlanToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveTestPlanToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.saveTestPlanToolStripMenuItem.Text = "Save...";
             this.saveTestPlanToolStripMenuItem.Click += new System.EventHandler(this.saveTestPlanToolStripMenuItem_Click);
+            // 
+            // saveAsToolStripMenuItem
+            // 
+            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.saveAsToolStripMenuItem.Text = "Save As...";
+            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(147, 6);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
             // 
             // settingsToolStripMenuItem
             // 
@@ -340,38 +386,20 @@
             this.panel5.Size = new System.Drawing.Size(342, 42);
             this.panel5.TabIndex = 14;
             // 
-            // saveAsToolStripMenuItem
+            // toolsToolStripMenuItem
             // 
-            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.saveAsToolStripMenuItem.Text = "Save As...";
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[]
+                {openLogInBrowserToolStripMenuItem });
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.toolsToolStripMenuItem.Text = "Tools";
             // 
-            // toolStripMenuItem1
+            // openLogInBrowserToolStripMenuItem
             // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(177, 6);
-            // 
-            // exitToolStripMenuItem
-            // 
-            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.exitToolStripMenuItem.Text = "Exit";
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(177, 6);
-            // 
-            // newTestPlanToolStripMenuItem
-            // 
-            this.newTestPlanToolStripMenuItem.Name = "newTestPlanToolStripMenuItem";
-            this.newTestPlanToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.newTestPlanToolStripMenuItem.Text = "New Test Plan";
-            // 
-            // toolStripMenuItem3
-            // 
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(177, 6);
+            this.openLogInBrowserToolStripMenuItem.Name = "openLogInBrowserToolStripMenuItem";
+            this.openLogInBrowserToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.openLogInBrowserToolStripMenuItem.Text = "Open Log in Browser";
+            this.openLogInBrowserToolStripMenuItem.Click += openLogInBrowserToolStripMenuItem_Click;
             // 
             // Form1
             // 
@@ -407,6 +435,7 @@
 
         }
 
+
         #endregion
 
         private System.Windows.Forms.MenuStrip menuStrip1;
@@ -440,6 +469,8 @@
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openLogInBrowserToolStripMenuItem;
     }
 }
 

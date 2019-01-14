@@ -43,7 +43,7 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
             // Two channels of testing
             tr = new TestResult(2);
 
-            ((IComposite)Tm).SetToDefaults();
+            Tm.SetToDefaults();
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
 

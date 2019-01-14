@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using Tractor;
 
 namespace Com.QuantAsylum.Tractor.HTML
 {
@@ -76,7 +77,7 @@ namespace Com.QuantAsylum.Tractor.HTML
         public void Render()
         {
             String existingPageContent = "";
-            string file = Dir + "/Index.html";
+            string file = Dir + Constants.LogFileName;
 
             if (File.Exists(file))
             {

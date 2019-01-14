@@ -36,5 +36,17 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             TestBase.DoneEditingCallback = doneEditing;
             TestBase.CancelEditingCallback = cancelEditing;
         }
+
+        public void SetToDefaults()
+        {
+            if (TestClass is IInstrument)
+            {
+                ((IInstrument)TestClass).SetToDefaults();
+            }
+            else if (TestClass is IComposite)
+            {
+                ((IComposite)TestClass).SetToDefaults();
+            }
+        }
     }
 }

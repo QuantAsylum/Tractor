@@ -25,7 +25,7 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             // Two channels of testing
             tr = new TestResult(2);
 
-            ((IInstrument)Tm.TestClass).SetToDefaults();
+            Tm.SetToDefaults();
 
             try
             {

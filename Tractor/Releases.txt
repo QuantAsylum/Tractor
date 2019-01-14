@@ -1,6 +1,9 @@
 ﻿0.7
 - Major re-structuring for implementing test hardware. They are now a collection of interfaces, and you group interfaces
   based on instrument availability and functionality. Options may be supersetted or subsetted.
+- Added Audition01 test command
+- Provided ability to display a picture to the operator in Input01
+- Database logging is now working
 
 0.64
 - Add colorcoding for pass fail

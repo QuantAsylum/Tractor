@@ -460,13 +460,23 @@ namespace Tractor
         /// <param name="e"></param>
         private void saveTestPlanToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (SettingsFile == "")
+                return;
+
+            File.WriteAllText(SettingsFile, AppSettings.Serialize());
+            AppSettingsDirty = false;
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.InitialDirectory = Constants.DataFilePath;
             sfd.Filter = "Test Profile files (*.tp)|*.tp|All files (*.*)|*.*";
 
             if (sfd.ShowDialog() == DialogResult.OK)
             {
-                File.WriteAllText(sfd.FileName, AppSettings.Serialize());
+                SettingsFile = sfd.FileName;
+                File.WriteAllText(SettingsFile, AppSettings.Serialize());
                 AppSettingsDirty = false;
             }
         }
@@ -522,6 +532,11 @@ namespace Tractor
                 Type t = Type.GetType(AppSettings.TestClass);
                 Tm.TestClass = Activator.CreateInstance(t);
             }
+        }
+
+        private void openLogInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start(Constants.TestLogsPath + Constants.LogFileName);
         }
     }
 }

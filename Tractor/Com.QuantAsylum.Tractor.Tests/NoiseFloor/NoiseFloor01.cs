@@ -32,7 +32,7 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
             // Two channels of testing
             tr = new TestResult(2);
 
-            ((IComposite)Tm.TestClass).SetToDefaults();
+            Tm.SetToDefaults();
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
 
@@ -75,7 +75,7 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
         {
             s = "";
 
-            if (((IAudioAnalyzer)Tm).GetInputRanges().Contains(AnalyzerInputRange) == false)
+            if (((IAudioAnalyzer)Tm.TestClass).GetInputRanges().Contains(AnalyzerInputRange) == false)
             {
                 s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm).GetInputRanges());
                 return false;

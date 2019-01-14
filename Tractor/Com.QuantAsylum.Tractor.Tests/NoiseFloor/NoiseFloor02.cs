@@ -35,7 +35,7 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
             // Two channels of testing
             tr = new TestResult(2);
 
-            ((IComposite)Tm.TestClass).SetToDefaults();
+            Tm.SetToDefaults();
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
             ((IProgrammableLoad)Tm.TestClass).SetImpedance(ProgrammableLoadImpedance);

@@ -51,8 +51,8 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             try
             {
                 // QA401 first
-                TcpChannel tcpChannel = (TcpChannel)Helper.GetChannel(4401, false);
-                //TcpChannel tcpChannel = new TcpChannel();
+                //TcpChannel tcpChannel = (TcpChannel)Helper.GetChannel(9401, false);
+                TcpChannel tcpChannel = new TcpChannel();
                 ChannelServices.RegisterChannel(tcpChannel, false);
 
                 Type requiredType = typeof(QA401Interface);
@@ -96,7 +96,6 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             Qa401.SetTitle(s);
         }
 
-
         public void AudioGenSetGen1(bool isOn, float ampLevel_dBV, float freq_Hz)
         {
             Qa401.SetGenerator(QuantAsylum.QA401.GenType.Gen1, isOn, ampLevel_dBV, freq_Hz);
@@ -137,7 +136,6 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         {
             return (Qa401.GetAcquisitionState() == AcquisitionState.Busy);
         }
-
 
         public void AuditionStart(string fileName, double volume, bool repeat)
         {
@@ -228,22 +226,18 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         bool IsAppAlreadyRunning()
         {
             System.Threading.Mutex mutex;
-            bool createdNew;
 
-            // Try to create a named mutex. All we really care about is whether or not we were
-            // able to create it. If another app was running, then the mutex would already exist
-            // and we would fail to create it. 
-            mutex = new System.Threading.Mutex(false, MutexName, out createdNew);
+            mutex = new System.Threading.Mutex(false, MutexName);
 
-            if (createdNew)
+            if (mutex.WaitOne(1))
             {
-                // Release ownership
+                // Here we were able to grab ownership. The app must not be running
+                mutex.ReleaseMutex();
                 mutex.Dispose();
-                mutex = null;
                 return false;
+          
             }
 
-            // Here we weren't able to create a new mutex. The hardware is in use
             return true;
         }
 
@@ -282,16 +276,19 @@ namespace Com.QuantAsylum.Tractor.TestManagers
                         for (int i=0; i<5; i++)
                         {
                             if (IsAppAlreadyRunning())
+                            {
+                                Thread.Sleep(5000);
                                 return true;
+                            }
 
                             Thread.Sleep(1000);
                         }
 
                         return true;
                     }
-                    catch
+                    catch (Exception ex)
                     {
-
+                        Log.WriteLine(LogType.Error, "Exception inside LaunchApp(): " + ex.Message);
                     }
                 }
             }

@@ -32,7 +32,7 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             // Two channels of testing
             tr = new TestResult(2);
 
-            ((IComposite)Tm.TestClass).SetToDefaults();
+            Tm.SetToDefaults();
             ((IPowerSupply)Tm.TestClass).SetSupplyState(PowerState);
             Thread.Sleep(1200);
             float current = ((ICurrentMeter)Tm.TestClass).GetDutCurrent(3);
