@@ -15,6 +15,8 @@ using Com.QuantAsylum.Tractor.Tests;
 using Com.QuantAsylum.Tractor.Tests.GainTests;
 using Com.QuantAsylum.Tractor.Ui.Extensions;
 using Com.QuantAsylum.Tractor.Dialogs;
+using Tractor.Com.QuantAsylum.Tractor.Dialogs;
+using System.Threading;
 
 namespace Tractor
 {
@@ -29,7 +31,7 @@ namespace Tractor
         /// </summary>
         bool AppSettingsDirty = false;
 
-        string SettingsFile = "";
+        static internal string SettingsFile = "";
 
         bool HasRun = false;
 
@@ -41,6 +43,13 @@ namespace Tractor
         {
             This = this;
             InitializeComponent();
+
+#if !DEBUG
+            DlgSplash splash = new DlgSplash();
+            splash.Show();
+
+            Thread.Sleep(1000);
+#endif
 
             AppSettings = new AppSettings();
             label3.Text = "";
@@ -94,13 +103,16 @@ namespace Tractor
         {
             Directory.CreateDirectory(Constants.DataFilePath);
             Directory.CreateDirectory(Constants.TestLogsPath);
-
+            Directory.CreateDirectory(Constants.AuditPath);
+            Directory.CreateDirectory(Constants.PidPath);
 
             Text = Constants.TitleBarText + " " + Constants.Version.ToString("0.00") + Constants.VersionSuffix;
 
             DefaultTreeview();
 
             SetTreeviewControls();
+
+            Com.QuantAsylum.Tractor.Database.AuditDb.StartBackgroundWorker();
         }
 
 
@@ -532,11 +544,20 @@ namespace Tractor
                 Type t = Type.GetType(AppSettings.TestClass);
                 Tm.TestClass = Activator.CreateInstance(t);
             }
-        }
+        } 
 
         private void openLogInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process.Start(Constants.TestLogsPath + Constants.LogFileName);
+            string s = Constants.TestLogsPath + Constants.LogFileName;
+
+            if (File.Exists(s))
+            {
+                System.Diagnostics.Process.Start(s);
+            }
+            else
+            {
+                MessageBox.Show("The log doesn't yet exist.");
+            }
         }
     }
 }

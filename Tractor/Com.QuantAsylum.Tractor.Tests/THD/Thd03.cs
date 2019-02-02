@@ -41,37 +41,31 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
 
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, OutputLevel, Freq);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, OutputLevel, Freq);
-            ((IAudioAnalyzer)Tm.TestClass).RunSingle();
-
-            while (((IAudioAnalyzer)Tm.TestClass).AnalyzerIsBusy())
-            {
-                Thread.Sleep(25);
-            }
+            ((IAudioAnalyzer)Tm.TestClass).DoAcquisition();
 
             TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
-            
-            //tr.Value[1] = (float)Tm.ComputeThdPct(Tm.GetData(ChannelEnum.Right), Freq, 20000);
+            // Get THD in dB
+            ((IAudioAnalyzer)Tm.TestClass).ComputeThdPct(Freq, 20000, out tr.Value[0], out tr.Value[1]);
+            tr.Value[0] = 20 * (float)Math.Log10(tr.Value[0] / 100);
+            tr.Value[1] = 20 * (float)Math.Log10(tr.Value[1] / 100);
 
-            // Convert to db
-            //tr.Value[0] = 20 * (float)Math.Log10(tr.Value[0] / 100);
-            //tr.Value[1] = 20 * (float)Math.Log10(tr.Value[1] / 100);
+            // Compute peak
+            ((IAudioAnalyzer)Tm.TestClass).ComputeRms(Freq * 0.98f, Freq * 1.02f, out double peakLDbv, out double peakRDbv);
+
+            // Convert to volts
+            double leftVrms = (float)Math.Pow(10, peakLDbv / 20);
+            double rightVrms = (float)Math.Pow(10, peakRDbv / 20);
+
+            // Convert to watts
+            double leftWatts = (leftVrms * leftVrms) / LoadImpedance;
+            double rightWatts = (rightVrms * rightVrms) / LoadImpedance;
 
             bool passLeft = true, passRight = true;
 
             if (LeftChannel)
             {
-                // Get dbV out
-                float wattsOut = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left), Freq * 0.98f, Freq * 1.02f) - ExtGain;
-                // Get volts out
-                wattsOut = (float)Math.Pow(10, wattsOut / 20);
-                // Get watts out
-                wattsOut = (wattsOut * wattsOut) / LoadImpedance;
-
-                tr.Value[0] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeThdPct(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left), Freq, 20000);
-                // Convert to dB
-                tr.Value[0] = 20 * (float)Math.Log10(tr.Value[0] / 100);
-                tr.StringValue[0] = string.Format("{0:N1} dB @ {1:N1}W", tr.Value[0], wattsOut);
+                tr.StringValue[0] = string.Format("{0:N1} dB @ {1:N1} Watts", tr.Value[0], leftWatts);
                 if ((tr.Value[0] < MinimumOKThd) || (tr.Value[0] > MaximumOKThd))
                     passLeft = false;
             }
@@ -80,17 +74,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
 
             if (RightChannel)
             {
-                // Get dbV out
-                float wattsOut = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right), Freq * 0.98f, Freq * 1.02f) - ExtGain;
-                // Get volts out
-                wattsOut = (float)Math.Pow(10, wattsOut / 20);
-                // Get watts out
-                wattsOut = (wattsOut * wattsOut) / LoadImpedance;
-
-                tr.Value[1] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeThdPct(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right), Freq, 20000);
-                // Convert to dB
-                tr.Value[1] = 20 * (float)Math.Log10(tr.Value[1] / 100);
-                tr.StringValue[1] = string.Format("{0:N1} dB @ {1:N1}W", tr.Value[1], wattsOut);
+                tr.StringValue[1] = string.Format("{0:N1} dB @ {1:N1} Watts", tr.Value[1], rightWatts);
                 if ((tr.Value[1] < MinimumOKThd) || (tr.Value[1] > MaximumOKThd))
                     passRight = false;
             }

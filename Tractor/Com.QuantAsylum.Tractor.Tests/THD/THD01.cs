@@ -39,17 +39,13 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
 
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, OutputLevel, Freq);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, OutputLevel, Freq);
-            ((IAudioAnalyzer)Tm.TestClass).RunSingle();
-
-            while (((IAudioAnalyzer)Tm.TestClass).AnalyzerIsBusy())
-            {
-
-            }
+            ((IAudioAnalyzer)Tm.TestClass).DoAcquisition();
 
             TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
-            tr.Value[0] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeThdPct(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left), Freq, 20000);
-            tr.Value[1] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeThdPct(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right), Freq, 20000);
+            ((IAudioAnalyzer)Tm.TestClass).ComputeThdPct(Freq, 20000, out tr.Value[0], out tr.Value[1]);
+            //tr.Value[0] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeThdPct(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left), Freq, 20000);
+            //tr.Value[1] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeThdPct(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right), Freq, 20000);
 
             // Convert to db
             tr.Value[0] = 20 * (float)Math.Log10(tr.Value[0] / 100);
@@ -97,8 +93,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
 
         public override bool IsRunnable()
         {
-            if ((Tm.TestClass is IAudioAnalyzer) &&
-                 (Tm.TestClass is IProgrammableLoad))
+            if (Tm.TestClass is IAudioAnalyzer)
             {
                 return true;
             }

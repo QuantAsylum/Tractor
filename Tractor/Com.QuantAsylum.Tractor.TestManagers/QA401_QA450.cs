@@ -97,9 +97,9 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             Qa401.SetInputRange(attenLevel_dB);
         }
 
-        public void RunSingle()
+        public void DoAcquisition()
         {
-            Qa401.RunSingle();
+            Qa401.DoAcquisition();
         }
 
         public void SetFftLength(uint length)
@@ -127,15 +127,25 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             Qa401.AudioGenSetGen2(isOn, ampLevel_dBV, freq_Hz);
         }
 
-        public double ComputeRms(PointD[] data, float startFreq, float stopFreq)
+        public void ComputeRms(double startFreq, double stopFreq, out double rmsDbvL, out double rmsDbvR)
         {
-            return Qa401.ComputeRms(data, startFreq, stopFreq);
+            Qa401.ComputeRms(startFreq, stopFreq, out rmsDbvL, out rmsDbvR);
         }
 
-        public double ComputeThdPct(PointD[] data, float fundamental, float stopFreq)
+        public void ComputeThdPct(double fundamental, double stopFreq, out double thdPctL, out double thdPctR)
         {
-            return Qa401.ComputeRms(data, fundamental, stopFreq);
+            Qa401.ComputeThdPct(fundamental, stopFreq, out thdPctL, out thdPctR);
         }
+
+        //public double ComputeRms(PointD[] data, float startFreq, float stopFreq)
+        //{
+        //    return Qa401.ComputeRms(data, startFreq, stopFreq);
+        //}
+
+        //public double ComputeThdPct(PointD[] data, float fundamental, float stopFreq)
+        //{
+        //    return Qa401.ComputeRms(data, fundamental, stopFreq);
+        //}
 
         public void AuditionStart(string fileName, double volume, bool repeat)
         {
@@ -192,6 +202,9 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             return false;
         }
 
-       
+        public void DoAcquisitionAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

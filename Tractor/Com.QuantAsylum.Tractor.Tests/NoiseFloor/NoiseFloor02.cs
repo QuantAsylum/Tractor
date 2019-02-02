@@ -43,17 +43,12 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
             // Disable generators
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(false, -60, 1000);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(false, -60, 1000);
-            ((IAudioAnalyzer)Tm.TestClass).RunSingle();
+            ((IAudioAnalyzer)Tm.TestClass).DoAcquisition();
 
-            while (((IAudioAnalyzer)Tm.TestClass).AnalyzerIsBusy())
-            {
-                Thread.Sleep(20);
-            }
 
             TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
-            tr.Value[0] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left), 20, 20000);
-            tr.Value[1] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right), 20, 20000);
+            ((IAudioAnalyzer)Tm.TestClass).ComputeRms(20, 20000, out tr.Value[0], out tr.Value[1]);
 
             if (LeftChannel)
                 tr.StringValue[0] = tr.Value[0].ToString("0.0") + " dBV";
@@ -78,15 +73,15 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
         public override bool CheckValues(out string s)
         {
             s = "";
-            if (((IProgrammableLoad)Tm).GetSupportedImpedances().Contains(ProgrammableLoadImpedance) == false)
+            if (((IProgrammableLoad)Tm.TestClass).GetSupportedImpedances().Contains(ProgrammableLoadImpedance) == false)
             {
-                s = "Output impedance must be: " + string.Join(" ", ((IProgrammableLoad)Tm).GetSupportedImpedances());
+                s = "Output impedance must be: " + string.Join(" ", ((IProgrammableLoad)Tm.TestClass).GetSupportedImpedances());
                 return false;
             }
 
-            if (((IAudioAnalyzer)Tm).GetInputRanges().Contains(AnalyzerInputRange) == false)
+            if (((IAudioAnalyzer)Tm.TestClass).GetInputRanges().Contains(AnalyzerInputRange) == false)
             {
-                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm).GetInputRanges());
+                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm.TestClass).GetInputRanges());
                 return false;
             }
 

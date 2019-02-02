@@ -127,7 +127,17 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             }
         }
 
-        public void RunSingle()
+        public void DoAcquisition()
+        {
+            Qa401.RunSingle();
+
+            while (AnalyzerIsBusy())
+            {
+                Thread.Sleep(50);
+            }
+        }
+
+        public void DoAcquisitionAsync()
         {
             Qa401.RunSingle();
         }
@@ -185,6 +195,16 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         public double ComputeRms(PointD[] data, float startFreq, float stopFreq)
         {
             return Qa401.ComputePowerDB(MarshallToQAPointD(data), startFreq, stopFreq);
+        }
+
+        public void ComputeRms(double startFreq, double stopFreq, out double rmsDbvL, out double rmsDbvR)
+        {
+            Qa401.ComputeRms(startFreq, stopFreq, out rmsDbvL, out rmsDbvR);
+        }
+
+        public void ComputeThdPct(double fundamental, double stopFreq, out double thdPctL, out double thdPctR)
+        {
+            Qa401.ComputeThdPct(fundamental, stopFreq, out thdPctL, out thdPctR);
         }
 
         public double ComputeThdPct(PointD[] data, float fundamental, float stopFreq)

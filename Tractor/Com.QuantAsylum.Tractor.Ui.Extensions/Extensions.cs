@@ -10,6 +10,7 @@ namespace Com.QuantAsylum.Tractor.Ui.Extensions
 {
     public static class Extensions
     {
+
         // From https://bitbucket.org/Superbest/superbest-random/src/f067e1dc014c31be62c5280ee16544381e04e303/Superbest%20random/RandomExtensions.cs?at=master&fileviewer=file-view-default
         public static double NextGaussian(this Random r, double mu = 0, double sigma = 1)
         {

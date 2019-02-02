@@ -39,17 +39,11 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
             // Disable generators
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(false, -60, 1000);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(false, -60, 1000);
-            ((IAudioAnalyzer)Tm.TestClass).RunSingle();
-
-            while (((IAudioAnalyzer)Tm.TestClass).AnalyzerIsBusy())
-            {
-                Thread.Sleep(20);
-            }
+            ((IAudioAnalyzer)Tm.TestClass).DoAcquisition();
 
             TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
-            tr.Value[0] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left), 20, 20000);
-            tr.Value[1] = (float)((IAudioAnalyzer)Tm.TestClass).ComputeRms(((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right), 20, 20000);
+            ((IAudioAnalyzer)Tm.TestClass).ComputeRms(20, 20000, out tr.Value[0], out tr.Value[1]);
 
             if (LeftChannel)
                 tr.StringValue[0] = tr.Value[0].ToString("0.0") + " dB";
@@ -77,7 +71,7 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
 
             if (((IAudioAnalyzer)Tm.TestClass).GetInputRanges().Contains(AnalyzerInputRange) == false)
             {
-                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm).GetInputRanges());
+                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm.TestClass).GetInputRanges());
                 return false;
             }
 

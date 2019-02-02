@@ -38,41 +38,51 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             tr = new TestResult(2);
 
             Tm.SetToDefaults();
-            ((IProgrammableLoad)Tm).SetImpedance(ProgrammableLoadImpedance);
+            ((IProgrammableLoad)Tm.TestClass).SetImpedance(ProgrammableLoadImpedance);
 
-            ((IAudioAnalyzer)Tm).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm).SetInputRange(AnalyzerInputRange);
-            ((IAudioAnalyzer)Tm).SetFftLength(8192);
-            ((IAudioAnalyzer)Tm).AudioGenSetGen1(true, AnalyzerOutputLevel, TestFrequency);
-            ((IAudioAnalyzer)Tm).AudioGenSetGen2(false, AnalyzerOutputLevel, TestFrequency);
-            ((IAudioAnalyzer)Tm).RunSingle();
+            ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(8192);
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, AnalyzerOutputLevel, TestFrequency);
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, AnalyzerOutputLevel, TestFrequency);
+            ((IAudioAnalyzer)Tm.TestClass).DoAcquisitionAsync();
 
             float current = 0;
-            while (((IAudioAnalyzer)Tm).AnalyzerIsBusy())
+            while (((IAudioAnalyzer)Tm.TestClass).AnalyzerIsBusy())
             {
                 float c = ((ICurrentMeter)Tm).GetDutCurrent();
                 if (c > current)
+                {
                     current = c;
-                Debug.WriteLine("Current: " + current);
+                }
+
+                Log.WriteLine(LogType.General, "Current: " + current.ToString("0.000"));
             }
 
-            TestResultBitmap = ((IAudioAnalyzer)Tm).GetBitmap();
+            TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
+            // Get dBV out and adjust based on input gains
+            ((IAudioAnalyzer)Tm.TestClass).ComputeRms(TestFrequency * 0.98f, TestFrequency * 1.02f, out double peakLDbv, out double peakRDbv);
+            peakLDbv -= ExternalAnalyzerInputGain;
+            peakRDbv -= ExternalAnalyzerInputGain;
+
+            // Convert to Volts RMS
+            double leftVrms = (double)Math.Pow(10, peakLDbv / 20);
+            double rightVrms = (double)Math.Pow(10, peakRDbv / 20);
+
+            // Convert to watts
+            double wattsL = leftVrms * leftVrms / ProgrammableLoadImpedance;
+            double wattsR = rightVrms * rightVrms / ProgrammableLoadImpedance;
+
+            double wattsInPerChannel = AmplifierSupplyVoltage * current / 2;
+            tr.Value[0] = 100 * wattsL / wattsInPerChannel;
+            tr.Value[1] = 100 * wattsR / wattsInPerChannel;
 
             bool passLeft = true, passRight = true;
-
+    
             if (LeftChannel)
             {
-                // Get dbV out
-                float wattsOut = (float)((IAudioAnalyzer)Tm).ComputeRms(((IAudioAnalyzer)Tm).GetData(ChannelEnum.Left), TestFrequency * 0.98f, TestFrequency * 1.02f) - ExternalAnalyzerInputGain;
-                // Get volts out
-                wattsOut = (float)Math.Pow(10, wattsOut / 20);
-                // Get watts out
-                wattsOut = (wattsOut * wattsOut) / ProgrammableLoadImpedance;
-                // Since two channels are active, we must divide current by 2
-                float wattsIn = AmplifierSupplyVoltage * current/2;
-                tr.Value[0] = 100 * wattsOut / wattsIn;
-                tr.StringValue[0] = string.Format("{0:N1}% @ {1:N2} W out", tr.Value[0], wattsOut);
+                tr.StringValue[0] = string.Format("{0:N1}% @ {1:N2} W out", tr.Value[0], wattsL);
                 if ((tr.Value[0] < MinimumPassEfficiency) || (tr.Value[0] > MaximumPassEfficiency))
                     passLeft = false;
             }
@@ -81,16 +91,7 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 
             if (RightChannel)
             {
-                // Get dbV out
-                float wattsOut = (float)((IAudioAnalyzer)Tm).ComputeRms(((IAudioAnalyzer)Tm).GetData(ChannelEnum.Right), TestFrequency * 0.98f, TestFrequency * 1.02f) - ExternalAnalyzerInputGain;
-                // Get volts out
-                wattsOut = (float)Math.Pow(10, wattsOut / 20);
-                // Get watts out
-                wattsOut = (wattsOut * wattsOut) / ProgrammableLoadImpedance;
-                // Since two channels are active, we must divide current by 2
-                float wattsIn = AmplifierSupplyVoltage * current/2;
-                tr.Value[1] = 100 * wattsOut / wattsIn;
-                tr.StringValue[1] = string.Format("{0:N1}% @ {1:N2} W out", tr.Value[1], wattsOut);
+                tr.StringValue[1] = string.Format("{0:N1}% @ {1:N2} W out", tr.Value[1], wattsR);
                 if ((tr.Value[1] < MinimumPassEfficiency) || (tr.Value[1] > MaximumPassEfficiency))
                     passLeft = false;
             }

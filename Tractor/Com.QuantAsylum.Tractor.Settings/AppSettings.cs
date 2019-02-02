@@ -23,6 +23,14 @@ namespace Com.QuantAsylum.Tractor.Settings
 
         public string DbSessionName = "";
 
+        public bool UseAuditDb = false;
+
+        public Guid ProductId = Guid.NewGuid();
+
+        public string AuditDbSessionName = "";
+
+        public string AuditDbEmail = "youremail@yourcompany.com";
+
         /// <summary>
         /// Finds a unique name in the TestList given a root. For example, if
         /// the root is "THD" and the list is empty, then "THD-1" will be returned, 

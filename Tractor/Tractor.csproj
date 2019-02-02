@@ -36,7 +36,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Tractor Icon.ico</ApplicationIcon>
+    <ApplicationIcon>Tractor Icon2.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="QAAnalyzer, Version=1.7.0.4, Culture=neutral, processorArchitecture=MSIL">
@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Com.QuantAsylum.Hardware\QA450.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Database\AuditDb.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Database\Db.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Database\DataSchema.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgAnalysis.cs">
@@ -102,6 +103,12 @@
     <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgSettings.Designer.cs">
       <DependentUpon>DlgSettings.cs</DependentUpon>
     </Compile>
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgSplash.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgSplash.Designer.cs">
+      <DependentUpon>DlgSplash.cs</DependentUpon>
+    </Compile>
     <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgTestRun.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -118,6 +125,7 @@
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\IPowerSupply.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\IProgrammableLoad.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA401.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA401H.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA401_QA450.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA450.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\TestManager.cs" />
@@ -175,6 +183,9 @@
     <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgSettings.resx">
       <DependentUpon>DlgSettings.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgSplash.resx">
+      <DependentUpon>DlgSplash.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgTestRun.resx">
       <DependentUpon>DlgTestRun.cs</DependentUpon>
     </EmbeddedResource>
@@ -208,6 +219,7 @@
   <ItemGroup>
     <Content Include="Releases.txt" />
     <Content Include="Tractor Icon.ico" />
+    <Content Include="Tractor Icon2.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

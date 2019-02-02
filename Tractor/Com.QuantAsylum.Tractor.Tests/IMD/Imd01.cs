@@ -42,32 +42,26 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
             tr = new TestResult(2);
 
             Tm.SetToDefaults();
-            ((IAudioAnalyzer)Tm).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm).SetInputRange(AnalyzerInputRange);
+            ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
 
-            ((IAudioAnalyzer)Tm).AudioGenSetGen1(true, AnalyzerOutputLevel - 6, 19000);
-            ((IAudioAnalyzer)Tm).AudioGenSetGen2(true, AnalyzerOutputLevel - 6, 20000);
-            ((IAudioAnalyzer)Tm).RunSingle();
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, AnalyzerOutputLevel - 6, 19000);
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(true, AnalyzerOutputLevel - 6, 20000);
+            ((IAudioAnalyzer)Tm.TestClass).DoAcquisition();
 
-            while (((IAudioAnalyzer)Tm).AnalyzerIsBusy())
-            {
-                Thread.Sleep(20);
-            }
+            TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
-            TestResultBitmap = ((IAudioAnalyzer)Tm).GetBitmap();
+            ((IAudioAnalyzer)Tm.TestClass).ComputeRms(18995, 19005, out double l1, out double r1);
+            ((IAudioAnalyzer)Tm.TestClass).ComputeRms(995, 1005, out double l2, out double r2);
 
             if (LeftChannel)
             {
-                PointD[] data = ((IAudioAnalyzer)Tm).GetData(ChannelEnum.Left);
-                tr.Value[0] = ((IAudioAnalyzer)Tm).ComputeRms(data, 18995, 19005);
-                tr.Value[0] = ((IAudioAnalyzer)Tm).ComputeRms(data, 995, 1005) - tr.Value[0];
+                tr.Value[0] = l2 - l1;
             }
 
             if (RightChannel)
             {
-                PointD[] data = ((IAudioAnalyzer)Tm).GetData(ChannelEnum.Right);
-                tr.Value[1] = ((IAudioAnalyzer)Tm).ComputeRms(data, 18995, 19005);
-                tr.Value[1] = ((IAudioAnalyzer)Tm).ComputeRms(data, 995, 1005) - tr.Value[1];
+                tr.Value[1] = r2 - r1;
             }
 
             bool passLeft = true, passRight = true;
@@ -105,9 +99,9 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
         {
             s = "";
 
-            if (((IAudioAnalyzer)Tm).GetInputRanges().Contains(AnalyzerInputRange) == false)
+            if (((IAudioAnalyzer)Tm.TestClass).GetInputRanges().Contains(AnalyzerInputRange) == false)
             {
-                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm).GetInputRanges());
+                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm.TestClass).GetInputRanges());
                 return false;
             }
 

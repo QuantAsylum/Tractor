@@ -51,34 +51,20 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
 
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, AnalyzerOutputLevel - 6, 19000);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(true, AnalyzerOutputLevel - 6, 20000);
-            ((IAudioAnalyzer)Tm.TestClass).RunSingle();
-
-            while (((IAudioAnalyzer)Tm.TestClass).AnalyzerIsBusy())
-            {
-                Thread.Sleep(20);
-            }
+            ((IAudioAnalyzer)Tm.TestClass).DoAcquisition();
 
             TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
-            if (LeftChannel)
-            {
-                PointD[] data = ((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Left);
-                tr.Value[0] = ((IAudioAnalyzer)Tm.TestClass).ComputeRms(data, 18995, 19005);
-                tr.Value[0] = ((IAudioAnalyzer)Tm.TestClass).ComputeRms(data, 995, 1005) - tr.Value[0];
-            }
-
-            if (RightChannel)
-            {
-                PointD[] data = ((IAudioAnalyzer)Tm.TestClass).GetData(ChannelEnum.Right);
-                tr.Value[1] = ((IAudioAnalyzer)Tm.TestClass).ComputeRms(data, 18995, 19005);
-                tr.Value[1] = ((IAudioAnalyzer)Tm.TestClass).ComputeRms(data, 995, 1005) - tr.Value[1];
-            }
+            ((IAudioAnalyzer)Tm.TestClass).ComputeRms(18995, 19005, out double toneRmsL, out double toneRmsR);
+            ((IAudioAnalyzer)Tm.TestClass).ComputeRms(990, 1010, out double productLeft, out double productRight);
+            tr.Value[0] = toneRmsL + 6 - productLeft;
+            tr.Value[1] = toneRmsR + 6 - productRight;
 
             bool passLeft = true, passRight = true;
 
             if (LeftChannel)
             {
-                tr.StringValue[0] = tr.Value[0].ToString("0.0") + " dB";
+                tr.StringValue[0] = "1 KHz mixing product is " + tr.Value[0].ToString("0.0") + " dBc from combined amplitude of 19 and  ";
                 if ((tr.Value[0] < MinimumPassLevel) || (tr.Value[0] > MaximumPassLevel))
                     passLeft = false;
             }
@@ -108,15 +94,15 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
         public override bool CheckValues(out string s)
         {
             s = "";
-            if (((IProgrammableLoad)Tm).GetSupportedImpedances().Contains(ProgrammableLoadImpedance) == false)
+            if (((IProgrammableLoad)Tm.TestClass).GetSupportedImpedances().Contains(ProgrammableLoadImpedance) == false)
             {
-                s = "Output impedance must be: " + string.Join(" ", ((IProgrammableLoad)Tm).GetSupportedImpedances());
+                s = "Output impedance must be: " + string.Join(" ", ((IProgrammableLoad)Tm.TestClass).GetSupportedImpedances());
                 return false;
             }
 
-            if (((IAudioAnalyzer)Tm).GetInputRanges().Contains(AnalyzerInputRange) == false)
+            if (((IAudioAnalyzer)Tm.TestClass).GetInputRanges().Contains(AnalyzerInputRange) == false)
             {
-                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm).GetInputRanges());
+                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm.TestClass).GetInputRanges());
                 return false;
             }
 

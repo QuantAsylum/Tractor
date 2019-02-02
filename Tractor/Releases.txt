@@ -1,4 +1,10 @@
-﻿0.72
+﻿0.75
+- Added splash
+- Added cloud database support
+- QA401 Test flow now resembles QA401H test flow (eg processing done without pulling data across)
+
+
+0.72
 - Major re-structuring for implementing test hardware. They are now a collection of interfaces, and you group interfaces
   based on instrument availability and functionality. Options may be supersetted or subsetted.
 - Added Audition01 test command

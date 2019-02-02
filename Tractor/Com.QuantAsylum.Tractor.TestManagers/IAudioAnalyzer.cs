@@ -18,11 +18,14 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         int[] GetInputRanges();
         void SetInputRange(int attenLevel_dB);
 
-        void RunSingle();
+        void DoAcquisition();
+        void DoAcquisitionAsync();
         bool AnalyzerIsBusy();
 
-        double ComputeRms(PointD[] data, float startFreq, float stopFreq);
-        double ComputeThdPct(PointD[] data, float fundamental, float stopFreq);
+        //double ComputeRms(PointD[] data, float startFreq, float stopFreq);
+        void ComputeRms(double startFreq, double stopFreq, out double RmsDbvL, out double RmsDbvR);
+        //double ComputeThdPct(PointD[] data, float fundamental, float stopFreq);
+        void ComputeThdPct(double fundamental, double stopFreq, out double ThdPctL, out double ThdPctR);
 
         void AuditionStart(string fileName, double volume, bool repeat);
         void AuditionSetVolume(double volume);

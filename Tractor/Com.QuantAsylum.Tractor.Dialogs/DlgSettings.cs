@@ -6,11 +6,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using Tractor;
+using Tractor.Com.QuantAsylum.Tractor.Database;
 
 namespace Com.QuantAsylum.Tractor.Dialogs
 {
@@ -18,18 +20,21 @@ namespace Com.QuantAsylum.Tractor.Dialogs
     {
         AppSettings Settings;
 
+        bool CanClose = true;
+
         public DlgSettings(AppSettings settings)
         {
             InitializeComponent();
             Settings = settings;
             label5.Text = "";
+            label7.Text = "";
         }
 
         private void DlgSettings_Load(object sender, EventArgs e)
         {
             foreach (Type testType in System.Reflection.Assembly.GetExecutingAssembly().GetTypes()
-                            .Where(  mytype => (mytype.GetInterfaces().Contains(typeof(IComposite))) ||                           
-                                              (mytype.GetInterfaces().Contains(typeof(IInstrument)))   
+                            .Where(mytype => (mytype.GetInterfaces().Contains(typeof(IComposite))) ||
+                                            (mytype.GetInterfaces().Contains(typeof(IInstrument)))
                             ))
             {
                 comboBox1.Items.Add(testType.FullName);
@@ -44,15 +49,43 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             checkBox3.Checked = Settings.UseDb;
             textBox2.Text = Settings.DbConnectString;
             textBox3.Text = Settings.DbSessionName;
+            textBox4.Text = Settings.ProductId.ToString();
+            textBox5.Text = Settings.AuditDbSessionName;
+            checkBox4.Checked = Settings.UseAuditDb;
+            textBox6.Text = Settings.AuditDbEmail;
         }
 
+        private void DlgSettings_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (CanClose == false)
+                e.Cancel = true;
+        }
+
+        // OK Button clicked
         private void button1_Click(object sender, EventArgs e)
         {
-            Settings.TestClass = comboBox1.Text;
-            Settings.AbortOnFailure = checkBox1.Checked;
-            Settings.UseDb = checkBox3.Checked;
-            Settings.DbConnectString = textBox2.Text;
-            Settings.DbSessionName = textBox3.Text;
+            if (Guid.TryParse(textBox4.Text, out Guid guidResult))
+            {
+                Settings.TestClass = comboBox1.Text;
+                Settings.AbortOnFailure = checkBox1.Checked;
+                Settings.UseDb = checkBox3.Checked;
+                Settings.DbConnectString = textBox2.Text;
+                Settings.DbSessionName = textBox3.Text;
+                Settings.ProductId = guidResult;
+                Settings.AuditDbSessionName = textBox5.Text;
+                Settings.UseAuditDb = checkBox4.Checked;
+                Settings.AuditDbEmail = textBox6.Text;
+                return;
+            }
+
+            CanClose = false;
+
+        }
+
+        // Cancel button clicked
+        private void button2_Click(object sender, EventArgs e)
+        {
+            CanClose = true;
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -86,5 +119,91 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             else
                 label5.Text = "Error";
         }
+
+        // Test connection to audit database
+        private void button6_Click(object sender, EventArgs e)
+        {
+            label7.Text = "Wait...";
+            label7.Update();
+            if (AuditDb.CheckService())
+            {
+                label7.Text = "Connection successful";
+            }
+            else
+            {
+                label7.Text = "Connection failed. Service or internet connection may be down";
+            }
+        }
+
+        // Generate new Product ID
+        private void button7_Click(object sender, EventArgs e)
+        {
+            textBox4.Text = Guid.NewGuid().ToString();
+            label7.Text = "";
+        }
+
+        // Save Product ID to file
+        private void button8_Click(object sender, EventArgs e)
+        {
+            if (Guid.TryParse(textBox4.Text, out Guid guidResult))
+            {
+                try
+                {
+                    SaveFileDialog sfd = new SaveFileDialog();
+                    sfd.InitialDirectory = Constants.PidPath;
+                    sfd.DefaultExt = "pid";
+                    sfd.Filter = "pid files (*.pid) | *.pid";
+                    sfd.CheckPathExists = true;
+
+                    if (sfd.ShowDialog() == DialogResult.OK)
+                    {
+                        File.WriteAllText(sfd.FileName, guidResult.ToString());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.WriteLine(LogType.Error, "An exception occured saving a PID to a file: " + ex.Message);
+                }
+            }
+            else
+            {
+                label7.Text = "Bad GUID. Please correct and try again";
+            }
+
+        }
+
+        // Load Product Id from a file
+        private void button9_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.InitialDirectory = Constants.PidPath;
+                ofd.DefaultExt = "pid";
+                ofd.Filter = "pid files (*.pid) | *.pid";
+                ofd.CheckFileExists = true;
+                ofd.CheckPathExists = true;
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string[] lines = File.ReadAllLines(ofd.FileName);
+
+                    if (Guid.TryParse(lines[0], out Guid guidResult))
+                    {
+                        textBox4.Text = guidResult.ToString();
+                        return;
+                    }
+
+                    MessageBox.Show("Failed to load file because the GUID couldn't be parsed");
+                    
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.WriteLine(LogType.Error, "An exception occured load a PID fron a file: " + ex.Message);
+            }
+        }
+
+        
     }
 }

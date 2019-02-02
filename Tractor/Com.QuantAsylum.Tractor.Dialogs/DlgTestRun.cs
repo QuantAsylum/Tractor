@@ -10,6 +10,12 @@ using Com.QuantAsylum.Tractor.HTML;
 using Tractor;
 using Com.QuantAsylum.Tractor.Database;
 using System.Collections.Generic;
+using Tractor.Com.QuantAsylum.Tractor.Database;
+using System.Security.Cryptography;
+using Com.QuantAsylum.Tractor.Settings;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
+using System.Text;
 
 namespace Com.QuantAsylum.Tractor.Dialogs
 {
@@ -39,8 +45,9 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
         private void DlgReporting_Load(object sender, EventArgs e)
         {
+            statusStrip1.Items.Add(new ToolStripStatusLabel("---"));
             dataGridView1.DefaultCellStyle.Font = new Font("Arial", 12);
-            dataGridView1.RowTemplate.MinimumHeight= 25;
+            dataGridView1.RowTemplate.MinimumHeight = 25;
             dataGridView1.ReadOnly = true;
 
             dataGridView1.ColumnCount = Enum.GetValues(typeof(ColText)).Cast<int>().Max() + 1;
@@ -100,7 +107,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                 if (((IInstrument)Tm.TestClass).IsConnected() == false)
                     ((IInstrument)Tm.TestClass).ConnectToDevice();
             }
-           
+
 
             ClearPassFailResultColumn();
 
@@ -152,10 +159,10 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                             dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.PASSFAIL, i].Value = "Running..."; });
                         }
 
-                        dataGridView1.Invoke((MethodInvoker)delegate 
+                        dataGridView1.Invoke((MethodInvoker)delegate
                         {
                             dataGridView1[(int)ColText.TARGET, i].Value = Form1.AppSettings.TestList[i].GetTestLimits();
-                            dataGridView1.FirstDisplayedScrollingRowIndex = i > 2 ? i-2 : 0;
+                            dataGridView1.FirstDisplayedScrollingRowIndex = i > 2 ? i - 2 : 0;
                         });
 
                         while (Pause)
@@ -181,7 +188,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                                 break;
                         }
 
-                        if (Form1.AppSettings.AbortOnFailure && (tr.Pass == false) )
+                        if (Form1.AppSettings.AbortOnFailure && (tr.Pass == false))
                         {
                             Abort = true;
                         }
@@ -219,49 +226,52 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                             Form1.AppSettings.TestList[i].TestResultBitmap == null ? "[No Image]" : html.ImageLink("Screen", Form1.AppSettings.TestList[i].TestResultBitmap)
                             ));
 
+                        if (Form1.AppSettings.UseAuditDb)
+                        {
+                            if (Form1.AppSettings.TestList[i].LeftChannel)
+                            {
+                                SubmitToAuditDb(0, Form1.AppSettings.TestList[i], tr);
+                            }
+                            if (Form1.AppSettings.TestList[i].RightChannel)
+                            {
+                                SubmitToAuditDb(1, Form1.AppSettings.TestList[i], tr);
+                            }
+                        }
+
                         // Add to database if needed
                         if (Form1.AppSettings.UseDb)
                         {
-         
                             // Left channel
                             if (Form1.AppSettings.TestList[i].LeftChannel)
                             {
-                                Test tri = new Test()
-                                {
-                                    SerialNumber = Tm.LocalStash.ContainsKey("SerialNumber") ? Tm.LocalStash["SerialNumber"] : "0",
-                                    SessionName = Form1.AppSettings.DbSessionName,
-                                    Name = Form1.AppSettings.TestList[i].Name,
-                                    Time = DateTime.Now,
-                                    PassFail = tr.Pass,
-                                    ResultString = tr.StringValue[0],
-                                    Result = (float)tr.Value[0],
-                                    TestFile = "",
-                                    TestFileMD5 = "",
-                                    TestLimits = Form1.AppSettings.TestList[i].GetTestLimits(),
-                                    ImageArray = Form1.AppSettings.TestList[i].TestResultBitmap != null ? TestResultDatabase.BmpToBytes(Form1.AppSettings.TestList[i].TestResultBitmap) : null
-                                };
-                                Db.InsertTest(tri);
+                                SubmitToDb(0, Form1.AppSettings.TestList[i], tr);
+                            }
+
+                            if (Form1.AppSettings.TestList[i].RightChannel)
+                            {
+                                SubmitToDb(1, Form1.AppSettings.TestList[i], tr);
                             }
 
                             // Right channel
-                            if (Form1.AppSettings.TestList[i].RightChannel)
-                            {
-                                Test tri = new Test()
-                                {
-                                    SerialNumber = Tm.LocalStash.ContainsKey("SerialNumber") ? Tm.LocalStash["SerialNumber"] : "0",
-                                    SessionName = Form1.AppSettings.DbSessionName,
-                                    Name = Form1.AppSettings.TestList[i].Name,
-                                    Time = DateTime.Now,
-                                    PassFail = tr.Pass,
-                                    ResultString = tr.StringValue[1],
-                                    Result = (float)tr.Value[1],
-                                    TestFile = "",
-                                    TestFileMD5 = "",
-                                    TestLimits = Form1.AppSettings.TestList[i].GetTestLimits(),
-                                    ImageArray = Form1.AppSettings.TestList[i].TestResultBitmap != null ? TestResultDatabase.BmpToBytes(Form1.AppSettings.TestList[i].TestResultBitmap) : null
-                                };
-                                Db.InsertTest(tri);
-                            }
+                            //if (Form1.AppSettings.TestList[i].RightChannel)
+                            //{
+                            //    Test tri = new Test()
+                            //    {
+                            //        SerialNumber = Tm.LocalStash.ContainsKey("SerialNumber") ? Tm.LocalStash["SerialNumber"] : "0",
+                            //        SessionName = Form1.AppSettings.DbSessionName,
+                            //        Name = Form1.AppSettings.TestList[i].Name,
+                            //        Time = DateTime.Now,
+                            //        PassFail = tr.Pass,
+                            //        ResultString = tr.StringValue[1],
+                            //        Result = (float)tr.Value[1],
+                            //        TestFile = "",
+                            //        TestFileMD5 = "",
+                            //        TestLimits = Form1.AppSettings.TestList[i].GetTestLimits(),
+                            //        ImageArray = Form1.AppSettings.TestList[i].TestResultBitmap != null ? TestResultDatabase.BmpToBytes(Form1.AppSettings.TestList[i].TestResultBitmap) : null
+                            //    };
+                            //    Db.InsertTest(tri);
+                            //}
+
                         }
 
                         if (IsConnected() == false)
@@ -289,6 +299,59 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                 }
 
             }).Start();
+        }
+
+        private void SubmitToDb(int channelIndex, TestBase tb, TestResult tr)
+        {
+            Test tri = new Test()
+            {
+                SerialNumber = Tm.LocalStash.ContainsKey("SerialNumber") ? Tm.LocalStash["SerialNumber"] : "0",
+                SessionName = Form1.AppSettings.DbSessionName,
+                Name = tb.Name,
+                Time = DateTime.Now,
+                PassFail = tr.Pass,
+                ResultString = tr.StringValue[channelIndex],
+                Result = (float)tr.Value[channelIndex],
+                TestFile = "",
+                TestFileMD5 = "",
+                TestLimits = tb.GetTestLimits(),
+                ImageArray = tb.TestResultBitmap != null ? TestResultDatabase.BmpToBytes(tb.TestResultBitmap) : null
+            };
+            Db.InsertTest(tri);
+        }
+
+        private void SubmitToAuditDb(int channelIndex, TestBase tb, TestResult tr)
+        {
+            AuditData d = new AuditData()
+            {
+                ProductId = Form1.AppSettings.ProductId.ToString(),
+                SerialNumber = Tm.LocalStash.ContainsKey("SerialNumber") ? Tm.LocalStash["SerialNumber"] : "0",
+                SessionName = Form1.AppSettings.AuditDbSessionName,
+                Name = tb.Name,
+                TestFile = Form1.SettingsFile,
+                TestFileMd5 = ComputeMd5(Form1.AppSettings),
+                Time = DateTime.Now,
+                PassFail = tr.Pass,
+                ResultString = tr.StringValue[channelIndex],
+                Result = (float)tr.Value[channelIndex],
+                TestLimits = tb.GetTestLimits(),
+                Email = Form1.AppSettings.AuditDbEmail
+            };
+            AuditDb.SubmitAuditData(d);
+        }
+
+        private string ComputeMd5(AppSettings settings)
+        {
+            byte[] bytes = ASCIIEncoding.ASCII.GetBytes(settings.Serialize());
+            byte[] hash = null;
+
+            BinaryFormatter bf = new BinaryFormatter();
+            using (var md5 = MD5.Create())
+            {
+                hash = md5.ComputeHash(bytes);
+            }
+
+            return Convert.ToBase64String(hash);
         }
 
         private void TestPassFinished(bool allTestPassed)
@@ -375,6 +438,13 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                 this.Opacity = 0.6;
             else
                 this.Opacity = 1.0;
+        }
+
+        // This timer provides general status updates. It runs all the time
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+            ToolStripStatusLabel lbl = (ToolStripStatusLabel)statusStrip1.Items[0];
+            lbl.Text = string.Format("Audit Queue Depth: {0} items", AuditDb.AuditQueueDepth.ToString());
         }
     }
 }
