@@ -2,6 +2,8 @@
 - Added splash
 - Added cloud database support
 - QA401 Test flow now resembles QA401H test flow (eg processing done without pulling data across)
+- Significant re-structuring of THD and RMS measurements internally. These have only been lightly tested
+- Requires QA401 version 1.708 or later
 
 
 0.72
