@@ -3,7 +3,9 @@
 - Added cloud database support
 - QA401 Test flow now resembles QA401H test flow (eg processing done without pulling data across)
 - Significant re-structuring of THD and RMS measurements internally. These have only been lightly tested
-- Requires QA401 version 1.708 or later
+- Requires QA401 version 1.709 or later, and QA401H version 0.94 or later
+- Added complete error checking to Gain01 test. This needs to be replicated out to other other tests
+- Made FFT size an option for every test
 
 
 0.72

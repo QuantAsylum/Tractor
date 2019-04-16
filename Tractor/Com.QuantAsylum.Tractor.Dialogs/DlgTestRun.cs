@@ -139,6 +139,8 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
                     bool allPassed = true;
 
+                    Guid testGroup = Guid.NewGuid();
+
                     for (int i = 0; i < Form1.AppSettings.TestList.Count; i++)
                     {
                         dataGridView1[(int)ColText.PASSFAIL, i].Style.BackColor = Color.White;
@@ -230,11 +232,11 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                         {
                             if (Form1.AppSettings.TestList[i].LeftChannel)
                             {
-                                SubmitToAuditDb(0, Form1.AppSettings.TestList[i], tr);
+                                SubmitToAuditDb(testGroup, 0, Form1.AppSettings.TestList[i], tr);
                             }
                             if (Form1.AppSettings.TestList[i].RightChannel)
                             {
-                                SubmitToAuditDb(1, Form1.AppSettings.TestList[i], tr);
+                                SubmitToAuditDb(testGroup, 1, Form1.AppSettings.TestList[i], tr);
                             }
                         }
 
@@ -244,34 +246,13 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                             // Left channel
                             if (Form1.AppSettings.TestList[i].LeftChannel)
                             {
-                                SubmitToDb(0, Form1.AppSettings.TestList[i], tr);
+                                SubmitToDb(testGroup, 0, Form1.AppSettings.TestList[i], tr);
                             }
 
                             if (Form1.AppSettings.TestList[i].RightChannel)
                             {
-                                SubmitToDb(1, Form1.AppSettings.TestList[i], tr);
+                                SubmitToDb(testGroup, 1, Form1.AppSettings.TestList[i], tr);
                             }
-
-                            // Right channel
-                            //if (Form1.AppSettings.TestList[i].RightChannel)
-                            //{
-                            //    Test tri = new Test()
-                            //    {
-                            //        SerialNumber = Tm.LocalStash.ContainsKey("SerialNumber") ? Tm.LocalStash["SerialNumber"] : "0",
-                            //        SessionName = Form1.AppSettings.DbSessionName,
-                            //        Name = Form1.AppSettings.TestList[i].Name,
-                            //        Time = DateTime.Now,
-                            //        PassFail = tr.Pass,
-                            //        ResultString = tr.StringValue[1],
-                            //        Result = (float)tr.Value[1],
-                            //        TestFile = "",
-                            //        TestFileMD5 = "",
-                            //        TestLimits = Form1.AppSettings.TestList[i].GetTestLimits(),
-                            //        ImageArray = Form1.AppSettings.TestList[i].TestResultBitmap != null ? TestResultDatabase.BmpToBytes(Form1.AppSettings.TestList[i].TestResultBitmap) : null
-                            //    };
-                            //    Db.InsertTest(tri);
-                            //}
-
                         }
 
                         if (IsConnected() == false)
@@ -301,7 +282,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             }).Start();
         }
 
-        private void SubmitToDb(int channelIndex, TestBase tb, TestResult tr)
+        private void SubmitToDb(Guid testGroup, int channelIndex, TestBase tb, TestResult tr)
         {
             Test tri = new Test()
             {
@@ -312,6 +293,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                 PassFail = tr.Pass,
                 ResultString = tr.StringValue[channelIndex],
                 Result = (float)tr.Value[channelIndex],
+                TestGroup = testGroup.ToString(),
                 TestFile = "",
                 TestFileMD5 = "",
                 TestLimits = tb.GetTestLimits(),
@@ -320,14 +302,16 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             Db.InsertTest(tri);
         }
 
-        private void SubmitToAuditDb(int channelIndex, TestBase tb, TestResult tr)
+        private void SubmitToAuditDb(Guid testGroup, int channelIndex, TestBase tb, TestResult tr)
         {
             AuditData d = new AuditData()
             {
                 ProductId = Form1.AppSettings.ProductId.ToString(),
                 SerialNumber = Tm.LocalStash.ContainsKey("SerialNumber") ? Tm.LocalStash["SerialNumber"] : "0",
                 SessionName = Form1.AppSettings.AuditDbSessionName,
+                Channel = channelIndex == 0 ? "Left" : "Right",
                 Name = tb.Name,
+                TestGroup = testGroup.ToString(),
                 TestFile = Form1.SettingsFile,
                 TestFileMd5 = ComputeMd5(Form1.AppSettings),
                 Time = DateTime.Now,

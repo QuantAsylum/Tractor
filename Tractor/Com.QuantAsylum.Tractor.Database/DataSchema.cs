@@ -75,6 +75,12 @@ namespace Com.QuantAsylum.Tractor.Database
         public string SessionName;
 
         /// <summary>
+        /// A guid indicating the group this test belongs to
+        /// </summary>
+        [Column]
+        public string TestGroup;
+
+        /// <summary>
         /// This is the name of the test file that was loaded to test this particular product
         /// </summary>
         [Column]

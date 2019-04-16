@@ -202,6 +202,11 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             Qa401.ComputeRms(startFreq, stopFreq, out rmsDbvL, out rmsDbvR);
         }
 
+        public void ComputePeak(double startFreq, double stopFreq, out double PeakDbvL, out double PeakDbvR)
+        {
+            Qa401.GetPeak(startFreq, stopFreq, out PeakDbvL, out PeakDbvR);
+        }
+
         public void ComputeThdPct(double fundamental, double stopFreq, out double thdPctL, out double thdPctR)
         {
             Qa401.ComputeThdPct(fundamental, stopFreq, out thdPctL, out thdPctR);

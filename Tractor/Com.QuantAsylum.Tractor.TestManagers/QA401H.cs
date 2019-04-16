@@ -3,23 +3,21 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 
-namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
+namespace Com.QuantAsylum.Tractor.TestManagers
 {
-    /// <summary>
-    /// This is a test-fit only. Do not try to use this class
-    /// </summary>
-    class QA401H_DO_NOT_USE : IInstrument, IAudioAnalyzer
+    class QA401H : IInstrument, IAudioAnalyzer
     {
         static HttpClient Client = new HttpClient();
         static string RootUrl;
 
-        public QA401H_DO_NOT_USE()
+        public QA401H()
         {
             SetRootUrl("http://localhost:9401");
         }
@@ -33,11 +31,6 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
             };
         }
 
-        //public bool AnalyzerIsBusy()
-        //{
-        //    return false;
-        //}
-
         public void AudioAnalyzerSetTitle(string s)
         {
             return;
@@ -45,12 +38,12 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
 
         public void AudioGenSetGen1(bool isOn, float ampLevel_dBV, float freq_Hz)
         {
-            PutSync(string.Format("/Settings/AudioGen/1/{0}/{1}/{2}", isOn, freq_Hz, ampLevel_dBV));
+            PutSync(string.Format("/Settings/AudioGen/1/{0}/{1}/{2}", isOn ? 1 : 0, freq_Hz, ampLevel_dBV));
         }
 
         public void AudioGenSetGen2(bool isOn, float ampLevel_dBV, float freq_Hz)
         {
-            PutSync(string.Format("/Settings/AudioGen/2/{0}/{1}/{2}", isOn, freq_Hz, ampLevel_dBV));
+            PutSync(string.Format("/Settings/AudioGen/2/{0}/{1}/{2}", isOn ? 1 : 0, freq_Hz, ampLevel_dBV));
         }
 
         public void AuditionSetVolume(double volume)
@@ -73,6 +66,13 @@ namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
             Dictionary<string, object> d = GetSync(string.Format("/RmsDbv/{0}/{1}", startFreq, stopFreq));
             rmsDbvL = Convert.ToDouble(d["Left"]);
             rmsDbvR = Convert.ToDouble(d["Right"]);
+        }
+
+        public void ComputePeak(double startFreq, double stopFreq, out double PeakDbvL, out double PeakDbvR)
+        {
+            Dictionary<string, object> d = GetSync(string.Format("/PeakDbv/{0}/{1}", startFreq, stopFreq));
+            PeakDbvL = Convert.ToDouble(d["Left"]);
+            PeakDbvR = Convert.ToDouble(d["Right"]);
         }
 
         public void ComputeThdPct(double fundamental, double stopFreq, out double thdPctL, out double thdPctR)

@@ -125,13 +125,28 @@ namespace Com.QuantAsylum.Tractor.Dialogs
         {
             label7.Text = "Wait...";
             label7.Update();
-            if (AuditDb.CheckService())
+
+            try
             {
-                label7.Text = "Connection successful";
+                if (double.TryParse(AuditDb.CheckService(), out double result))
+                {
+                    if (result >= Constants.RequiredWebserviceVersion)
+                    {
+                        label7.Text = string.Format("Connection successful. Webservice version: {0:0.00}", result);
+                    }
+                    else
+                    {
+                        label7.Text = string.Format("Bad version. Needed {0:0.00} but found {1:0.00}", Constants.RequiredWebserviceVersion, result);
+                    }
+                }
+                else
+                {
+                    label7.Text = "Connection failed. Service or internet connection may be down";
+                }
             }
-            else
+            catch (Exception ex)
             {
-                label7.Text = "Connection failed. Service or internet connection may be down";
+                label7.Text = ex.Message.Substring(0, Math.Min(100, ex.Message.Length-1));
             }
         }
 

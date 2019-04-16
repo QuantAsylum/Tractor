@@ -196,7 +196,8 @@ namespace Tractor
             }
             else
             {
-                treeView1.SelectedNode = treeView1.Nodes[0];
+                if (treeView1.Nodes.Count > 0)
+                    treeView1.SelectedNode = treeView1.Nodes[0];
             }
         }
 
@@ -250,7 +251,12 @@ namespace Tractor
         private void UpdateTestConcerns(TestBase tb)
         {
             string s;
-            if (tb.IsRunnable())
+
+            if (tb == null)
+            {
+                s = "Description: \n\nRunnable: \n\nIssues:";
+            }
+            else if (tb.IsRunnable())
             {
                 tb.CheckValues(out string values);
                 s = string.Format("Description: {0}\n\nRunnable: Yes\n\nIssues:{1}", tb.GetTestDescription(), values == "" ? "None" : values);
@@ -438,6 +444,32 @@ namespace Tractor
             SetTreeviewControls();
         }
 
+        private void newTestPlan_Click(object sender, EventArgs e)
+        {
+            if (AppSettingsDirty)
+            {
+                if (MessageBox.Show("You have unsaved data. Save it first?", "Unsaved data", MessageBoxButtons.YesNo) == DialogResult.OK)
+                {
+                    if (SettingsFile != "")
+                        saveTestPlanToolStripMenuItem_Click(null, null);
+                    else
+                        saveAsToolStripMenuItem_Click(null, null);
+                }
+            }
+
+            AppSettings = new AppSettings();
+            AppSettingsDirty = true;
+            Type t = Type.GetType(AppSettings.TestClass);
+            Tm.TestClass = Activator.CreateInstance(t);
+            foreach (TestBase test in AppSettings.TestList)
+            {
+                test.SetTestManager(Tm);
+            }
+            ClearEditFields();
+            UpdateTestConcerns(null);
+            RePopulateTreeView();
+        }
+
         /// <summary>
         /// Loads settings from file system
         /// </summary>
@@ -445,6 +477,17 @@ namespace Tractor
         /// <param name="e"></param>
         private void loadTestPlanToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (AppSettingsDirty)
+            {
+                if (MessageBox.Show("You have unsaved data. Save it first?", "Unsaved data", MessageBoxButtons.YesNo) == DialogResult.OK)
+                {
+                    if (SettingsFile != "")
+                        saveTestPlanToolStripMenuItem_Click(null, null);
+                    else
+                        saveAsToolStripMenuItem_Click(null, null);
+                }
+            }
+
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.InitialDirectory = Constants.DataFilePath;
             ofd.Filter = "Test Profile files (*.tp)|*.tp|All files (*.*)|*.*";
@@ -558,6 +601,17 @@ namespace Tractor
             {
                 MessageBox.Show("The log doesn't yet exist.");
             }
+        }
+
+        private void queryCloudToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DlgQuery dlg = new DlgQuery();
+
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+
+            }
+
         }
     }
 }

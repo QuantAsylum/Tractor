@@ -36,20 +36,20 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             tr = new TestResult(2);
 
             Tm.SetToDefaults();
-            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(4096);
+            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(4096); // was 4096 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
 
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, AnalyzerOutputLevel, TestFrequency);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, AnalyzerOutputLevel, TestFrequency);
 
-            Thread.CurrentThread.Priority = ThreadPriority.BelowNormal;
+            //Thread.CurrentThread.Priority = ThreadPriority.BelowNormal;
             ((IAudioAnalyzer)Tm.TestClass).DoAcquisition();
 
             TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
             // Compute the total RMS around the freq of interest
-            ((IAudioAnalyzer)Tm.TestClass).ComputeRms(TestFrequency * 0.98f, TestFrequency * 1.02f, out double l1, out double r1);
+            ((IAudioAnalyzer)Tm.TestClass).ComputePeak(TestFrequency * 0.90f, TestFrequency * 1.10f, out double l1, out double r1);
             tr.Value[0] = l1 + ExternalAnalyzerInputGain - AnalyzerOutputLevel;
             tr.Value[1] = r1 + ExternalAnalyzerInputGain - AnalyzerOutputLevel;
 
@@ -85,6 +85,39 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
                 tr.Pass = passRight;
 
             return;
+        }
+
+        public override bool CheckValues(out string s)
+        {
+            s = "";
+            if (IsParamsValid(out s) == false)
+                return false;
+
+            if (TestFrequency < 1 || TestFrequency > 20000)
+            {
+                s = "Test Frequency must be >= 1 and <= 20";
+                return false;
+            }
+
+            if (AnalyzerOutputLevel < -110 || AnalyzerOutputLevel >5)
+            {
+                s = "Analyzer output level must be >= -110 and <= 5";
+                return false;
+            }
+
+            if (MaximumPassGain <= MinimumPassGain)
+            {
+                s = "Maximum Pass Gain must be > Minimum Pass Gain";
+                return false;
+            }
+
+            if (((IAudioAnalyzer)Tm.TestClass).GetInputRanges().Contains(AnalyzerInputRange) == false)
+            {
+                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm.TestClass).GetInputRanges());
+                return false;
+            }
+
+            return true;
         }
 
         public override string GetTestLimits()

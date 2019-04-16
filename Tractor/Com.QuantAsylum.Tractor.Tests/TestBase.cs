@@ -99,6 +99,7 @@ namespace Com.QuantAsylum.Tractor.Tests
         internal enum TestTypeEnum { Unspecified, User, LevelGain, FrequencyResponse, Phase, CrossTalk, SNR, Distortion, Other };
         internal TestTypeEnum TestType = TestTypeEnum.Unspecified;
 
+        public int FftLength = 8192;
         public int RetryCount = 2;
         public bool LeftChannel = true;
         public bool RightChannel = true;
@@ -284,9 +285,35 @@ namespace Com.QuantAsylum.Tractor.Tests
             IsDirty = false;
         }
 
+
         public virtual bool CheckValues(out string s)
         {
             s = "";
+            return true;
+        }
+
+        public bool IsParamsValid(out string s)
+        {
+            s = "";
+            if (FftLength < 2048 || FftLength > Math.Pow(2, 18))
+            {
+                s = "FFT length must be >= 2048 and <= 2^18";
+                return false;
+            }
+
+            // Make sure power of two
+            if ((FftLength & (FftLength - 1)) != 0)
+            {
+                s = "FFT length must be a power of two";
+                return false;
+            }
+
+            if (RetryCount < 1 || RetryCount > 10)
+            {
+                s = "Retry count must be >= 1 and <= 10";
+                return false;
+            }
+
             return true;
         }
 

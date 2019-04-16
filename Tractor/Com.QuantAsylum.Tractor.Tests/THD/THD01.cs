@@ -32,7 +32,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             tr = new TestResult(2);
 
             Tm.SetToDefaults();
-            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(32768);
+            ((IAudioAnalyzer)Tm.TestClass).SetFftLength((uint)FftLength);
 
            ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(InputRange);

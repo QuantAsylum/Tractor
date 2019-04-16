@@ -97,6 +97,12 @@
     <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgPrompt.Designer.cs">
       <DependentUpon>DlgPrompt.cs</DependentUpon>
     </Compile>
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgQuery.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgQuery.Designer.cs">
+      <DependentUpon>DlgQuery.cs</DependentUpon>
+    </Compile>
     <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgSettings.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -160,6 +166,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Log.cs" />
+    <Compile Include="Maths.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgAddTest.resx">
@@ -179,6 +186,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgPrompt.resx">
       <DependentUpon>DlgPrompt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgQuery.resx">
+      <DependentUpon>DlgQuery.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgSettings.resx">
       <DependentUpon>DlgSettings.cs</DependentUpon>

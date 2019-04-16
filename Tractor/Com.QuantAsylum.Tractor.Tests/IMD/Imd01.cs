@@ -45,8 +45,9 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
 
-            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, AnalyzerOutputLevel - 6, 19000);
-            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(true, AnalyzerOutputLevel - 6, 20000);
+            // The RMS of two distinct but equal tones is 3 dBV above level of the tones
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, AnalyzerOutputLevel - 3, 19000);
+            ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(true, AnalyzerOutputLevel - 3, 20000);
             ((IAudioAnalyzer)Tm.TestClass).DoAcquisition();
 
             TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
@@ -115,10 +116,10 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
 
         public override string GetTestDescription()
         {
-            return "Performs IMD ITU Test. This test generates dual tones at 19 and 20 KHz, each with a level 6 dB below the specified amplitude. " +
+            return "Performs IMD ITU Test. This test generates dual tones at 19 and 20 KHz, each with a level 3 dB below the specified amplitude. " +
                    "The combined amplitude of the tones will be the value specified in the test parameters. The resultant mixing product at 1 KHz " +
-                   "is measured, and the amplitude relative to the specified amplitude is computed. If the amplitude relative to the specified output amplitude " +
-                   "is within the specified window limits, then the test is considered to pass.";
+                   "is measured, and the amplitude relative to the specified amplitude is computed. If the amplitude relative to the specified " +
+                   "output amplitude is within the specified window limits, then the test is considered to pass.";
         }
 
         public override bool IsRunnable()

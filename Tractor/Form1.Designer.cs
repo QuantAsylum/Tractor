@@ -40,6 +40,8 @@
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openLogInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.AddTestBtn = new System.Windows.Forms.Button();
@@ -60,6 +62,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
+            this.queryCloudToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openLogInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
@@ -88,7 +91,7 @@
             this.menuStrip1.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
-            //
+            // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[]
             {
                 newTestPlanToolStripMenuItem,
@@ -118,6 +121,7 @@
             this.newTestPlanToolStripMenuItem.Name = "newTestPlanToolStripMenuItem";
             this.newTestPlanToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
             this.newTestPlanToolStripMenuItem.Text = "New Test Plan";
+            this.newTestPlanToolStripMenuItem.Click += new System.EventHandler(this.newTestPlan_Click);
             // 
             // toolStripMenuItem1
             // 
@@ -167,6 +171,18 @@
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
             this.settingsToolStripMenuItem.Text = "Settings";
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
+            // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.toolsToolStripMenuItem.Text = "Tools";
+            // 
+            // openLogInBrowserToolStripMenuItem
+            // 
+            this.openLogInBrowserToolStripMenuItem.Name = "openLogInBrowserToolStripMenuItem";
+            this.openLogInBrowserToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.openLogInBrowserToolStripMenuItem.Text = "Open Log in Browser";
             // 
             // helpToolStripMenuItem
             // 
@@ -386,19 +402,20 @@
             this.panel5.Size = new System.Drawing.Size(342, 42);
             this.panel5.TabIndex = 14;
             // 
-            // toolsToolStripMenuItem
+            // queryCloudToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[]
-                {openLogInBrowserToolStripMenuItem });
+                {openLogInBrowserToolStripMenuItem, queryCloudToolStripMenuItem });
+            this.queryCloudToolStripMenuItem.Name = "queryCloudToolStripMenuItem";
+            this.queryCloudToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.queryCloudToolStripMenuItem.Text = "Query Cloud";
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
-            // 
-            // openLogInBrowserToolStripMenuItem
-            // 
             this.openLogInBrowserToolStripMenuItem.Name = "openLogInBrowserToolStripMenuItem";
             this.openLogInBrowserToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.openLogInBrowserToolStripMenuItem.Text = "Open Log in Browser";
+            this.queryCloudToolStripMenuItem.Click += new System.EventHandler(this.queryCloudToolStripMenuItem_Click);
             this.openLogInBrowserToolStripMenuItem.Click += openLogInBrowserToolStripMenuItem_Click;
             // 
             // Form1
@@ -433,6 +450,11 @@
             this.ResumeLayout(false);
             this.PerformLayout();
 
+        }
+
+        private void NewTestPlanToolStripMenuItem_Click(object sender, System.EventArgs e)
+        {
+            throw new System.NotImplementedException();
         }
 
 
@@ -471,6 +493,7 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openLogInBrowserToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem queryCloudToolStripMenuItem;
     }
 }
 
