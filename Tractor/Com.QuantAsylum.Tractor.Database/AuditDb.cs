@@ -67,17 +67,25 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
 
         static public string CheckService()
         {
-            var response = Client.GetAsync(Url + "/api/CheckService").Result;
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                string content = response.Content.ReadAsStringAsync().Result;
-                JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
-                string result = (string)jsSerializer.DeserializeObject(content);
-                var r = jsSerializer.Deserialize<string>(result);
-                Log.WriteLine(LogType.Database, string.Format("Checkservice(). Response: " + r));
-                return r;
+                var response = Client.GetAsync(Url + "/api/CheckService").Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string content = response.Content.ReadAsStringAsync().Result;
+                    JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
+                    string result = (string)jsSerializer.DeserializeObject(content);
+                    var r = jsSerializer.Deserialize<string>(result);
+                    Log.WriteLine(LogType.Database, string.Format("Checkservice(). Response: " + r));
+                    return r;
+                }
             }
+            catch (Exception ex)
+            {
+
+            }
+
             throw new HttpRequestException("CheckService() failed");
         }
 
@@ -97,17 +105,26 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
         /// <returns></returns>
         static public List<string> QueryGroupsBySerialNumber(string pid, string sn)
         {
-            QueryData d = new QueryData() { ProductId = pid, SerialNumber = sn };
+            try
+            {
+                QueryData d = new QueryData() { ProductId = pid, SerialNumber = sn };
 
-            var json = new JavaScriptSerializer().Serialize(d);
-            var body = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = Client.PostAsync(Url + "/api/QueryGroups", body).Result;
+                var json = new JavaScriptSerializer().Serialize(d);
+                var body = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = Client.PostAsync(Url + "/api/QueryGroups", body).Result;
 
-            string content = response.Content.ReadAsStringAsync().Result;
-            JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
-            string result = (string)jsSerializer.DeserializeObject(content);
-            var r = jsSerializer.Deserialize<List<string>>(result);
-            return r;
+                string content = response.Content.ReadAsStringAsync().Result;
+                JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
+                string result = (string)jsSerializer.DeserializeObject(content);
+                var r = jsSerializer.Deserialize<List<string>>(result);
+                return r;
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return new List<string> { "An error occured in QueryGroupsBySerialNumber()" };
         }
 
         /// <summary>
@@ -118,45 +135,63 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
         /// <returns></returns>
         static public string QueryTestsByGroup(string pid, string group)
         {
-            QueryData d = new QueryData() { ProductId = pid, TestGroup = group };
-
-            var json = new JavaScriptSerializer().Serialize(d);
-            var body = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = Client.PostAsync(Url + "/api/QueryTests", body).Result;
-
-            string content = response.Content.ReadAsStringAsync().Result;
-            JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
-            string result = (string)jsSerializer.DeserializeObject(content);
-            List<AuditData> ad = jsSerializer.Deserialize<List<AuditData>>(result);
-
-            StringBuilder sb = new StringBuilder();
-            if (ad.Count > 0)
+            try
             {
-                sb.AppendLine("Unit: " + ad[0].SerialNumber);
-                sb.AppendLine("Date: " + ad[0].Time.ToString());
-                for (int i = 0; i < ad.Count; i++)
+                QueryData d = new QueryData() { ProductId = pid, TestGroup = group };
+
+                var json = new JavaScriptSerializer().Serialize(d);
+                var body = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = Client.PostAsync(Url + "/api/QueryTests", body).Result;
+
+                string content = response.Content.ReadAsStringAsync().Result;
+                JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
+                string result = (string)jsSerializer.DeserializeObject(content);
+                List<AuditData> ad = jsSerializer.Deserialize<List<AuditData>>(result);
+
+                StringBuilder sb = new StringBuilder();
+                if (ad.Count > 0)
                 {
-                    sb.AppendFormat("{0}[{1}] {2} [{3}]  {4}" + Environment.NewLine, ad[i].Name, ad[i].Channel, ad[i].ResultString, ad[i].TestLimits, ad[i].PassFail);
+                    sb.AppendLine("Unit: " + ad[0].SerialNumber);
+                    sb.AppendLine("Date: " + ad[0].Time.ToString());
+                    for (int i = 0; i < ad.Count; i++)
+                    {
+                        sb.AppendFormat("{0}[{1}] {2} [{3}]  {4}" + Environment.NewLine, ad[i].Name, ad[i].Channel, ad[i].ResultString, ad[i].TestLimits, ad[i].PassFail);
+                    }
                 }
+
+                return sb.ToString();
+            }
+            catch (Exception ex)
+            {
+
             }
 
-            return sb.ToString();
+            return "An error occurred in QueryTestByGroup()";
         }
 
         static public List<string> QueryTestNames(string pid)
         {
-            QueryData d = new QueryData() { ProductId = pid };
+            try
+            {
+                QueryData d = new QueryData() { ProductId = pid };
 
-            var json = new JavaScriptSerializer().Serialize(d);
-            var body = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = Client.PostAsync(Url + "/api/QueryTestNames", body).Result;
+                var json = new JavaScriptSerializer().Serialize(d);
+                var body = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = Client.PostAsync(Url + "/api/QueryTestNames", body).Result;
 
-            string content = response.Content.ReadAsStringAsync().Result;
-            JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
-            string result = (string)jsSerializer.DeserializeObject(content);
-            List<string> vals = jsSerializer.Deserialize<List<string>>(result);
+                string content = response.Content.ReadAsStringAsync().Result;
+                JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
+                string result = (string)jsSerializer.DeserializeObject(content);
+                List<string> vals = jsSerializer.Deserialize<List<string>>(result);
 
-            return vals;
+                return vals;
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return new List<string> { "An error occured in QueryTestNames()" };
         }
 
         /// <summary>

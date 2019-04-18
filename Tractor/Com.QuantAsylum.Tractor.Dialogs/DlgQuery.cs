@@ -145,6 +145,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Dialogs
 
         private void comboBox1_DropDown(object sender, EventArgs e)
         {
+            textBox6.Clear();
             List<string> names = AuditDb.QueryTestNames(textBox4.Text);
             names.Sort();
             comboBox1.DataSource = names;

@@ -230,7 +230,10 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                     "the Cloud Database will be supported in this application only--there is no way currently for you to " +
                     "programmatically access the data. Data maybe deleted after a period of time (6 months) as " +
                     "part of housecleaning operations. You may contact us to request an extension to that period. Under " +
-                    "no circumstances can we be responsible for costs or damages due to lost data.", "Important!");
+                    "no circumstances can we be responsible for costs or damages due to lost data. Finally, make sure you " +
+                    "fill in the email address field below so that we know who to contact before data might be deleted. If " +
+                    "there is no valid email address, we will assume it was a test account and can be safely deleted at any " +
+                    "time. ", "Important!");
             }
         }
     }
