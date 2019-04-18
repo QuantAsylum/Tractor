@@ -81,6 +81,7 @@ namespace Tractor
             menuStrip1.Enabled = true;
             AddTestBtn.Enabled = true;
             AppSettingsDirty = true;
+            UpdateTitleBar();
             RePopulateTreeView();
             SetTreeviewControls();
             UpdateTestConcerns(SelectedTb);
@@ -105,13 +106,18 @@ namespace Tractor
             Directory.CreateDirectory(Constants.AuditPath);
             Directory.CreateDirectory(Constants.PidPath);
 
-            Text = Constants.TitleBarText + " " + Constants.Version.ToString("0.00") + Constants.VersionSuffix;
+            UpdateTitleBar();
 
             DefaultTreeview();
 
             SetTreeviewControls();
 
             Com.QuantAsylum.Tractor.Database.AuditDb.StartBackgroundWorker();
+        }
+
+        private void UpdateTitleBar()
+        {
+            Text = string.Format("{0} {1} [{2:0.00}{3}]", Constants.TitleBarText, Constants.Version, Path.GetFileName(SettingsFile), AppSettingsDirty ? "*" : "");
         }
 
 
@@ -159,7 +165,7 @@ namespace Tractor
             TreeNode root = new TreeNode();
             root.Text = testName + "   [" + (test as TestBase).GetTestName() + "]";
 
-            if ((test as AudioTestBase).RunTest)
+            if ((test as TestBase).RunTest)
                 root.Checked = true;
 
             treeView1.Nodes.Add(root);
@@ -356,6 +362,7 @@ namespace Tractor
 
                 TreeViewAdd(dlg.textBox1.Text, CreateTestInstance(className));
                 AppSettingsDirty = true;
+                UpdateTitleBar();
 
                 SelectedTb = AppSettings.TestList.Last();
                 RePopulateTreeView(SelectedTb.Name);
@@ -442,6 +449,7 @@ namespace Tractor
         {
             AppSettings.TestList.RemoveAt(treeView1.SelectedNode.Index);
             AppSettingsDirty = true;
+            UpdateTitleBar();
             RePopulateTreeView();
 
             SetTreeviewControls();
@@ -453,15 +461,13 @@ namespace Tractor
             {
                 if (MessageBox.Show("You have unsaved data. Save it first?", "Unsaved data", MessageBoxButtons.YesNo) == DialogResult.OK)
                 {
-                    if (SettingsFile != "")
-                        saveTestPlanToolStripMenuItem_Click(null, null);
-                    else
-                        saveAsToolStripMenuItem_Click(null, null);
+                    saveTestPlanToolStripMenuItem_Click(null, null);
                 }
             }
 
             AppSettings = new AppSettings();
             AppSettingsDirty = true;
+            UpdateTitleBar();
             Type t = Type.GetType(AppSettings.TestClass);
             Tm.TestClass = Activator.CreateInstance(t);
             foreach (TestBase test in AppSettings.TestList)
@@ -471,6 +477,7 @@ namespace Tractor
             ClearEditFields();
             UpdateTestConcerns(null);
             RePopulateTreeView();
+            UpdateTitleBar();
         }
 
         /// <summary>
@@ -484,10 +491,7 @@ namespace Tractor
             {
                 if (MessageBox.Show("You have unsaved data. Save it first?", "Unsaved data", MessageBoxButtons.YesNo) == DialogResult.OK)
                 {
-                    if (SettingsFile != "")
-                        saveTestPlanToolStripMenuItem_Click(null, null);
-                    else
-                        saveAsToolStripMenuItem_Click(null, null);
+                    saveTestPlanToolStripMenuItem_Click(null, null);
                 }
             }
 
@@ -497,11 +501,20 @@ namespace Tractor
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                SettingsFile = ofd.FileName;
-                AppSettings = AppSettings.Deserialize(File.ReadAllText(ofd.FileName));
-                Type t = Type.GetType(AppSettings.TestClass);
-                Tm.TestClass = Activator.CreateInstance(t);
-                AppSettingsDirty = false;
+                try
+                {
+                    SettingsFile = ofd.FileName;
+                    AppSettings = AppSettings.Deserialize(File.ReadAllText(ofd.FileName));
+                    Type t = Type.GetType(AppSettings.TestClass);
+                    Tm.TestClass = Activator.CreateInstance(t);
+                    AppSettingsDirty = false;
+                    UpdateTitleBar();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("There was an error loading the file: " + ex.Message, "File Load Error");
+                }
+                UpdateTitleBar();
 
                 foreach (TestBase test in AppSettings.TestList)
                 {
@@ -519,10 +532,22 @@ namespace Tractor
         private void saveTestPlanToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (SettingsFile == "")
+            {
+                saveAsToolStripMenuItem_Click(null, null);
                 return;
+            }
 
-            File.WriteAllText(SettingsFile, AppSettings.Serialize());
-            AppSettingsDirty = false;
+            try
+            {
+                File.WriteAllText(SettingsFile, AppSettings.Serialize());
+                AppSettingsDirty = false;
+                UpdateTitleBar();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("There was an error saving the file: " + ex.Message, "File Save Error");
+            }
+            UpdateTitleBar();
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -534,9 +559,18 @@ namespace Tractor
             if (sfd.ShowDialog() == DialogResult.OK)
             {
                 SettingsFile = sfd.FileName;
-                File.WriteAllText(SettingsFile, AppSettings.Serialize());
-                AppSettingsDirty = false;
+                try
+                {
+                    File.WriteAllText(SettingsFile, AppSettings.Serialize());
+                    AppSettingsDirty = false;
+                    UpdateTitleBar();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("There was an error saving the file: " + ex.Message, "File Save Error");
+                }
             }
+            UpdateTitleBar();
         }
 
         /// <summary>
@@ -556,6 +590,7 @@ namespace Tractor
                 AppSettings.TestList.RemoveAt(index);
                 AppSettings.TestList.Insert(index - 1, SelectedTb);
                 AppSettingsDirty = true;
+                UpdateTitleBar();
                 RePopulateTreeView(SelectedTb.Name);
             }
         }
@@ -577,6 +612,7 @@ namespace Tractor
                 AppSettings.TestList.RemoveAt(index);
                 AppSettings.TestList.Insert(index + 1, SelectedTb);
                 AppSettingsDirty = true;
+                UpdateTitleBar();
                 RePopulateTreeView(SelectedTb.Name);
             }
         }
@@ -587,17 +623,9 @@ namespace Tractor
 
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                // BUGBUG! If we're already connected via Dotnet remoting, then we first need to 
-                // close the connection before we try to create the instance again. Otherwise
-                // we leave the socket hanging. Since the QA401 is the only device using remoting
-                // we'll handle it special here. Long term, we move away from this and this can
-                // be removed. When that day does come, the CloseConnection() method should 
-                // be pulled from all interfaces as it's no longer needed.
-                if (Tm.TestClass is IInstrument)
-                {
-                    ((IInstrument)Tm.TestClass).CloseConnection();
-                }
-
+                AppSettingsDirty = true;
+                UpdateTitleBar();
+                ((IInstrument)Tm.TestClass).CloseConnection();
                 Type t = Type.GetType(AppSettings.TestClass);
                 Tm.TestClass = Activator.CreateInstance(t);
             }
@@ -631,6 +659,7 @@ namespace Tractor
         public void AcceptChanges()
         {
             AppSettingsDirty = true;
+            UpdateTitleBar();
             EditingInProgress = false;
             treeView1.Enabled = true;
             SetTreeviewControls();

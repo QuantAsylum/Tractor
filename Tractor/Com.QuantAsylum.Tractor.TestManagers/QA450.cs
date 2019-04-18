@@ -1,5 +1,4 @@
-﻿using Com.QuantAsylum.Tractor.TestManagers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -58,17 +57,15 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
         public bool IsRunning()
         {
-            throw new System.NotImplementedException();
+            return IsConnected();
         }
 
         public void LaunchApplication()
         {
-            throw new System.NotImplementedException();
         }
 
         public void SetToDefaults()
         {
-            throw new System.NotImplementedException();
         }
 
         public int[] GetSupportedImpedances()

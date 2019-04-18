@@ -1,12 +1,5 @@
-﻿using Com.QuantAsylum;
-using Com.QuantAsylum.Tractor.TestManagers;
-using Com.QuantAsylum.Tractor.Tests;
+﻿using Com.QuantAsylum.Tractor.TestManagers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Tractor.Com.QuantAsylum.Tractor.Tests;
 
 namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
@@ -15,7 +8,7 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
     /// Measures the noise floor without any weighting applied, from 20 to 20KHz
     /// </summary>
     [Serializable]
-    public class NoiseFloorA01 : AudioTestBase
+    public class RmsLevelA03 : AudioTestBase
     {
         [ObjectEditorAttribute(Index = 230, DisplayText = "Minimum Level to Pass (dB)", MinValue = -100, MaxValue = 100)]
         public float MinimumPassLevel = -10.5f;
@@ -23,12 +16,21 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
         [ObjectEditorAttribute(Index = 240, DisplayText = "Maximum Level to Pass (dB)", MinValue = -100, MaxValue = 100, MustBeGreaterThanIndex = 230)]
         public float MaximumPassLevel = -9.5f;
 
+        [ObjectEditorAttribute(Index = 250, DisplayText = "Load Impedance (ohms)", ValidInts = new int[] { 8, 4 })]
+        public int ProgrammableLoadImpedance = 8;
+
         [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
         public int AnalyzerInputRange = 6;
 
-        public NoiseFloorA01() : base()
+        [ObjectEditorAttribute(Index = 260, DisplayText = "RMS Measurement Start (Hz)", MinValue = 10, MaxValue = 20000)]
+        public float StartFreq = 20;
+
+        [ObjectEditorAttribute(Index = 270, DisplayText = "RMS Measurement Stop (Hz)", MinValue = 10, MaxValue = 20000, MustBeGreaterThanIndex = 260)]
+        public float EndFreq = 20000;
+
+        public RmsLevelA03() : base()
         {
-            Name = "NoiseFloorA01";
+            Name = "NoiseFloorA03";
             _TestType = TestTypeEnum.LevelGain;
         }
 
@@ -38,26 +40,27 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
             tr = new TestResult(2);
 
             Tm.SetToDefaults();
-            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
-            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize);
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
+            ((IProgrammableLoad)Tm.TestClass).SetImpedance(ProgrammableLoadImpedance);
 
             // Disable generators
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(false, -60, 1000);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(false, -60, 1000);
             ((IAudioAnalyzer)Tm.TestClass).DoAcquisition();
 
+
             TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
-            ((IAudioAnalyzer)Tm.TestClass).ComputeRms(20, 20000, out tr.Value[0], out tr.Value[1]);
+            ((IAudioAnalyzer)Tm.TestClass).ComputeRms(StartFreq, EndFreq, out tr.Value[0], out tr.Value[1]);
 
             if (LeftChannel)
-                tr.StringValue[0] = tr.Value[0].ToString("0.0") + " dB";
+                tr.StringValue[0] = tr.Value[0].ToString("0.0") + " dBV";
             else
                 tr.StringValue[0] = "SKIP";
 
             if (RightChannel)
-                tr.StringValue[1] = tr.Value[1].ToString("0.0") + " dB";
+                tr.StringValue[1] = tr.Value[1].ToString("0.0") + " dBV";
             else
                 tr.StringValue[1] = "SKIP";
 
@@ -78,7 +81,7 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
 
         public override string GetTestDescription()
         {
-            return "Measures the noise floor (residual noise) without A-Weighting applied. If the resulting measurement is " +
+            return "Measures the RMS level in the specified bandwidth with the indicated load applied. If the resulting measurement is " +
                    "within the specified limits, then 'pass = true' is returned.";
         }
 
@@ -86,7 +89,7 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
         {
             get
             {
-                return (int)HardwareTypes.AudioAnalyzer;
+                return (int)HardwareTypes.AudioAnalyzer | (int)HardwareTypes.ProgrammableLoad;
             }
         }
     }

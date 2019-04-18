@@ -1,21 +1,20 @@
-﻿using System;
+﻿using Com.QuantAsylum.Tractor.Database;
+using Com.QuantAsylum.Tractor.HTML;
+using Com.QuantAsylum.Tractor.Settings;
+using Com.QuantAsylum.Tractor.TestManagers;
+using Com.QuantAsylum.Tractor.Tests;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Windows.Forms;
-using Com.QuantAsylum.Tractor.TestManagers;
-using Com.QuantAsylum.Tractor.Tests;
-using System.Threading;
-using Com.QuantAsylum.Tractor.HTML;
-using Tractor;
-using Com.QuantAsylum.Tractor.Database;
-using System.Collections.Generic;
-using Tractor.Com.QuantAsylum.Tractor.Database;
-using System.Security.Cryptography;
-using Com.QuantAsylum.Tractor.Settings;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
+using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
+using System.Windows.Forms;
+using Tractor;
+using Tractor.Com.QuantAsylum.Tractor.Database;
 
 namespace Com.QuantAsylum.Tractor.Dialogs
 {
@@ -110,29 +109,6 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             ((IInstrument)Tm.TestClass).LaunchApplication();
             ((IInstrument)Tm.TestClass).ConnectToDevice(out result);
             return ((IInstrument)Tm.TestClass).IsConnected();
-
-           
-
-            /*
-
-            if (Tm.TestClass is IComposite)
-            {
-                if (((IComposite)Tm.TestClass).IsConnected() == false)
-                {
-                    if (((IComposite)Tm.TestClass).ConnectToDevices(out string result) == false)
-                    {
-                        MessageBox.Show(result);
-                        Abort = true;
-                        return;
-                    }
-                }
-            }
-            else if (Tm.TestClass is IInstrument)
-            {
-                if (((IInstrument)Tm.TestClass).IsConnected() == false)
-                    ((IInstrument)Tm.TestClass).ConnectToDevice();
-            }
-            */
         }
 
         private void Start()
@@ -146,7 +122,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
             if (Tm.TestClass is IPowerSupply)
             {
-                (Tm as IPowerSupply).SetSupplyState(false);
+                (Tm.TestClass as IPowerSupply).SetSupplyState(false);
                 Thread.Sleep(750);
             }
 
@@ -219,6 +195,10 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                                 if (tr.Pass)
                                     break;
                             }
+                        }
+                        else
+                        {
+                            Form1.AppSettings.TestList[i].DoTest(Form1.AppSettings.TestList[i].Name, out tr);
                         }
 
                         if (Form1.AppSettings.AbortOnFailure && (tr.Pass == false))
@@ -338,8 +318,8 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                 ResultString = tr.StringValue[channelIndex],
                 Result = (float)tr.Value[channelIndex],
                 TestGroup = testGroup.ToString(),
-                TestFile = "",
-                TestFileMD5 = "",
+                TestFile = Form1.SettingsFile,
+                TestFileMD5 = ComputeMd5(Form1.AppSettings),
                 TestLimits = tb.GetTestLimits(),
                 ImageArray = tb.TestResultBitmap != null ? TestResultDatabase.BmpToBytes(tb.TestResultBitmap) : null
             };
@@ -353,7 +333,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                 ProductId = Form1.AppSettings.ProductId.ToString(),
                 SerialNumber = Tm.LocalStash.ContainsKey("SerialNumber") ? Tm.LocalStash["SerialNumber"] : "0",
                 SessionName = Form1.AppSettings.AuditDbSessionName,
-                Channel = channelIndex == 0 ? "Left" : "Right",
+                Channel = (channelIndex == 0 ? "Left" : "Right"),
                 Name = tb.Name,
                 TestGroup = testGroup.ToString(),
                 TestFile = Form1.SettingsFile,

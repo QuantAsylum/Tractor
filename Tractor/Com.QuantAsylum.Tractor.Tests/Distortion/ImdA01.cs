@@ -1,13 +1,5 @@
-﻿using Com.QuantAsylum;
-using Com.QuantAsylum.Tractor.TestManagers;
-using Com.QuantAsylum.Tractor.Tests;
+﻿using Com.QuantAsylum.Tractor.TestManagers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Com.QuantAsylum.Tractor.TestManagers;
 using Tractor.Com.QuantAsylum.Tractor.Tests;
 
 namespace Com.QuantAsylum.Tractor.Tests.IMDTests

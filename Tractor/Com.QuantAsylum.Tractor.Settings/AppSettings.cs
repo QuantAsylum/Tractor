@@ -13,7 +13,7 @@ namespace Com.QuantAsylum.Tractor.Settings
     {
         public List<TestBase> TestList = new List<TestBase>();
 
-        public string TestClass = "Com.QuantAsylum.Tractor.TestManagers.QA401_QA450";
+        public string TestClass = "Com.QuantAsylum.Tractor.TestManagers.QA401";
 
         public bool AbortOnFailure = true;
 

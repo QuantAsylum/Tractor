@@ -1,17 +1,13 @@
-﻿using Com.QuantAsylum.Tractor.TestManagers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Com.QuantAsylum.Tractor.Dialogs;
+﻿using Com.QuantAsylum.Tractor.Dialogs;
+using Com.QuantAsylum.Tractor.TestManagers;
+using System.IO;
 using Tractor.Com.QuantAsylum.Tractor.Tests;
 
 namespace Com.QuantAsylum.Tractor.Tests.Other
 {
-    public class AuditionA01 : AudioTestBase
+    public class AuditionA01 : UiTestBase
     {
-        [ObjectEditorAttribute(Index = 200, DisplayText = "File Name:", MaxLength = 128)]
+        [ObjectEditorAttribute(Index = 200, DisplayText = "WAV File Name:", MaxLength = 128)]
         public string AuditionFileName = "";
 
         [ObjectEditorAttribute(Index = 210, DisplayText = "Output Level (0..1)", MinValue = 0, MaxValue = 1)]
@@ -22,9 +18,8 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 
         public AuditionA01() : base()
         {
-            RetryCount = 1;
             Name = "AuditionA01";
-            _TestType = TestTypeEnum.Other;
+            _TestType = TestTypeEnum.Operator;
         }
 
         public override void DoTest(string title, out TestResult tr)
@@ -33,6 +28,11 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             tr = new TestResult(2);
 
             Tm.SetToDefaults();
+
+            if (File.Exists(AuditionFileName) == false)
+            {
+                throw new FileLoadException("Specified audition file doesn't exist");
+            }
 
             try
             {

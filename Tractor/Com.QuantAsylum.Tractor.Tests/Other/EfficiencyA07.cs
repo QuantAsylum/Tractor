@@ -1,13 +1,5 @@
 ﻿using Com.QuantAsylum.Tractor.TestManagers;
-using Com.QuantAsylum.Tractor.Tests;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Com.QuantAsylum.Tractor.TestManagers;
 using Tractor;
 using Tractor.Com.QuantAsylum.Tractor.Tests;
 
@@ -67,7 +59,7 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             float current = 0;
             while (((IAudioAnalyzer)Tm.TestClass).AnalyzerIsBusy())
             {
-                float c = ((ICurrentMeter)Tm).GetDutCurrent();
+                float c = ((ICurrentMeter)Tm.TestClass).GetDutCurrent();
                 if (c > current)
                 {
                     current = c;

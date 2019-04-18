@@ -89,16 +89,16 @@ namespace Tractor
             // Find all the classes in this assembly that implement ITest
 
             var instances = from t in Assembly.GetExecutingAssembly().GetTypes()
-                            where t.IsSubclassOf(typeof(AudioTestBase))
+                            where t.IsSubclassOf(typeof(TestBase))
                                      && t.GetConstructor(Type.EmptyTypes) != null
-                            select Activator.CreateInstance(t) as AudioTestBase;
+                            select Activator.CreateInstance(t) as TestBase;
 
             string filter = comboBox2.Text;
 
             // Add them to the combobox. This is our list of options
             foreach (var instance in instances)
             {
-                if ((instance as AudioTestBase).TestType.ToString() == filter)
+                if ((instance as TestBase).TestType.ToString() == filter)
                 {
                     comboBox1.Items.Add(new ComboItem() { DisplayName = instance.GetTestName(), Description = instance.GetTestDescription() });
                 }

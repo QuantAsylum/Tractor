@@ -245,7 +245,8 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
         public void DoAcquisitionAsync()
         {
-            throw new NotImplementedException();
+            Qa401.DoAcquisitionAsync();
+            //throw new NotImplementedException();
         }
     }
 }

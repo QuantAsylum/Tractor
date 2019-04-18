@@ -55,7 +55,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
         {
             NowEditingCallback = nowEditingCallback;
             ObjectToEdit = obj;
-            BackupObjectToEdit = (AudioTestBase)obj.ShallowCopy();
+            BackupObjectToEdit = (TestBase)obj.ShallowCopy();
             Tlp = tlp;
             ParentForm = parentForm;
             PopulateUi();
@@ -410,7 +410,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
             OkButton.Enabled = false;
             CancelButton.Enabled = false;
             ObjectToEdit = BackupObjectToEdit;
-            BackupObjectToEdit = (AudioTestBase)ObjectToEdit.ShallowCopy();
+            BackupObjectToEdit = (TestBase)ObjectToEdit.ShallowCopy();
             PopulateUi();
             ParentForm.AbandonChanges();
         }

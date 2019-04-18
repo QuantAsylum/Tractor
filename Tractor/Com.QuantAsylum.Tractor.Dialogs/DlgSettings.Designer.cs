@@ -49,6 +49,8 @@
             this.button3 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.textBox6 = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.button9 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
@@ -60,8 +62,6 @@
             this.label6 = new System.Windows.Forms.Label();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.textBox6 = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -278,6 +278,22 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Audit Database";
             // 
+            // textBox6
+            // 
+            this.textBox6.Location = new System.Drawing.Point(113, 100);
+            this.textBox6.Name = "textBox6";
+            this.textBox6.Size = new System.Drawing.Size(351, 20);
+            this.textBox6.TabIndex = 24;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(73, 107);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(34, 13);
+            this.label9.TabIndex = 25;
+            this.label9.Text = "email:";
+            // 
             // button9
             // 
             this.button9.Location = new System.Drawing.Point(372, 150);
@@ -369,22 +385,7 @@
             this.checkBox4.TabIndex = 17;
             this.checkBox4.Text = "Use Database";
             this.checkBox4.UseVisualStyleBackColor = true;
-            // 
-            // textBox6
-            // 
-            this.textBox6.Location = new System.Drawing.Point(113, 100);
-            this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(351, 20);
-            this.textBox6.TabIndex = 24;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(73, 107);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(34, 13);
-            this.label9.TabIndex = 25;
-            this.label9.Text = "email:";
+            this.checkBox4.CheckedChanged += new System.EventHandler(this.checkBox4_CheckedChanged);
             // 
             // DlgSettings
             // 

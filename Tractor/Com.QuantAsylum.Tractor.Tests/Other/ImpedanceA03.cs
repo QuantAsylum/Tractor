@@ -1,8 +1,5 @@
 ﻿using Com.QuantAsylum.Tractor.TestManagers;
 using System;
-using System.Linq;
-using System.Threading;
-using Tractor;
 using Tractor.Com.QuantAsylum.Tractor.Tests;
 
 namespace Com.QuantAsylum.Tractor.Tests.Other

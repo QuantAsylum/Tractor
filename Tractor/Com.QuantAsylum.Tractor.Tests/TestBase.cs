@@ -58,8 +58,8 @@ namespace Com.QuantAsylum.Tractor.Tests
     [System.Xml.Serialization.XmlInclude(typeof(GainA03))]
     [System.Xml.Serialization.XmlInclude(typeof(ImdA01))]
     [System.Xml.Serialization.XmlInclude(typeof(ImdA03))]
-    [System.Xml.Serialization.XmlInclude(typeof(NoiseFloorA01))]
-    [System.Xml.Serialization.XmlInclude(typeof(NoiseFloorA03))]
+    [System.Xml.Serialization.XmlInclude(typeof(RmsLevelA01))]
+    [System.Xml.Serialization.XmlInclude(typeof(RmsLevelA03))]
     [System.Xml.Serialization.XmlInclude(typeof(IdInputA00))]
     [System.Xml.Serialization.XmlInclude(typeof(ThdA01))]
     [System.Xml.Serialization.XmlInclude(typeof(ThdA03))]
@@ -69,6 +69,7 @@ namespace Com.QuantAsylum.Tractor.Tests
     [System.Xml.Serialization.XmlInclude(typeof(PowerA14))]
     [System.Xml.Serialization.XmlInclude(typeof(EfficiencyA07))]
     [System.Xml.Serialization.XmlInclude(typeof(AuditionA01))]
+    [System.Xml.Serialization.XmlInclude(typeof(ShellA00))]
     public class TestBase
     {
         [Flags]
@@ -113,7 +114,7 @@ namespace Com.QuantAsylum.Tractor.Tests
         /// SNR measures the ratio between the signal and the noise
         /// Distortion measures THD or THD + N
         /// </summary>
-        internal enum TestTypeEnum { Unspecified, User, LevelGain, FrequencyResponse, Phase, CrossTalk, SNR, Distortion, Other };
+        internal enum TestTypeEnum { Unspecified, Operator, LevelGain, Distortion, Other };
         internal TestTypeEnum _TestType = TestTypeEnum.Unspecified;
 
         internal Bitmap TestResultBitmap { get; set; }
@@ -152,7 +153,7 @@ namespace Com.QuantAsylum.Tractor.Tests
 
         public virtual string GetTestLimits()
         {
-            throw new NotImplementedException();
+            return "";
         }
 
         public virtual string GetTestDescription()
@@ -223,7 +224,7 @@ namespace Com.QuantAsylum.Tractor.Tests
         }      
     }
 
-    public class UiTest : TestBase
+    public class UiTestBase : TestBase
     {
 
     }

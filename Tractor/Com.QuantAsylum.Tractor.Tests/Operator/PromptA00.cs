@@ -1,14 +1,7 @@
-﻿using Com.QuantAsylum.Tractor.TestManagers;
+﻿using Com.QuantAsylum.Tractor.Dialogs;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Com.QuantAsylum.Tractor.Dialogs;
-using Com.QuantAsylum.Tractor.TestManagers;
-using Com.QuantAsylum.Tractor.Dialogs;
 using System.Drawing;
+using System.Windows.Forms;
 using Tractor.Com.QuantAsylum.Tractor.Tests;
 
 namespace Com.QuantAsylum.Tractor.Tests
@@ -17,7 +10,7 @@ namespace Com.QuantAsylum.Tractor.Tests
     /// This test will prompt the user to enter a serial number or other identifier
     /// </summary>
     [Serializable]
-    public class PromptA00 : UiTest
+    public class PromptA00 : UiTestBase
     {
         [ObjectEditorAttribute(Index = 200, DisplayText = "Prompt Message:", MaxLength = 128)]
         public string PromptMessage = "";
@@ -31,7 +24,7 @@ namespace Com.QuantAsylum.Tractor.Tests
         public PromptA00() : base()
         {
             Name = "PromptA00";
-            _TestType = TestTypeEnum.User;
+            _TestType = TestTypeEnum.Operator;
         }
 
         public override void DoTest(string title, out TestResult tr)

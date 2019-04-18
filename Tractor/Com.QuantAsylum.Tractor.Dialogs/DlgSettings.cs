@@ -219,6 +219,19 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             }
         }
 
-        
+        private void checkBox4_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox4.Checked)
+            {
+                MessageBox.Show("By checking the Cloud Database option, Tractor will save raw test data (no bitmap graphics) " +
+                    "to a Microsoft Azure website run by QuantAsylum USA LLC. The product ID is your secret key to this " +
+                    "data. If you lose this key, it will be very difficult to recover your data. Anyone with this key " +
+                    "would theoretically be able to submit tests and view tests on your behalf. Retrieving data from " +
+                    "the Cloud Database will be supported in this application only--there is no way currently for you to " +
+                    "programmatically access the data. Data maybe deleted after a period of time (6 months) as " +
+                    "part of housecleaning operations. You may contact us to request an extension to that period. Under " +
+                    "no circumstances can we be responsible for costs or damages due to lost data.", "Important!");
+            }
+        }
     }
 }
