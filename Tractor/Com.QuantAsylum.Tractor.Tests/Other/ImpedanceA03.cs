@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using Tractor;
+using Tractor.Com.QuantAsylum.Tractor.Tests;
 
 namespace Com.QuantAsylum.Tractor.Tests.Other
 {
@@ -10,19 +11,27 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
     /// This test will check the gain at a given impedance level
     /// </summary>
     [Serializable]
-    public class Impedance01 : TestBase
-    {           
+    public class ImpedanceA03 : AudioTestBase
+    {
+        [ObjectEditorAttribute(Index = 200, DisplayText = "Test Frequency (Hz)", MinValue = 10, MaxValue = 20000)]
         public float TestFrequency = 1000;
+
+        [ObjectEditorAttribute(Index = 210, DisplayText = "Analyzer Output Level (dBV)", MinValue = -100, MaxValue = 6)]
         public float AnalyzerOutputLevel = -30;
 
-        public int AnalyzerInputRange = 6;
-
+        [ObjectEditorAttribute(Index = 220, DisplayText = "Minimum Gain to Pass (dB)", MinValue = -100, MaxValue = 100)]
         public float MinimumPassImpedance = 0.01f;
+
+        [ObjectEditorAttribute(Index = 230, DisplayText = "Maximum Gain to Pass (dB)", MinValue = -100, MaxValue = 100, MustBeGreaterThanIndex = 220)]
         public float MaximumPassImpedance = 0.2f;
 
-        public Impedance01() : base()
+        [ObjectEditorAttribute(Index = 240, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
+        public int AnalyzerInputRange = 6;
+
+        public ImpedanceA03() : base()
         {
-            TestType = TestTypeEnum.Other;
+            Name = "ImpedanceA03";
+            _TestType = TestTypeEnum.Other;
         }
 
         public override void DoTest(string title, out TestResult tr)
@@ -115,19 +124,6 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             return - 8 * (vOut4 - vOut8)/(2*vOut4 - vOut8);
         }
 
-        public override bool CheckValues(out string s)
-        {
-            s = "";
-
-            if (((IAudioAnalyzer)Tm.TestClass).GetInputRanges().Contains(AnalyzerInputRange) == false)
-            {
-                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm.TestClass).GetInputRanges());
-                return false;
-            }
-
-            return true;
-        }
-
         public override string GetTestLimits()
         {
             return string.Format("{0:N1}...{1:N1} Ohms", MinimumPassImpedance, MaximumPassImpedance);
@@ -140,15 +136,12 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
                    "specified load.";
         }
 
-        public override bool IsRunnable()
+        internal override int HardwareMask
         {
-            if ((Tm.TestClass is IAudioAnalyzer) &&
-                 (Tm.TestClass is IProgrammableLoad))
+            get
             {
-                return true;
+                return (int)HardwareTypes.AudioAnalyzer | (int)HardwareTypes.ProgrammableLoad;
             }
-
-            return false;
         }
     }
 }

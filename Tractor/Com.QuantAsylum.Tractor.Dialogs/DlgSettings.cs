@@ -33,7 +33,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
         private void DlgSettings_Load(object sender, EventArgs e)
         {
             foreach (Type testType in System.Reflection.Assembly.GetExecutingAssembly().GetTypes()
-                            .Where(mytype => (mytype.GetInterfaces().Contains(typeof(IComposite))) ||
+                            .Where(mytype => /*(mytype.GetInterfaces().Contains(typeof(IComposite))) ||*/
                                             (mytype.GetInterfaces().Contains(typeof(IInstrument)))
                             ))
             {

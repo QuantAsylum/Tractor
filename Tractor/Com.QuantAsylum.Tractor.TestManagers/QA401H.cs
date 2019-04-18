@@ -82,9 +82,22 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             thdPctR = Convert.ToDouble(d["Right"]);
         }
 
-        public bool ConnectToDevice()
+        public bool ConnectToDevice(out string result)
         {
+            result = "";
+
+            if (IsConnected() == false)
+            {
+                result = "Unable to connect to the QA401H. Is the server running?";
+                return false;
+            }
+
             return true;
+        }
+
+        public void CloseConnection()
+        {
+
         }
 
         public Bitmap GetBitmap()
@@ -104,7 +117,16 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
         public bool IsConnected()
         {
-            return Convert.ToBoolean(GetSync("/Status/Connection", "Value"));
+            try
+            {
+                return Convert.ToBoolean(GetSync("/Status/Connection", "Value"));
+            }
+            catch
+            {
+
+            }
+
+            return false;
         }
 
         public bool IsRunning()
@@ -114,7 +136,7 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
         public void LaunchApplication()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void DoAcquisition()

@@ -28,25 +28,23 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         public delegate void DoneEditing();
         public delegate void CancelEditing();
 
+        /// <summary>
+        /// This allows different tests to share data.
+        /// </summary>
         public Dictionary<string, string> LocalStash = new Dictionary<string, string>();
-
-        public void SetCallbacks(StartEditing startEditing, DoneEditing doneEditing, CancelEditing cancelEditing)
-        {
-            TestBase.StartEditingCallback = startEditing;
-            TestBase.DoneEditingCallback = doneEditing;
-            TestBase.CancelEditingCallback = cancelEditing;
-        }
 
         public void SetToDefaults()
         {
-            if (TestClass is IInstrument)
-            {
-                ((IInstrument)TestClass).SetToDefaults();
-            }
-            else if (TestClass is IComposite)
-            {
-                ((IComposite)TestClass).SetToDefaults();
-            }
+            ((IInstrument)TestClass).SetToDefaults();
+
+            //if (TestClass is IInstrument)
+            //{
+            //    ((IInstrument)TestClass).SetToDefaults();
+            //}
+            //else if (TestClass is IComposite)
+            //{
+            //    ((IComposite)TestClass).SetToDefaults();
+            //}
         }
     }
 }

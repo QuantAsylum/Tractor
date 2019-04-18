@@ -21,6 +21,7 @@ namespace Com.QuantAsylum.Tractor.TestManagers
     class QA401 : IInstrument, IAudioAnalyzer
     {
         QA401Interface Qa401;
+        TcpChannel TcpChannelInst;
 
         string MutexName = "Global\\QA401MutexCheck";
 
@@ -39,9 +40,12 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             Qa401.SetToDefault("");
         }
 
-        public bool ConnectToDevice()
+        public bool ConnectToDevice(out string result)
         {
-            Qa401 = null;
+            result = "";
+
+            if (Qa401 != null)
+                return true;
 
             if (IsAppAlreadyRunning() == false)
             {
@@ -50,10 +54,8 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
             try
             {
-                // QA401 first
-                //TcpChannel tcpChannel = (TcpChannel)Helper.GetChannel(9401, false);
-                TcpChannel tcpChannel = new TcpChannel();
-                ChannelServices.RegisterChannel(tcpChannel, false);
+                TcpChannelInst = new TcpChannel();
+                ChannelServices.RegisterChannel(TcpChannelInst, false);
 
                 Type requiredType = typeof(QA401Interface);
 
@@ -63,6 +65,7 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             }
             catch (Exception ex)
             {
+                result = ex.Message;
                 Log.WriteLine(LogType.Error, "Exception in ConnectToDevice() " + ex.Message);
             }
 
@@ -84,6 +87,11 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             }
 
             return false;
+        }
+
+        public void CloseConnection()
+        {
+            ChannelServices.UnregisterChannel(TcpChannelInst);
         }
 
         public void SetFftLength(uint length)

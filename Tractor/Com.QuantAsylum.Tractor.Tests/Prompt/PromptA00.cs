@@ -9,6 +9,7 @@ using Com.QuantAsylum.Tractor.Dialogs;
 using Com.QuantAsylum.Tractor.TestManagers;
 using Com.QuantAsylum.Tractor.Dialogs;
 using System.Drawing;
+using Tractor.Com.QuantAsylum.Tractor.Tests;
 
 namespace Com.QuantAsylum.Tractor.Tests
 {
@@ -16,26 +17,27 @@ namespace Com.QuantAsylum.Tractor.Tests
     /// This test will prompt the user to enter a serial number or other identifier
     /// </summary>
     [Serializable]
-    public class Prompt01 : TestBase
+    public class PromptA00 : UiTest
     {
-        public string Id { get; set; }
+        [ObjectEditorAttribute(Index = 200, DisplayText = "Prompt Message:", MaxLength = 128)]
+        public string PromptMessage = "";
 
-        public string PromptMessage = "???";
+        [ObjectEditorAttribute(Index = 210, DisplayText = "Bitmap File Name:", MaxLength = 128)]
         public string BitmapFile = "";
+
+        [ObjectEditorAttribute(Index = 220, DisplayText = "Display Fail Button")]
         public bool ShowFailButton = true;
 
-        public Prompt01() : base()
+        public PromptA00() : base()
         {
-            Name = "Prompt";
-            RetryCount = 1;
-            TestType = TestTypeEnum.User;
+            Name = "PromptA00";
+            _TestType = TestTypeEnum.User;
         }
 
         public override void DoTest(string title, out TestResult tr)
         {
             // Two channels of testing
             tr = new TestResult(2);
-
 
             Bitmap bmp = null;
             try
@@ -60,11 +62,6 @@ namespace Com.QuantAsylum.Tractor.Tests
         public override string GetTestDescription()
         {
             return "Instructs the user to complete an action. 'Pass = true' is always returned.";
-        }
-
-        public override bool IsRunnable()
-        {
-            return true;
         }
     }
 }

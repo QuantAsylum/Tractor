@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Com.QuantAsylum.Tractor.TestManagers;
+using Tractor.Com.QuantAsylum.Tractor.Tests;
 
 namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
 {
@@ -15,16 +15,21 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
     /// Measures the noise floor without any weighting applied, from 20 to 20KHz
     /// </summary>
     [Serializable]
-    public class NoiseFloor01 : TestBase
+    public class NoiseFloorA01 : AudioTestBase
     {
-        public float MinimumPassLevel = -200;
-        public float MaximumPassLevel = -105;
+        [ObjectEditorAttribute(Index = 230, DisplayText = "Minimum Level to Pass (dB)", MinValue = -100, MaxValue = 100)]
+        public float MinimumPassLevel = -10.5f;
 
+        [ObjectEditorAttribute(Index = 240, DisplayText = "Maximum Level to Pass (dB)", MinValue = -100, MaxValue = 100, MustBeGreaterThanIndex = 230)]
+        public float MaximumPassLevel = -9.5f;
+
+        [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
         public int AnalyzerInputRange = 6;
 
-        public NoiseFloor01() : base()
+        public NoiseFloorA01() : base()
         {
-            TestType = TestTypeEnum.LevelGain;
+            Name = "NoiseFloorA01";
+            _TestType = TestTypeEnum.LevelGain;
         }
 
         public override void DoTest(string title, out TestResult tr)
@@ -34,6 +39,7 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
 
             Tm.SetToDefaults();
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize);
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
 
             // Disable generators
@@ -65,19 +71,6 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
             return;
         }
 
-        public override bool CheckValues(out string s)
-        {
-            s = "";
-
-            if (((IAudioAnalyzer)Tm.TestClass).GetInputRanges().Contains(AnalyzerInputRange) == false)
-            {
-                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm.TestClass).GetInputRanges());
-                return false;
-            }
-
-            return true;
-        }
-
         public override string GetTestLimits()
         {
             return string.Format("{0:N1}...{1:N1} dBV", MinimumPassLevel, MaximumPassLevel);
@@ -85,18 +78,16 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
 
         public override string GetTestDescription()
         {
-            return "Measures the noise floor (residual noise) with A-Weighting applied. If the resulting measurement is " +
+            return "Measures the noise floor (residual noise) without A-Weighting applied. If the resulting measurement is " +
                    "within the specified limits, then 'pass = true' is returned.";
         }
 
-        public override bool IsRunnable()
+        internal override int HardwareMask
         {
-            if (Tm.TestClass is IAudioAnalyzer)
+            get
             {
-                return true;
+                return (int)HardwareTypes.AudioAnalyzer;
             }
-
-            return false;
         }
     }
 }

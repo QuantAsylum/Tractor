@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace Com.QuantAsylum.Tractor.TestManagers
 {
+    /*
     interface IComposite
     {
         void SetToDefaults();
         bool IsConnected();
-        bool ConnectToDevices();
-    }
+        bool ConnectToDevices(out string result);
+        void CloseConnection();
+    }*/
 }

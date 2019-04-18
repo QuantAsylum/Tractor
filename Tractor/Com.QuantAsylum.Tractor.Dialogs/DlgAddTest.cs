@@ -10,8 +10,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Com.QuantAsylum.Tractor.TestManagers;
 using Com.QuantAsylum.Tractor.Tests;
-using static Com.QuantAsylum.Tractor.Tests.TestBase;
+using static Com.QuantAsylum.Tractor.Tests.AudioTestBase;
 using Com.QuantAsylum.Tractor.Settings;
+using static Com.QuantAsylum.Tractor.Tests.TestBase;
 
 namespace Tractor
 {
@@ -86,29 +87,20 @@ namespace Tractor
             comboBox1.Text = "";
 
             // Find all the classes in this assembly that implement ITest
-            //var instances = Assembly.GetExecutingAssembly().GetTypes().Where(t => t.IsSubclassOf(typeof(TestBase)));
 
             var instances = from t in Assembly.GetExecutingAssembly().GetTypes()
-                            where t.IsSubclassOf(typeof(TestBase))
+                            where t.IsSubclassOf(typeof(AudioTestBase))
                                      && t.GetConstructor(Type.EmptyTypes) != null
-                            select Activator.CreateInstance(t) as TestBase;
-
-
-            //var instances = from t in Assembly.GetExecutingAssembly().GetTypes()
-            //                where t.GetInterfaces().Contains(typeof(TestBase))
-            //                         && t.GetConstructor(Type.EmptyTypes) != null
-            //                select Activator.CreateInstance(t) as TestBase;
+                            select Activator.CreateInstance(t) as AudioTestBase;
 
             string filter = comboBox2.Text;
 
             // Add them to the combobox. This is our list of options
-            
             foreach (var instance in instances)
             {
-                if ((instance as TestBase).GetTestType().ToString() == filter)
+                if ((instance as AudioTestBase).TestType.ToString() == filter)
                 {
                     comboBox1.Items.Add(new ComboItem() { DisplayName = instance.GetTestName(), Description = instance.GetTestDescription() });
-                    //comboBox1.Items.Add(instance.GetTestName());
                 }
 
 

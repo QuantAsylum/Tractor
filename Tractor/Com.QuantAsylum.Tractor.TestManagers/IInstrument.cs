@@ -14,7 +14,8 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         void SetToDefaults();
         bool IsRunning();
         void LaunchApplication();
-        bool ConnectToDevice();
+        bool ConnectToDevice(out string result);
         bool IsConnected();
+        void CloseConnection();
     }
 }

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Com.QuantAsylum.Tractor.Dialogs;
 using Com.QuantAsylum.Tractor.TestManagers;
+using Tractor.Com.QuantAsylum.Tractor.Tests;
 
 namespace Com.QuantAsylum.Tractor.Tests
 {
@@ -13,14 +14,16 @@ namespace Com.QuantAsylum.Tractor.Tests
     /// This test will prompt the user to enter a serial number or other identifier
     /// </summary>
     [Serializable]
-    public class IdInput01 : TestBase
+    public class IdInputA00 : UiTest
     {
-        public string Id { get; set; }
 
-        public IdInput01() : base()
+        [ObjectEditorAttribute(Index = 200, MaxLength = 32)]
+        public string Id = "";
+
+        public IdInputA00() : base()
         {
-            Name = "IdInput";
-            TestType = TestTypeEnum.User;
+            Name = "IdInputA00";
+            _TestType = TestTypeEnum.User;
         }
 
         public override void DoTest(string title, out TestResult tr)
@@ -48,12 +51,5 @@ namespace Com.QuantAsylum.Tractor.Tests
                    "entered something, but no further qualification is performed on the input string. " + 
                    "If the user hit cancel or if the string is empty, then 'pass = false' is returned";
         }
-
-        public override bool IsRunnable()
-        {
-            return true;
-        }
-
-
     }
 }

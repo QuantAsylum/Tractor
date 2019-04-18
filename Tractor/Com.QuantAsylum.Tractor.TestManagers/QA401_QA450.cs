@@ -9,7 +9,7 @@ using Com.QuantAsylum.Tractor.TestManagers;
 
 namespace Com.QuantAsylum.Tractor.TestManagers
 {
-    class QA401_QA450 : IComposite, IAudioAnalyzer, IProgrammableLoad, ICurrentMeter, IPowerSupply
+    class QA401_QA450 : /* IComposite, */IInstrument, IAudioAnalyzer, IProgrammableLoad, ICurrentMeter, IPowerSupply
     {
         QA401 Qa401;
         QA450 Qa450;
@@ -191,20 +191,56 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             return false;
         }
 
-        public bool ConnectToDevices()
+        public bool IsRunning()
         {
+            return Qa401.IsRunning();
+        }
+
+        public void LaunchApplication()
+        {
+            Qa401.LaunchApplication();
+        }
+
+        public bool ConnectToDevice(out string result)
+        {
+            result = "";
+
             bool r1 = false, r2 = false;
 
             if (Qa401.IsConnected() == false)
-                r1 = Qa401.ConnectToDevice();
+            {
+                r1 = Qa401.ConnectToDevice(out result);
+                if (r1 == false)
+                {
+                    result += "Unable to connect to the QA401. ";
+                }
+            }
 
             if (Qa450.IsConnected() == false)
-                r2 = Qa450.ConnectToDevice();
+            {
+                result += "Unable to the connect to the QA450. ";
+            }
 
             if (r1 && r2)
+            {
                 return true;
+            }
 
+            result += "The testing will now stop.";
             return false;
+        }
+
+        public void CloseConnection()
+        {
+            if (Qa401.IsConnected())
+            {
+                Qa401.CloseConnection();
+            }
+
+            if (Qa450.IsConnected())
+            {
+                Qa450.CloseConnection();
+            }
         }
 
         public void DoAcquisitionAsync()

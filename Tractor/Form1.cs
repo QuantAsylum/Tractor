@@ -17,6 +17,7 @@ using Com.QuantAsylum.Tractor.Ui.Extensions;
 using Com.QuantAsylum.Tractor.Dialogs;
 using Tractor.Com.QuantAsylum.Tractor.Dialogs;
 using System.Threading;
+using Tractor.Com.QuantAsylum.Tractor.Tests;
 
 namespace Tractor
 {
@@ -25,10 +26,6 @@ namespace Tractor
         internal static Form1 This;
 
         TestManager Tm;
-
-        /// <summary>
-        /// Keeps track if the TestManager currently loaded has changed
-        /// </summary>
         bool AppSettingsDirty = false;
 
         static internal string SettingsFile = "";
@@ -36,6 +33,9 @@ namespace Tractor
         bool HasRun = false;
 
         TestBase SelectedTb;
+
+        ObjectEditor ObjEditor;
+        bool EditingInProgress = false;
 
         static internal AppSettings AppSettings;
 
@@ -54,7 +54,6 @@ namespace Tractor
             AppSettings = new AppSettings();
             label3.Text = "";
             Tm = new TestManager();
-            Tm.SetCallbacks(StartEditing, DoneEditing, CancelEditing);
             Type t = Type.GetType(AppSettings.TestClass);
             Tm.TestClass = Activator.CreateInstance(t);
         }
@@ -118,7 +117,7 @@ namespace Tractor
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            // If we have run anything, make sure power is off. 
+            // If we have run anything, make sure power to the DUT is off. 
             if (HasRun)
             {
                 try
@@ -132,7 +131,7 @@ namespace Tractor
             }
 
             // Here, the data is clean. Check if we need to save the current TestManager data
-            if (AppSettingsDirty || ((SelectedTb != null) && SelectedTb.IsDirty == true))
+            if (AppSettingsDirty)
             {
                 if (MessageBox.Show("Do you want to save the current test plan?", "Changes not saved", MessageBoxButtons.YesNo) == DialogResult.Yes)
                 {
@@ -160,7 +159,7 @@ namespace Tractor
             TreeNode root = new TreeNode();
             root.Text = testName + "   [" + (test as TestBase).GetTestName() + "]";
 
-            if ((test as TestBase).RunTest)
+            if ((test as AudioTestBase).RunTest)
                 root.Checked = true;
 
             treeView1.Nodes.Add(root);
@@ -241,10 +240,17 @@ namespace Tractor
             ClearEditFields();
             TestBase tb = AppSettings.TestList.Find(o => o.Name == GetTestName(e.Node.Text));
             SelectedTb = tb;
-            tb.PopulateUI(tableLayoutPanel1);
+            ObjEditor = new ObjectEditor(this, SelectedTb, tableLayoutPanel1, NowEditingCallback);
 
             UpdateTestConcerns(tb);
 
+            SetTreeviewControls();
+        }
+
+        private void NowEditingCallback()
+        {
+            treeView1.Enabled = false;
+            EditingInProgress = true;
             SetTreeviewControls();
         }
 
@@ -286,6 +292,19 @@ namespace Tractor
         /// </summary>
         private void SetTreeviewControls()
         {
+            if (EditingInProgress)
+            {
+                treeView1.Enabled = false;
+                panel4.Enabled = false;
+                menuStrip1.Enabled = false;
+            }
+            else
+            {
+                treeView1.Enabled = true;
+                panel4.Enabled = true;
+                menuStrip1.Enabled = true;
+            }
+
             if (treeView1.Nodes.Count == 0)
                 RunTestsBtn.Enabled = false;
             else
@@ -328,7 +347,6 @@ namespace Tractor
 
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                //string className = (string)(dlg.comboBox1.Items[dlg.comboBox1.SelectedIndex]);
                 string className = dlg.GetSelectedTestName();
 
                 TestBase testInst = CreateTestInstance(className);
@@ -372,14 +390,6 @@ namespace Tractor
             tableLayoutPanel1.RowCount = 0;
         }
 
-        private void button2_Click(object sender, EventArgs e)
-        {
-            ClearEditFields();
-
-            if (AppSettings.TestList.Count > 0)
-                (AppSettings.TestList[0] as TestBase).PopulateUI(tableLayoutPanel1);
-        }
-
         /// <summary>
         /// Pops a modal dlg where the user is given a chance to review the tests and then execute them
         /// over and over if desired. This doesn't return until the user closes the dlg
@@ -390,6 +400,16 @@ namespace Tractor
         {
             if (AppSettings.TestList.Count == 0)
                 return;
+
+            // Make sure all tests are runnable
+            foreach (TestBase tb in AppSettings.TestList)
+            {
+                if (tb.IsRunnable() == false)
+                {
+                    MessageBox.Show("Not all tests are runnable. Make sure you have the correct class specified in Settings");
+                    return;
+                }
+            }
 
             DlgTestRun dlg = new DlgTestRun(Tm, TestRunCallback, Constants.TestLogsPath);
 
@@ -412,23 +432,6 @@ namespace Tractor
 
         }
 
-        /// <summary>
-        /// Called when user wants to exit app
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //if (TmIsDirty)
-            //{
-            //    MessageBox.Show("Changes not saved", "Save data?", MessageBoxButtons.YesNo) == DialogResult.Yes)
-            //    {
-
-            //    }
-            //}
-
-            Close();
-        }
 
         /// <summary>
         /// Deletes the currently selected test
@@ -584,6 +587,17 @@ namespace Tractor
 
             if (dlg.ShowDialog() == DialogResult.OK)
             {
+                // BUGBUG! If we're already connected via Dotnet remoting, then we first need to 
+                // close the connection before we try to create the instance again. Otherwise
+                // we leave the socket hanging. Since the QA401 is the only device using remoting
+                // we'll handle it special here. Long term, we move away from this and this can
+                // be removed. When that day does come, the CloseConnection() method should 
+                // be pulled from all interfaces as it's no longer needed.
+                if (Tm.TestClass is IInstrument)
+                {
+                    ((IInstrument)Tm.TestClass).CloseConnection();
+                }
+
                 Type t = Type.GetType(AppSettings.TestClass);
                 Tm.TestClass = Activator.CreateInstance(t);
             }
@@ -612,6 +626,21 @@ namespace Tractor
 
             }
 
+        }
+
+        public void AcceptChanges()
+        {
+            AppSettingsDirty = true;
+            EditingInProgress = false;
+            treeView1.Enabled = true;
+            SetTreeviewControls();
+        }
+
+        public void AbandonChanges()
+        {
+            EditingInProgress = false;
+            treeView1.Enabled = true;
+            SetTreeviewControls();
         }
     }
 }

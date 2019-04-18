@@ -5,19 +5,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Com.QuantAsylum.Tractor.Dialogs;
+using Tractor.Com.QuantAsylum.Tractor.Tests;
 
 namespace Com.QuantAsylum.Tractor.Tests.Other
 {
-    public class Audition01 : TestBase
+    public class AuditionA01 : AudioTestBase
     {
+        [ObjectEditorAttribute(Index = 200, DisplayText = "File Name:", MaxLength = 128)]
         public string AuditionFileName = "";
+
+        [ObjectEditorAttribute(Index = 210, DisplayText = "Output Level (0..1)", MinValue = 0, MaxValue = 1)]
         public float AuditionAmplitude = 0.2f;
+
+        [ObjectEditorAttribute(Index = 220, DisplayText = "Operator Instruction:", MaxLength = 128)]
         public string OperatorInstruction = "";
 
-        public Audition01() : base()
+        public AuditionA01() : base()
         {
             RetryCount = 1;
-            TestType = TestTypeEnum.Other;
+            Name = "AuditionA01";
+            _TestType = TestTypeEnum.Other;
         }
 
         public override void DoTest(string title, out TestResult tr)
@@ -52,12 +59,15 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 
         public override string GetTestDescription()
         {
-            return "Allows operator to audition a wave file.";
+            return "Allows operator to audition a wave file. This can be helpful for checking volume and tone controls.";
         }
 
-        public override bool IsRunnable()
+        internal override int HardwareMask
         {
-            return true;
+            get
+            {
+                return (int)HardwareTypes.AudioAnalyzer;
+            }
         }
 
     }

@@ -8,23 +8,29 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Com.QuantAsylum.Tractor.TestManagers;
+using Tractor.Com.QuantAsylum.Tractor.Tests;
 
 namespace Com.QuantAsylum.Tractor.Tests.Other
 {
     /// <summary>
-    /// This test will check the gain at a given impedance level
+    /// Enables or disables power to device
     /// </summary>
     [Serializable]
-    public class Power01 : TestBase
+    public class PowerA14 : AudioTestBase
     {
+        [ObjectEditorAttribute(Index = 200, DisplayText = "Power Enabled")]
         public bool PowerState;
 
+        [ObjectEditorAttribute(Index = 210, DisplayText = "Minimum Current to Pass (dB)", MinValue = 0, MaxValue = 15)]
         public float MinimumPassCurrent = 0.005f;
+
+        [ObjectEditorAttribute(Index = 220, DisplayText = "Minimum Current to Pass (dB)", MinValue = 0, MaxValue = 15, MustBeGreaterThanIndex = 210)]
         public float MaximumPassCurrent = 0.01f;
 
-        public Power01() : base()
+        public PowerA14() : base()
         {
-            TestType = TestTypeEnum.Other;
+            Name = "PowerA14";
+            _TestType = TestTypeEnum.Other;
         }
 
         public override void DoTest(string title, out TestResult tr)
@@ -48,13 +54,6 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             return;
         }
 
-        public override bool CheckValues(out string s)
-        {
-            s = "";
-
-            return true;
-        }
-
         public override string GetTestLimits()
         {
             return string.Format("{0:N1}...{1:N1}A", MinimumPassCurrent, MaximumPassCurrent);
@@ -62,18 +61,21 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 
         public override string GetTestDescription()
         {
-            return "Sets the power state of the QA450 and measures the current";
+            return "Sets the power state on the QA450 and measures the current in that state.";
         }
 
         public override bool IsRunnable()
         {
-            if ((Tm.TestClass is ICurrentMeter) &&
-                (Tm.TestClass is IPowerSupply))
-            {
-                return true;
-            }
+            int val = HardwareMask & ((int)HardwareTypes.PowerSupply | (int)HardwareTypes.CurrentMeter);
+            return ((val & 0x14) == 0x14);
+        }
 
-            return false;
+        internal override int HardwareMask
+        {
+            get
+            {
+                return (int)HardwareTypes.PowerSupply | (int)HardwareTypes.CurrentMeter;
+            }
         }
     }
 }

@@ -12,6 +12,8 @@ using Tractor.Com.QuantAsylum.Tractor.Tests.THDs;
 using Com.QuantAsylum.Tractor.Tests.Other;
 using Com.QuantAsylum.Tractor.TestManagers;
 using static Com.QuantAsylum.Tractor.TestManagers.TestManager;
+using Tractor;
+using Tractor.Com.QuantAsylum.Tractor.Tests;
 
 namespace Com.QuantAsylum.Tractor.Tests
 {
@@ -52,23 +54,37 @@ namespace Com.QuantAsylum.Tractor.Tests
     /// Base class for handling the display and update of data used by each test. 
     /// </summary>
     [Serializable]
-    [System.Xml.Serialization.XmlInclude(typeof(Gain01))]
-    [System.Xml.Serialization.XmlInclude(typeof(Gain02))]
-    [System.Xml.Serialization.XmlInclude(typeof(Imd01))]
-    [System.Xml.Serialization.XmlInclude(typeof(Imd02))]
-    [System.Xml.Serialization.XmlInclude(typeof(NoiseFloor01))]
-    [System.Xml.Serialization.XmlInclude(typeof(NoiseFloor02))]
-    [System.Xml.Serialization.XmlInclude(typeof(IdInput01))]
-    [System.Xml.Serialization.XmlInclude(typeof(Thd01))]
-    [System.Xml.Serialization.XmlInclude(typeof(Thd02))]
-    [System.Xml.Serialization.XmlInclude(typeof(Thd03))]
-    [System.Xml.Serialization.XmlInclude(typeof(Prompt01))]
-    [System.Xml.Serialization.XmlInclude(typeof(Impedance01))]
-    [System.Xml.Serialization.XmlInclude(typeof(Power01))]
-    [System.Xml.Serialization.XmlInclude(typeof(Efficiency01))]
-    [System.Xml.Serialization.XmlInclude(typeof(Audition01))]
+    [System.Xml.Serialization.XmlInclude(typeof(GainA01))]
+    [System.Xml.Serialization.XmlInclude(typeof(GainA03))]
+    [System.Xml.Serialization.XmlInclude(typeof(ImdA01))]
+    [System.Xml.Serialization.XmlInclude(typeof(ImdA03))]
+    [System.Xml.Serialization.XmlInclude(typeof(NoiseFloorA01))]
+    [System.Xml.Serialization.XmlInclude(typeof(NoiseFloorA03))]
+    [System.Xml.Serialization.XmlInclude(typeof(IdInputA00))]
+    [System.Xml.Serialization.XmlInclude(typeof(ThdA01))]
+    [System.Xml.Serialization.XmlInclude(typeof(ThdA03))]
+    [System.Xml.Serialization.XmlInclude(typeof(ThdB03))]
+    [System.Xml.Serialization.XmlInclude(typeof(PromptA00))]
+    [System.Xml.Serialization.XmlInclude(typeof(ImpedanceA03))]
+    [System.Xml.Serialization.XmlInclude(typeof(PowerA14))]
+    [System.Xml.Serialization.XmlInclude(typeof(EfficiencyA07))]
+    [System.Xml.Serialization.XmlInclude(typeof(AuditionA01))]
     public class TestBase
     {
+        [Flags]
+        internal enum HardwareTypes { AudioAnalyzer = 0x01, ProgrammableLoad = 0x02, CurrentMeter = 0x04, PowerSupply = 0x10 }
+
+        /// <summary>
+        /// Returns a value indicating the hardware required to run this test
+        /// </summary>
+        internal virtual int HardwareMask
+        {
+            get
+            {
+                return 0;
+            }
+ 
+        }
 
         internal bool RunTest { get; set; } = true;
 
@@ -76,6 +92,7 @@ namespace Com.QuantAsylum.Tractor.Tests
         /// Returns the user-assigned name for the test. This name must be unique among
         /// all the tests
         /// </summary>
+        [ObjectEditorAttribute(Index = 3, DisplayText = "Test Name")]
         public string Name = "Placeholder";
 
         /// <summary>
@@ -97,195 +114,30 @@ namespace Com.QuantAsylum.Tractor.Tests
         /// Distortion measures THD or THD + N
         /// </summary>
         internal enum TestTypeEnum { Unspecified, User, LevelGain, FrequencyResponse, Phase, CrossTalk, SNR, Distortion, Other };
-        internal TestTypeEnum TestType = TestTypeEnum.Unspecified;
-
-        public int FftLength = 8192;
-        public int RetryCount = 2;
-        public bool LeftChannel = true;
-        public bool RightChannel = true;
+        internal TestTypeEnum _TestType = TestTypeEnum.Unspecified;
 
         internal Bitmap TestResultBitmap { get; set; }
 
         internal TestManager Tm;
-
-        TableLayoutPanel TLPanel;
-        
-        internal bool IsDirty = false;
-        internal Button OkButton;
-        internal Button CancelButton;
-
-        /// <summary>
-        /// Called when user begings editing a test
-        /// </summary>
-        static internal StartEditing StartEditingCallback;
-        /// <summary>
-        /// Called when user has finished editing a test
-        /// </summary>
-        static internal DoneEditing DoneEditingCallback;
-        /// <summary>
-        /// Called when user has cancelled editing a test
-        /// </summary>
-        static internal CancelEditing CancelEditingCallback;
 
         internal void SetTestManager(TestManager tm)
         {
             Tm = tm;
         }
 
-        internal void PopulateUI(TableLayoutPanel p)
+        public object ShallowCopy()
         {
-            // Right now, this is using reflection to find the publics. These names are unsorted and 
-            // a single word (no space). It would be better in the future to use display name
-            // See https://stackoverflow.com/questions/5499459/how-to-get-displayattribute-of-a-property-by-reflection/5499578#5499578
-            TLPanel = p;
-
-            Type t = GetType();
-
-            FieldInfo[] f = t.GetFields();
-
-            TLPanel.RowCount = f.Length;
-            int row = 0;
-            foreach (FieldInfo fi in f)
-            {
-                object obj = fi.GetValue(this);
-
-                TLPanel.Controls.Add(new Label() { Text = UnCamelCase(fi.Name), Anchor = AnchorStyles.Right, AutoSize = true }, 0, row);
-
-                if (obj is float)
-                {
-                    float value = (float)fi.GetValue(this);
-                    TextBox tb = new TextBox() { Text = value.ToString("0.0"), Anchor = AnchorStyles.Left, AutoSize = true };
-                    tb.TextChanged += Tb_TextChanged;
-                    TLPanel.Controls.Add(tb, 1, row);
-                }
-                else if (obj is string)
-                {
-                    string value = (string)fi.GetValue(this);
-                    TextBox tb = new TextBox() { Text = value, Anchor = AnchorStyles.Left, AutoSize = true };
-                    tb.TextChanged += Tb_TextChanged;
-                    TLPanel.Controls.Add(tb, 1, row);
-                }
-                else if (obj is bool)
-                {
-                    bool value = (bool)fi.GetValue(this);
-                    CheckBox cb = new CheckBox() { Checked = value, Anchor = AnchorStyles.Left, AutoSize = true };
-                    cb.CheckedChanged += Cb_CheckedChanged;
-                    TLPanel.Controls.Add(cb, 1, row);
-                }
-                else if (obj is int)
-                {
-                    int value = (int)fi.GetValue(this);
-                    TextBox tb = new TextBox() { Text = value.ToString(), Anchor = AnchorStyles.Left, AutoSize = true };
-                    tb.TextChanged += Tb_TextChanged;
-                    TLPanel.Controls.Add(tb, 1, row);
-                }
-
-                ++row;
-            }
-            ++row;
-
-            OkButton = new Button() { Text = "Update", Anchor = (AnchorStyles.Top | AnchorStyles.Right), AutoSize = true, Enabled = false};
-            OkButton.Click += UpdateBtn_Click;
-            p.Controls.Add(OkButton, 0, row);
-
-            CancelButton = new Button() { Text = "Cancel", Anchor = (AnchorStyles.Top | AnchorStyles.Left), AutoSize = true, Enabled = false };
-            CancelButton.Click += CancelBtn_Click;
-            p.Controls.Add(CancelButton, 1, row++);
-        }
-
-        private void Cb_CheckedChanged(object sender, EventArgs e)
-        {
-            if (IsDirty == false)
-                StartEditingCallback?.Invoke();
-
-            IsDirty = true;
-            OkButton.Enabled = true;
-            CancelButton.Enabled = true;
-        }
-
-        private void Tb_TextChanged(object sender, EventArgs e)
-        {
-            if (IsDirty == false)
-                StartEditingCallback?.Invoke();
-
-            IsDirty = true;
-            OkButton.Enabled = true;
-            CancelButton.Enabled = true;
+            return this.MemberwiseClone();
         }
 
         /// <summary>
-        /// Copies all user changes in UI back to data structure. Returns true if everything was 
-        /// successfully parsed
+        /// Each derived class can override and check the values as needed. This would be
+        /// checking beyond what the ObjectEditorAttributes already check. Examples might
+        /// be verifying load impedances are legit since the attributes have not way of 
+        /// specifying that check (eg only 4 or 8 ohms)
         /// </summary>
-        /// <param name="errorCode"></param>
+        /// <param name="s"></param>
         /// <returns></returns>
-        bool SaveChanges(out string errorCode)
-        {
-            Type t = GetType();
-            errorCode = "";
-
-            try
-            {
-                for (int i = 0; i < TLPanel.RowCount; i++)
-                {
-                    string fieldName = TLPanel.GetControlFromPosition(0, i).Text;
-                    fieldName = ReCamelCase(fieldName);
-                    FieldInfo fi = t.GetField(fieldName);
-
-                    if (fi.GetValue(this) is float)
-                    {
-                        fi.SetValue(this, Convert.ToSingle(TLPanel.GetControlFromPosition(1, i).Text));
-                    }
-                    else if (fi.GetValue(this) is string)
-                    {
-                        fi.SetValue(this, TLPanel.GetControlFromPosition(1, i).Text);
-                    }
-                    else if (fi.GetValue(this) is bool)
-                    {
-                        fi.SetValue(this, ((CheckBox)(TLPanel.GetControlFromPosition(1, i))).Checked);
-                    }
-                    if (fi.GetValue(this) is int)
-                    {
-                        fi.SetValue(this, Convert.ToInt32(TLPanel.GetControlFromPosition(1, i).Text));
-                    }
-                }
-            }
-            catch(Exception ex)
-            {
-                // Failed to parse and thus failed to save
-                errorCode = ex.Message;
-                return false;
-            }
-
-            IsDirty = false;
-            return true;
-        }
-
-        private void UpdateBtn_Click(object sender, EventArgs e)
-        {
-            string error;
-            if (SaveChanges(out error) == false)
-            {
-                MessageBox.Show("Incorrect data has been entered: " + error + Environment.NewLine + Environment.NewLine + "Please correct the data", "Invalid Data", MessageBoxButtons.OK);
-                return;
-            }
-
-            OkButton.Enabled = false;
-            CancelButton.Enabled = false;
-
-            DoneEditingCallback?.Invoke();
-        }
-
-        private void CancelBtn_Click(object sender, EventArgs e)
-        {
-            OkButton.Enabled = false;
-            CancelButton.Enabled = false;
-
-            CancelEditingCallback?.Invoke();
-            IsDirty = false;
-        }
-
-
         public virtual bool CheckValues(out string s)
         {
             s = "";
@@ -295,31 +147,12 @@ namespace Com.QuantAsylum.Tractor.Tests
         public bool IsParamsValid(out string s)
         {
             s = "";
-            if (FftLength < 2048 || FftLength > Math.Pow(2, 18))
-            {
-                s = "FFT length must be >= 2048 and <= 2^18";
-                return false;
-            }
-
-            // Make sure power of two
-            if ((FftLength & (FftLength - 1)) != 0)
-            {
-                s = "FFT length must be a power of two";
-                return false;
-            }
-
-            if (RetryCount < 1 || RetryCount > 10)
-            {
-                s = "Retry count must be >= 1 and <= 10";
-                return false;
-            }
-
             return true;
         }
 
         public virtual string GetTestLimits()
         {
-            return "???";
+            throw new NotImplementedException();
         }
 
         public virtual string GetTestDescription()
@@ -332,9 +165,12 @@ namespace Com.QuantAsylum.Tractor.Tests
             return this.GetType().Name;
         }
 
-        internal virtual TestTypeEnum GetTestType()
+        internal virtual TestTypeEnum TestType
         {
-            return TestType;
+            get
+            {
+                return _TestType;
+            }
         }
 
         public virtual void DoTest(string title, out TestResult testResult)
@@ -348,7 +184,30 @@ namespace Com.QuantAsylum.Tractor.Tests
         /// <returns></returns>
         public virtual bool IsRunnable()
         {
-            throw new NotImplementedException();
+            bool success = true;
+
+            if ((HardwareMask & (int)HardwareTypes.AudioAnalyzer) > 0 )
+            {
+                if (Tm.TestClass is IAudioAnalyzer == false)
+                    success = false;
+            }
+            if ((HardwareMask & (int)HardwareTypes.CurrentMeter) > 0)
+            {
+                if (Tm.TestClass is ICurrentMeter == false)
+                    success = false;
+            }
+            if ((HardwareMask & (int)HardwareTypes.PowerSupply) > 0)
+            {
+                if (Tm.TestClass is IPowerSupply == false)
+                    success = false;
+            }
+            if ((HardwareMask & (int)HardwareTypes.ProgrammableLoad) > 0)
+            {
+                if (Tm.TestClass is IProgrammableLoad == false)
+                    success = false;
+            }
+
+            return success;
         }
 
         /// <summary>
@@ -361,29 +220,26 @@ namespace Com.QuantAsylum.Tractor.Tests
         {
             MemoryStream ms = new MemoryStream(imgArray);
             return (Bitmap)Image.FromStream(ms);
-        }
+        }      
+    }
 
-        /// <summary>
-        /// Converts CamelStringData into Camel String Data
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
-        public string UnCamelCase(string s)
-        {
-            return Regex.Replace(
-                    Regex.Replace(
-                        s,
-                        @"(\P{Ll})(\P{Ll}\p{Ll})",
-                        "$1 $2"
-                    ),
-                    @"(\p{Ll})(\P{Ll})",
-                    "$1 $2"
-                );
-        }
+    public class UiTest : TestBase
+    {
 
-        public string ReCamelCase(string s)
-        {
-            return s.Replace(" ", string.Empty);
-        }
+    }
+
+    public class AudioTestBase : TestBase
+    {
+        [ObjectEditorAttribute(Index = 100, DisplayText = "FFT Size", MustBePowerOfTwo = true, MinValue = 2048, MaxValue = 32768)]
+        public uint FftSize = 8192;
+
+        [ObjectEditorAttribute(Index = 102, DisplayText = "Retry Count")]
+        public int RetryCount = 2;
+
+        [ObjectEditorAttribute(Index = 104, DisplayText = "Measure Left Channel")]
+        public bool LeftChannel = true;
+
+        [ObjectEditorAttribute(Index = 106, DisplayText = "Measure Right Channel")]
+        public bool RightChannel = true;
     }
 }

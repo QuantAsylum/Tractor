@@ -5,28 +5,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
 {
+
     [Serializable]
-    public class Thd03 : TestBase
+    public class ThdA01 : AudioTestBase
     {
+        [ObjectEditorAttribute(Index = 200, DisplayText = "Test Frequency (Hz)", MinValue = 10, MaxValue = 20000)]
         public float Freq = 1000;
+
+        [ObjectEditorAttribute(Index = 210, DisplayText = "Analyzer Output Level (dBV)", MinValue = -100, MaxValue = 6)]
         public float OutputLevel = -30;
 
-        public float MinimumOKThd = -110;
-        public float MaximumOKThd = -100;
+        [ObjectEditorAttribute(Index = 230, DisplayText = "Minimum THD to Pass (dB)", MinValue = -100, MaxValue = 100)]
+        public float MinimumOKTHD = -110;
 
-        public int LoadImpedance = 8;
+        [ObjectEditorAttribute(Index = 240, DisplayText = "Maximum THD to Pass (dB)", MinValue = -100, MaxValue = 100, MustBeGreaterThanIndex = 230)]
+        public float MaximumOKTHD = -100;
+
+        [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
         public int InputRange = 6;
-        public int ExtGain = -6;
 
-        public Thd03() : base()
+        public ThdA01() : base()
         {
-            Name = "THD03";
-            TestType = TestTypeEnum.Distortion;
+            Name = "ThdA01";
+            _TestType = TestTypeEnum.Distortion;
         }
 
         public override void DoTest(string title, out TestResult tr)
@@ -35,9 +40,10 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             tr = new TestResult(2);
 
             Tm.SetToDefaults();
+            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize);
+
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(InputRange);
-            ((IProgrammableLoad)Tm.TestClass).SetImpedance(LoadImpedance);
 
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, OutputLevel, Freq);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, OutputLevel, Freq);
@@ -45,28 +51,18 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
 
             TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
-            // Get THD in dB
             ((IAudioAnalyzer)Tm.TestClass).ComputeThdPct(Freq, 20000, out tr.Value[0], out tr.Value[1]);
+
+            // Convert to db
             tr.Value[0] = 20 * (float)Math.Log10(tr.Value[0] / 100);
             tr.Value[1] = 20 * (float)Math.Log10(tr.Value[1] / 100);
-
-            // Compute peak
-            ((IAudioAnalyzer)Tm.TestClass).ComputeRms(Freq * 0.98f, Freq * 1.02f, out double peakLDbv, out double peakRDbv);
-
-            // Convert to volts
-            double leftVrms = (float)Math.Pow(10, peakLDbv / 20);
-            double rightVrms = (float)Math.Pow(10, peakRDbv / 20);
-
-            // Convert to watts
-            double leftWatts = (leftVrms * leftVrms) / LoadImpedance;
-            double rightWatts = (rightVrms * rightVrms) / LoadImpedance;
 
             bool passLeft = true, passRight = true;
 
             if (LeftChannel)
             {
-                tr.StringValue[0] = string.Format("{0:N1} dB @ {1:N1} Watts", tr.Value[0], leftWatts);
-                if ((tr.Value[0] < MinimumOKThd) || (tr.Value[0] > MaximumOKThd))
+                tr.StringValue[0] = tr.Value[0].ToString("0.0") + " dB";
+                if ((tr.Value[0] < MinimumOKTHD) || (tr.Value[0] > MaximumOKTHD))
                     passLeft = false;
             }
             else
@@ -74,13 +70,12 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
 
             if (RightChannel)
             {
-                tr.StringValue[1] = string.Format("{0:N1} dB @ {1:N1} Watts", tr.Value[1], rightWatts);
-                if ((tr.Value[1] < MinimumOKThd) || (tr.Value[1] > MaximumOKThd))
+                tr.StringValue[1] = tr.Value[1].ToString("0.0") + " dB";
+                if ((tr.Value[1] < MinimumOKTHD) || (tr.Value[1] > MaximumOKTHD))
                     passRight = false;
             }
             else
                 tr.StringValue[1] = "SKIP";
-
 
             if (LeftChannel && RightChannel)
                 tr.Pass = passLeft && passRight;
@@ -94,23 +89,20 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
 
         public override string GetTestLimits()
         {
-            return string.Format("{0:N1}...{1:N1} dB", MinimumOKThd, MaximumOKThd);
+            return string.Format("{0:N1}...{1:N1} dB", MinimumOKTHD, MaximumOKTHD);
         }
 
         public override string GetTestDescription()
         {
-            return "Measures THD at a given frequency and amplitude at a given load";
+            return "Measures THD at a given frequency and amplitude. Results must be within a given window to pass.";
         }
 
-        public override bool IsRunnable()
+        internal override int HardwareMask
         {
-            if ((Tm.TestClass is IAudioAnalyzer) &&
-                 (Tm.TestClass is IProgrammableLoad))
+            get
             {
-                return true;
+                return (int)HardwareTypes.AudioAnalyzer;
             }
-
-            return false;
         }
     }
 }

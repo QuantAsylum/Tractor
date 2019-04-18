@@ -85,33 +85,61 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
         private void button1_Click(object sender, EventArgs e)
         {
-            CloseBtn.Enabled = false;
-            PauseBtn.Enabled = true;
-            StartBtn.Enabled = false;
-            StopBtn.Enabled = true;
-            TestStartTime = DateTime.Now;
-            timer1.Enabled = true;
-            label1.Text = "Wait...";
-            Start();
+            label1.Text = "Checking connections...";
+            label1.Update();
+            if (CheckConnections(out string result))
+            {
+                CloseBtn.Enabled = false;
+                PauseBtn.Enabled = true;
+                StartBtn.Enabled = false;
+                StopBtn.Enabled = true;
+                TestStartTime = DateTime.Now;
+                timer1.Enabled = true;
+                label1.Text = "Wait...";
+                Start();
+            }
+            else
+            {
+                MessageBox.Show("The test could not be started: " + result);
+                label1.Text = "Failed to start.";
+            }
         }
 
-        private void Start()
+        private bool CheckConnections(out string result)
         {
+            ((IInstrument)Tm.TestClass).LaunchApplication();
+            ((IInstrument)Tm.TestClass).ConnectToDevice(out result);
+            return ((IInstrument)Tm.TestClass).IsConnected();
+
+           
+
+            /*
+
             if (Tm.TestClass is IComposite)
             {
                 if (((IComposite)Tm.TestClass).IsConnected() == false)
-                    ((IComposite)Tm.TestClass).ConnectToDevices();
+                {
+                    if (((IComposite)Tm.TestClass).ConnectToDevices(out string result) == false)
+                    {
+                        MessageBox.Show(result);
+                        Abort = true;
+                        return;
+                    }
+                }
             }
             else if (Tm.TestClass is IInstrument)
             {
                 if (((IInstrument)Tm.TestClass).IsConnected() == false)
                     ((IInstrument)Tm.TestClass).ConnectToDevice();
             }
+            */
+        }
 
+        private void Start()
+        {
+            Abort = false;
 
             ClearPassFailResultColumn();
-
-            Abort = false;
 
             dataGridView1[(int)ColText.PASSFAIL, 0].Value = "Starting...";
             dataGridView1.Refresh();
@@ -174,20 +202,23 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
                         TestResult tr = null;
 
-                        for (int j = 0; j < Form1.AppSettings.TestList[i].RetryCount; j++)
+                        if (Form1.AppSettings.TestList[i] is AudioTestBase)
                         {
-                            if (j > 0)
+                            for (int j = 0; j < ((AudioTestBase)Form1.AppSettings.TestList[i]).RetryCount; j++)
                             {
-                                dataGridView1.Invoke((MethodInvoker)delegate
+                                if (j > 0)
                                 {
-                                    dataGridView1[(int)ColText.PASSFAIL, i].Value = "Retry: " + j.ToString();
-                                });
+                                    dataGridView1.Invoke((MethodInvoker)delegate
+                                    {
+                                        dataGridView1[(int)ColText.PASSFAIL, i].Value = "Retry: " + j.ToString();
+                                    });
+                                }
+
+                                Form1.AppSettings.TestList[i].DoTest(Form1.AppSettings.TestList[i].Name, out tr);
+
+                                if (tr.Pass)
+                                    break;
                             }
-
-                            Form1.AppSettings.TestList[i].DoTest(Form1.AppSettings.TestList[i].Name, out tr);
-
-                            if (tr.Pass)
-                                break;
                         }
 
                         if (Form1.AppSettings.AbortOnFailure && (tr.Pass == false))
@@ -215,7 +246,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                         }
 
                         // If new test AND first test is serial number, then print it larger
-                        if (i == 0 && (Form1.AppSettings.TestList[0] is IdInput01))
+                        if (i == 0 && (Form1.AppSettings.TestList[0] is IdInputA00))
                         {
                             html.AddHeading2(string.Format("Device SN: {0}", tr.StringValue[0]));
                         }
@@ -230,28 +261,41 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
                         if (Form1.AppSettings.UseAuditDb)
                         {
-                            if (Form1.AppSettings.TestList[i].LeftChannel)
+                            if (Form1.AppSettings.TestList[i] is AudioTestBase)
                             {
-                                SubmitToAuditDb(testGroup, 0, Form1.AppSettings.TestList[i], tr);
-                            }
-                            if (Form1.AppSettings.TestList[i].RightChannel)
-                            {
-                                SubmitToAuditDb(testGroup, 1, Form1.AppSettings.TestList[i], tr);
+                                if (((AudioTestBase)Form1.AppSettings.TestList[i]).LeftChannel)
+                                {
+                                    SubmitToAuditDb(testGroup, 0, Form1.AppSettings.TestList[i], tr);
+                                }
+                                if (((AudioTestBase)Form1.AppSettings.TestList[i]).RightChannel)
+                                {
+                                    SubmitToAuditDb(testGroup, 1, Form1.AppSettings.TestList[i], tr);
+                                }
+                                else
+                                {
+                                    SubmitToAuditDb(testGroup, 0, Form1.AppSettings.TestList[i], tr);
+                                }
                             }
                         }
 
                         // Add to database if needed
                         if (Form1.AppSettings.UseDb)
                         {
-                            // Left channel
-                            if (Form1.AppSettings.TestList[i].LeftChannel)
+                            if (Form1.AppSettings.TestList[i] is AudioTestBase)
+                            {
+                                // Left channel
+                                if (((AudioTestBase)Form1.AppSettings.TestList[i]).LeftChannel)
+                                {
+                                    SubmitToDb(testGroup, 0, Form1.AppSettings.TestList[i], tr);
+                                }
+                                if (((AudioTestBase)Form1.AppSettings.TestList[i]).RightChannel)
+                                {
+                                    SubmitToDb(testGroup, 1, Form1.AppSettings.TestList[i], tr);
+                                }
+                            }
+                            else
                             {
                                 SubmitToDb(testGroup, 0, Form1.AppSettings.TestList[i], tr);
-                            }
-
-                            if (Form1.AppSettings.TestList[i].RightChannel)
-                            {
-                                SubmitToDb(testGroup, 1, Form1.AppSettings.TestList[i], tr);
                             }
                         }
 
@@ -359,15 +403,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
         private bool IsConnected()
         {
-            bool connected = false;
-            if (Tm.TestClass is IInstrument)
-            {
-                connected = ((IInstrument)Tm.TestClass).IsConnected();
-            }
-            else if (Tm.TestClass is IComposite)
-            {
-                connected = ((IComposite)Tm.TestClass).IsConnected();
-            }
+            bool connected = ((IInstrument)Tm.TestClass).IsConnected();
 
             if (connected == false)
             {

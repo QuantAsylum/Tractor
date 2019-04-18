@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Com.QuantAsylum.Tractor.TestManagers;
 using Tractor;
+using Tractor.Com.QuantAsylum.Tractor.Tests;
 
 namespace Com.QuantAsylum.Tractor.Tests.Other
 {
@@ -16,20 +17,36 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
     /// This test will check the gain at a given impedance level
     /// </summary>
     [Serializable]
-    public class Efficiency01 : TestBase
+    public class EfficiencyA07 : AudioTestBase
     {
+        [ObjectEditorAttribute(Index = 200, DisplayText = "Amp Voltage", MinValue = 5, MaxValue = 55)]
         public float AmplifierSupplyVoltage = 51;
-        public float MinimumPassEfficiency = 80;
-        public float MaximumPassEfficiency = 90;
+
+        [ObjectEditorAttribute(Index = 210, DisplayText = "Test Frequency (Hz)", MinValue = 10, MaxValue = 20000)]
         public float TestFrequency = 1000;
+
+        [ObjectEditorAttribute(Index = 220, DisplayText = "Analyzer Output Level (dBV)", MinValue = -100, MaxValue = 6)]
         public float AnalyzerOutputLevel = -15;
+
+        [ObjectEditorAttribute(Index = 230, DisplayText = "Pre-analyzer Input Gain (dB)", MinValue = -100, MaxValue = 100)]
         public float ExternalAnalyzerInputGain = -6;
+
+        [ObjectEditorAttribute(Index = 240, DisplayText = "Minimum Efficiency to Pass (dB)", MinValue = 20, MaxValue = 100)]
+        public float MinimumPassEfficiency = 80;
+
+        [ObjectEditorAttribute(Index = 250, DisplayText = "Maximum Efficiency to Pass (dB)", MinValue = -100, MaxValue = 100, MustBeGreaterThanIndex = 240)]
+        public float MaximumPassEfficiency = 90;
+
+        [ObjectEditorAttribute(Index = 260, DisplayText = "Load Impedance (ohms)", ValidInts = new int[] { 8, 4 })]
         public int ProgrammableLoadImpedance = 8;
+
+        [ObjectEditorAttribute(Index = 270, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
         public int AnalyzerInputRange = 26;
 
-        public Efficiency01() : base()
+        public EfficiencyA07() : base()
         {
-            TestType = TestTypeEnum.Other;
+            Name = "EfficiencyA07";
+            _TestType = TestTypeEnum.Other;
         }
 
         public override void DoTest(string title, out TestResult tr)
@@ -42,7 +59,7 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
-            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(8192);
+            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, AnalyzerOutputLevel, TestFrequency);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, AnalyzerOutputLevel, TestFrequency);
             ((IAudioAnalyzer)Tm.TestClass).DoAcquisitionAsync();
@@ -114,41 +131,19 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             return string.Format("{0:N1}...{1:N1}%", MinimumPassEfficiency, MaximumPassEfficiency);
         }
 
-        public override bool CheckValues(out string s)
-        {
-            s = "";
-            if (((IProgrammableLoad)Tm.TestClass).GetSupportedImpedances().Contains(ProgrammableLoadImpedance) == false)
-            {
-                s = "Output impedance must be: " + string.Join(" ", ((IProgrammableLoad)Tm.TestClass).GetSupportedImpedances());
-                return false;
-            }
-
-            if (((IAudioAnalyzer)Tm.TestClass).GetInputRanges().Contains(AnalyzerInputRange) == false)
-            {
-                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm.TestClass).GetInputRanges());
-                return false;
-            }
-
-            return true;
-        }
-
         public override string GetTestDescription()
         {
             return "Measures the efficiency of the amplifier under test. This is done by measuring amplifier output power " +
                 "and measuring amplifier input power (supply voltage and supply current). The ratio of these measurements " +
-                "is the efficiency.";
+                "is the efficiency, expressed in % (0..100)";
         }
 
-        public override bool IsRunnable()
+        internal override int HardwareMask
         {
-            if ((Tm.TestClass is IAudioAnalyzer) &&
-                (Tm.TestClass is ICurrentMeter) &&
-                (Tm.TestClass is IProgrammableLoad))
+            get
             {
-                return true;
+                return (int)HardwareTypes.AudioAnalyzer | (int)HardwareTypes.ProgrammableLoad | (int)HardwareTypes.CurrentMeter;
             }
-
-            return false;
         }
     }
 }

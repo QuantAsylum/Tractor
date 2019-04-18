@@ -28,10 +28,16 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             };
         }
 
-        public bool ConnectToDevice()
+        public bool ConnectToDevice(out string result)
         {
             // Nothing special to do for REST device
+            result = "";
             return true;
+        }
+
+        public void CloseConnection()
+        {
+            
         }
 
         public bool IsConnected()

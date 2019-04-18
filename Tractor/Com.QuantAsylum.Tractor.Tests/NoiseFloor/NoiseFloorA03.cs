@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Com.QuantAsylum.Tractor.TestManagers;
 using Tractor;
+using Tractor.Com.QuantAsylum.Tractor.Tests;
 
 namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
 {
@@ -16,18 +17,24 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
     /// Measures the noise floor without any weighting applied, from 20 to 20KHz
     /// </summary>
     [Serializable]
-    public class NoiseFloor02 : TestBase
+    public class NoiseFloorA03 : AudioTestBase
     {
+        [ObjectEditorAttribute(Index = 230, DisplayText = "Minimum Level to Pass (dB)", MinValue = -100, MaxValue = 100)]
+        public float MinimumPassLevel = -10.5f;
+
+        [ObjectEditorAttribute(Index = 240, DisplayText = "Maximum Level to Pass (dB)", MinValue = -100, MaxValue = 100, MustBeGreaterThanIndex = 230)]
+        public float MaximumPassLevel = -9.5f;
+
+        [ObjectEditorAttribute(Index = 250, DisplayText = "Load Impedance (ohms)", ValidInts = new int[] { 8, 4 })]
         public int ProgrammableLoadImpedance = 8;
-        public float MinimumPassLevel = -200;
-        public float MaximumPassLevel = -105;
 
-
+        [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
         public int AnalyzerInputRange = 6;
 
-        public NoiseFloor02() : base()
+        public NoiseFloorA03() : base()
         {
-            TestType = TestTypeEnum.LevelGain;
+            Name = "NoiseFloorA03";
+            _TestType = TestTypeEnum.LevelGain;
         }
 
         public override void DoTest(string title, out TestResult tr)
@@ -70,24 +77,6 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
             return;
         }
 
-        public override bool CheckValues(out string s)
-        {
-            s = "";
-            if (((IProgrammableLoad)Tm.TestClass).GetSupportedImpedances().Contains(ProgrammableLoadImpedance) == false)
-            {
-                s = "Output impedance must be: " + string.Join(" ", ((IProgrammableLoad)Tm.TestClass).GetSupportedImpedances());
-                return false;
-            }
-
-            if (((IAudioAnalyzer)Tm.TestClass).GetInputRanges().Contains(AnalyzerInputRange) == false)
-            {
-                s = "Input range not supported. Must be: " + string.Join(" ", ((IAudioAnalyzer)Tm.TestClass).GetInputRanges());
-                return false;
-            }
-
-            return true;
-        }
-
         public override string GetTestLimits()
         {
             return string.Format("{0:N1}...{1:N1} dBV", MinimumPassLevel, MaximumPassLevel);
@@ -99,15 +88,12 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
                    "within the specified limits, then 'pass = true' is returned.";
         }
 
-        public override bool IsRunnable()
+        internal override int HardwareMask
         {
-            if ((Tm.TestClass is IAudioAnalyzer) &&
-                 (Tm.TestClass is IProgrammableLoad))
+            get
             {
-                return true;
+                return (int)HardwareTypes.AudioAnalyzer | (int)HardwareTypes.ProgrammableLoad;
             }
-
-            return false;
         }
     }
 }
