@@ -10,10 +10,10 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
     [Serializable]
     public class RmsLevelA03 : AudioTestBase
     {
-        [ObjectEditorAttribute(Index = 230, DisplayText = "Minimum Level to Pass (dB)", MinValue = -100, MaxValue = 100)]
+        [ObjectEditorAttribute(Index = 230, DisplayText = "Minimum Level to Pass (dBV)", MinValue = -100, MaxValue = 100)]
         public float MinimumPassLevel = -10.5f;
 
-        [ObjectEditorAttribute(Index = 240, DisplayText = "Maximum Level to Pass (dB)", MinValue = -100, MaxValue = 100, MustBeGreaterThanIndex = 230)]
+        [ObjectEditorAttribute(Index = 240, DisplayText = "Maximum Level to Pass (dBV)", MinValue = -100, MaxValue = 100, MustBeGreaterThanIndex = 230)]
         public float MaximumPassLevel = -9.5f;
 
         [ObjectEditorAttribute(Index = 250, DisplayText = "Load Impedance (ohms)", ValidInts = new int[] { 8, 4 })]

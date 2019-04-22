@@ -129,7 +129,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                 {
                     bool value = (bool)fi.GetValue(ObjectToEdit);
                     CheckBox tb = new CheckBox() { Checked = value, Anchor = AnchorStyles.Left };
-                    tb.TextChanged += ValueChanged;
+                    tb.CheckedChanged+= ValueChanged;
                     Tlp.Controls.Add(tb, 1, row);
                 }
                 else if (o is ObjectEditorSpacer)
@@ -371,7 +371,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                     {
                         if (commit)
                         {
-                            string s = Tlp.GetControlFromPosition(1, i).Text;
+                            string s = Tlp.GetControlFromPosition(1, i).Text.Trim();
                             f[i].SetValue(ObjectToEdit, s.Substring(0, Math.Min(s.Length, f[i].GetCustomAttribute<ObjectEditorAttribute>().MaxLength)));
                         }
 

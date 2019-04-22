@@ -12,7 +12,7 @@ namespace Com.QuantAsylum.Tractor.Tests
     {
 
         [ObjectEditorAttribute(Index = 200, DisplayText = "Prompt Message:", MaxLength = 32)]
-        public string Id = "";
+        public string Msg = "";
 
         public IdInputA00() : base()
         {
@@ -25,24 +25,25 @@ namespace Com.QuantAsylum.Tractor.Tests
             // Two channels of testing
             tr = new TestResult(2);
 
-            DlgInput dlg = new DlgInput("Enter serial number");
+            DlgInput dlg = new DlgInput(Msg);
 
             if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                Id = dlg.Result;
-                if (Id != "")
+                string serialNumber = dlg.Result.Trim().ToUpper();
+                if (serialNumber != "")
                 {
-                    Tm.LocalStash.Add("SerialNumber", Id);
+                    Tm.LocalStash.Add("SerialNumber", serialNumber);
                     tr.Pass = true;
-                    tr.StringValue[0] = Id;
+                    tr.StringValue[0] = serialNumber;
                 }
             }
         }
 
         public override string GetTestDescription()
         {
-            return "Prompts the user to enter a serial number. This function returns 'pass = true' if the user " +
-                   "entered something, but no further qualification is performed on the input string. " + 
+            return "Prompts the user to enter some information as a string. This function returns 'pass = true' if the user " +
+                   "entered something, it will be converted to upper case and leading and trailing spaces will be removed, " +
+                   "but no further qualification is performed on the input string. " + 
                    "If the user hit cancel or if the string is empty, then 'pass = false' is returned";
         }
     }

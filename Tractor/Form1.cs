@@ -117,7 +117,12 @@ namespace Tractor
 
         private void UpdateTitleBar()
         {
-            Text = string.Format("{0} {1} [{2:0.00}{3}]", Constants.TitleBarText, Constants.Version, Path.GetFileName(SettingsFile), AppSettingsDirty ? "*" : "");
+            string s = string.Format("{0} {1}", Constants.TitleBarText, Constants.Version);
+
+            if (SettingsFile != "")
+                Text = s + string.Format(" [{0:0.00}{1}]", Path.GetFileName(SettingsFile), AppSettingsDirty ? "*" : "");
+            else
+                Text = s;
         }
 
 
@@ -653,7 +658,6 @@ namespace Tractor
             {
 
             }
-
         }
 
         public void AcceptChanges()
@@ -662,6 +666,12 @@ namespace Tractor
             UpdateTitleBar();
             EditingInProgress = false;
             treeView1.Enabled = true;
+            if (AppSettings.TestList.Where(o => o.Name == SelectedTb.Name).ToList().Count > 1)
+            {
+                // Name isn't unqiue. Make it unique
+                SelectedTb.Name = AppSettings.FindUniqueName(SelectedTb.Name);
+            }
+            RePopulateTreeView(SelectedTb.Name);
             SetTreeviewControls();
         }
 

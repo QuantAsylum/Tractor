@@ -31,7 +31,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
         {
             try
             {
-                AuditionVolume += 0.05f;
+                AuditionVolume += 0.01f;
 
                 if (AuditionVolume > 1.0f)
                     AuditionVolume = 1.0f;
@@ -50,7 +50,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
         {
             try
             {
-                AuditionVolume -= 0.05f;
+                AuditionVolume -= 0.01f;
 
                 if (AuditionVolume < 0f)
                     AuditionVolume = 0f;

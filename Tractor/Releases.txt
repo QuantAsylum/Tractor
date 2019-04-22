@@ -1,4 +1,10 @@
-﻿0.75
+﻿0.91 
+- Minor bug fixing
+
+0.9 
+- Massive cleanup and re-structuring
+
+0.75
 - Added splash
 - Added cloud database support
 - QA401 Test flow now resembles QA401H test flow (eg processing done without pulling data across)

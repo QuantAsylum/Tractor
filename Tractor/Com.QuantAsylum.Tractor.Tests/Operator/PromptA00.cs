@@ -54,7 +54,8 @@ namespace Com.QuantAsylum.Tractor.Tests
 
         public override string GetTestDescription()
         {
-            return "Instructs the user to complete an action. 'Pass = true' is always returned.";
+            return "Instructs the user to complete an action. A PNG image may be specified as an instruction aid, and the operator" +
+                "may optionally decide if the action succeeded or failed.";
         }
     }
 }

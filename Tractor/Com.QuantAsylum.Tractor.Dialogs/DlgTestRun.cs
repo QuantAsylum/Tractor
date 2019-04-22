@@ -251,10 +251,10 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                                 {
                                     SubmitToAuditDb(testGroup, 1, Form1.AppSettings.TestList[i], tr);
                                 }
-                                else
-                                {
-                                    SubmitToAuditDb(testGroup, 0, Form1.AppSettings.TestList[i], tr);
-                                }
+                            }
+                            else
+                            {
+                                SubmitToAuditDb(testGroup, 0, Form1.AppSettings.TestList[i], tr);
                             }
                         }
 

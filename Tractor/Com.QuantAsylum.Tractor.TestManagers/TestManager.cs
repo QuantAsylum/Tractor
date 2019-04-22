@@ -24,9 +24,9 @@ namespace Com.QuantAsylum.Tractor.TestManagers
     {
         public object TestClass;
 
-        public delegate void StartEditing();
-        public delegate void DoneEditing();
-        public delegate void CancelEditing();
+        //public delegate void StartEditing();
+        //public delegate void DoneEditing();
+        //public delegate void CancelEditing();
 
         /// <summary>
         /// This allows different tests to share data.
@@ -36,15 +36,6 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         public void SetToDefaults()
         {
             ((IInstrument)TestClass).SetToDefaults();
-
-            //if (TestClass is IInstrument)
-            //{
-            //    ((IInstrument)TestClass).SetToDefaults();
-            //}
-            //else if (TestClass is IComposite)
-            //{
-            //    ((IComposite)TestClass).SetToDefaults();
-            //}
         }
     }
 }
