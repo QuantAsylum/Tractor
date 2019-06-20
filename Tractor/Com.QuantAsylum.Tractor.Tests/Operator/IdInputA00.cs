@@ -16,7 +16,7 @@ namespace Com.QuantAsylum.Tractor.Tests
 
         public IdInputA00() : base()
         {
-            Name = "IdInputA00";
+            Name = this.GetType().Name;
             _TestType = TestTypeEnum.Operator;
         }
 

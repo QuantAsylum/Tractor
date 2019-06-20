@@ -41,7 +41,7 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
 
         public ImdA03() : base()
         {
-            Name = "ImdA03";
+            Name = this.GetType().Name;
             _TestType = TestTypeEnum.Distortion;
         }
 

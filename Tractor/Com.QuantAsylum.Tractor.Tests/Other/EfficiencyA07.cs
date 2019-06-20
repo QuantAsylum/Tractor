@@ -37,7 +37,7 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 
         public EfficiencyA07() : base()
         {
-            Name = "EfficiencyA07";
+            Name = this.GetType().Name;
             _TestType = TestTypeEnum.Other;
         }
 

@@ -221,17 +221,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4258771"
-     inkscape:cx="306.81847"
-     inkscape:cy="61.300909"
+     inkscape:zoom="1.4375402"
+     inkscape:cx="260.15143"
+     inkscape:cy="56.522796"
      inkscape:document-units="px"
-     inkscape:current-layer="layer5"
+     inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:pagecheckerboard="true"
      units="px"
-     inkscape:window-width="1920"
-     inkscape:window-height="1017"
-     inkscape:window-x="-8"
+     inkscape:window-width="1600"
+     inkscape:window-height="877"
+     inkscape:window-x="1912"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:snap-global="true" />
@@ -251,7 +251,7 @@
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="Background"
-     style="display:inline">
+     style="display:none">
     <rect
        transform="translate(0,-752.55911)"
        style="opacity:1;fill:#ff4c55;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:3.77952766;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
@@ -268,12 +268,12 @@
      inkscape:groupmode="layer"
      id="layer4"
      inkscape:label="Tracks"
-     style="display:inline" />
+     style="display:none" />
   <g
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="Shadow and Text"
-     style="display:inline">
+     style="display:none">
     <g
        id="g1193"
        transform="translate(-274.91203,-706.40295)">

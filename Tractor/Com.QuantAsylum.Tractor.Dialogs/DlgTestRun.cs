@@ -142,6 +142,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                     HtmlWriter html = new HtmlWriter(ReportDirectory);
 
                     bool allPassed = true;
+                    string opMessage = "";
 
                     Guid testGroup = Guid.NewGuid();
 
@@ -207,7 +208,16 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                         }
 
                         if (tr.Pass == false)
+                        {
                             allPassed = false;
+                        }
+
+                        // any test can update the operator message. But only the last test that updates
+                        // the operator message will have its result shown.
+                        if (tr.OperatorMessage != "")
+                        {
+                            opMessage = tr.OperatorMessage;
+                        }
 
                         dataGridView1.Invoke((MethodInvoker)delegate
                         {
@@ -290,12 +300,12 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                     html.AddParagraph(string.Format("Elapsed Time: {0:N1} sec", ts.TotalSeconds));
 
                     html.Render();
-                    this.Invoke(((MethodInvoker)delegate { TestPassFinished(allPassed); }));
+                    this.Invoke(((MethodInvoker)delegate { TestPassFinished(allPassed, allPassed ? opMessage : ""); }));
                 }
                 catch (Exception ex)
                 {
                     Log.WriteLine(LogType.Error, ex.Message);
-                    this.Invoke(((MethodInvoker)delegate { TestPassFinished(false); }));
+                    this.Invoke(((MethodInvoker)delegate { TestPassFinished(false, ""); }));
                 }
 
                 if (Tm.TestClass is IPowerSupply)
@@ -362,7 +372,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             return Convert.ToBase64String(hash);
         }
 
-        private void TestPassFinished(bool allTestPassed)
+        private void TestPassFinished(bool allTestPassed, string operatorMessage)
         {
             if (Tm.TestClass is IPowerSupply)
             {
@@ -371,7 +381,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
             timer1.Enabled = false;
 
-            DlgPassFail dlg = new DlgPassFail(allTestPassed ? "PASS" : "FAIL", allTestPassed);
+            DlgPassFail dlg = new DlgPassFail(allTestPassed ? "PASS" : "FAIL", allTestPassed, operatorMessage);
             dlg.ShowDialog();
 
             StartBtn.Enabled = true;

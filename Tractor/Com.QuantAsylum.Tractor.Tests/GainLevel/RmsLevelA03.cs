@@ -30,7 +30,7 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
 
         public RmsLevelA03() : base()
         {
-            Name = "NoiseFloorA03";
+            Name = this.GetType().Name;
             _TestType = TestTypeEnum.LevelGain;
         }
 

@@ -12,14 +12,21 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 {
     public partial class DlgPassFail : Form
     {
-        public DlgPassFail(string text, bool pass)
+        public DlgPassFail(string text, bool pass, string operatorMessage = "")
         {
             InitializeComponent();
             label1.Text = text;
+
+            label2.Text = operatorMessage;
+
             if (pass)
+            {
                 this.BackColor = Color.Green;
+            }
             else
+            {
                 this.BackColor = Color.Red;
+            }
         }
     }
 }

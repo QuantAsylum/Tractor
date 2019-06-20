@@ -27,7 +27,7 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 
         public ImpedanceA03() : base()
         {
-            Name = "ImpedanceA03";
+            Name = this.GetType().Name;
             _TestType = TestTypeEnum.Other;
         }
 

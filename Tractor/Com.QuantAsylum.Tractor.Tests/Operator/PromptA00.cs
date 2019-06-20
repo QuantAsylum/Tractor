@@ -23,7 +23,7 @@ namespace Com.QuantAsylum.Tractor.Tests
 
         public PromptA00() : base()
         {
-            Name = "PromptA00";
+            Name = this.GetType().Name;
             _TestType = TestTypeEnum.Operator;
         }
 

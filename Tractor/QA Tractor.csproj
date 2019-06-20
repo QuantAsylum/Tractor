@@ -135,6 +135,8 @@
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA401_QA450.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA450.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\TestManager.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\GainSorted5A01.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\GainSorted3A01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\ObjectEditorUiBuilder.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\GainA03.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Distortion\ImdA03.cs" />

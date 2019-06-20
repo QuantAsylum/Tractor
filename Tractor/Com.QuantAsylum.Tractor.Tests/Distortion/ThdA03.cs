@@ -33,7 +33,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
 
         public ThdA03() : base()
         {
-            Name = "ThdA03";
+            Name = this.GetType().Name;
             _TestType = TestTypeEnum.Distortion;
         }
 

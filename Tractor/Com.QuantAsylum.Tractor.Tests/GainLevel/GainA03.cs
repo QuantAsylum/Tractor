@@ -34,7 +34,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
 
         public GainA03() : base()
         {
-            Name = "GainA03";
+            Name = this.GetType().Name;
             _TestType = TestTypeEnum.LevelGain;
         }
 

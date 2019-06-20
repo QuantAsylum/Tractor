@@ -36,11 +36,17 @@ namespace Com.QuantAsylum.Tractor.Tests
         /// </summary>
         public bool Pass;
 
+        /// <summary>
+        /// A test-specific string that will be passed to the operator 
+        /// </summary>
+        public string OperatorMessage = "";
+
         public TestResult(int count)
         {
             Pass = false;
             Value = new double[count];
             StringValue = new string[count];
+
 
             for (int i=0; i<count; i++)
             {
@@ -70,6 +76,8 @@ namespace Com.QuantAsylum.Tractor.Tests
     [System.Xml.Serialization.XmlInclude(typeof(EfficiencyA07))]
     [System.Xml.Serialization.XmlInclude(typeof(AuditionA01))]
     [System.Xml.Serialization.XmlInclude(typeof(ShellA00))]
+    [System.Xml.Serialization.XmlInclude(typeof(GainSorted3A01N))]
+    [System.Xml.Serialization.XmlInclude(typeof(GainSorted5A01N))]
     public class TestBase
     {
         [Flags]

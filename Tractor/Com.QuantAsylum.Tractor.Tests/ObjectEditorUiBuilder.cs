@@ -65,6 +65,8 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
         {
             Tlp.SuspendLayout();
 
+            Tlp.AutoScroll = true;
+
             Type t = ObjectToEdit.GetType();
             FieldInfo[] f = t.GetFields();
 

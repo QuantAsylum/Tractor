@@ -271,12 +271,12 @@ namespace Tractor
 
             if (tb == null)
             {
-                s = "Description: \n\nRunnable: \n\nIssues:";
+                s = "Description: \n\nRunnable: \n\nIssues: ";
             }
             else if (tb.IsRunnable())
             {
                 tb.CheckValues(out string values);
-                s = string.Format("Description: {0}\n\nRunnable: Yes\n\nIssues:{1}", tb.GetTestDescription(), values == "" ? "None" : values);
+                s = string.Format("Description: {0}\n\nRunnable: Yes\n\nIssues: {1}", tb.GetTestDescription(), values == "" ? "None" : values);
             }
             else
             {
@@ -395,11 +395,14 @@ namespace Tractor
 
         private void ClearEditFields()
         {
+            tableLayoutPanel1.SuspendLayout();
+
             for (int i = tableLayoutPanel1.Controls.Count - 1; i >= 0; --i)
                 tableLayoutPanel1.Controls[i].Dispose();
 
             tableLayoutPanel1.Controls.Clear();
             tableLayoutPanel1.RowCount = 0;
+            tableLayoutPanel1.ResumeLayout();
         }
 
         /// <summary>

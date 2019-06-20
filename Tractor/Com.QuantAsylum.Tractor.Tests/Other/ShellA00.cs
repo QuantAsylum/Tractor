@@ -27,7 +27,7 @@ namespace Com.QuantAsylum.Tractor.Tests
 
         public ShellA00() : base()
         {
-            Name = "ShellA00";
+            Name = this.GetType().Name;
             _TestType = TestTypeEnum.Other;
         }
 

@@ -18,7 +18,7 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 
         public AuditionA01() : base()
         {
-            Name = "AuditionA01";
+            Name = this.GetType().Name;
             _TestType = TestTypeEnum.Operator;
         }
 

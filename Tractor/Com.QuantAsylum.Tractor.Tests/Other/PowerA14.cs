@@ -29,7 +29,7 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 
         public PowerA14() : base()
         {
-            Name = "PowerA14";
+            Name = this.GetType().Name;
             _TestType = TestTypeEnum.Other;
         }
 
