@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -21,6 +23,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
         public int[] ValidInts { get; set; } = null;
         public int MaxLength { get; set; } = 64;
         public bool Hide { get; set; } = false;
+        public bool IsFileName { get; set; } = false;
 
         /// <summary>
         /// The indicated index must be LESS than the current index
@@ -38,12 +41,17 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
 
     }
 
+    class FileLoadButton : Button
+    {
+        public TextBox FileNameTextBox;
+    }
+
     public class ObjectEditor
     {
         bool _IsDirty = false;
 
-        internal Button OkButton;
-        internal Button CancelButton;
+        Button OkButton;
+        Button CancelButton;
 
         TestBase ObjectToEdit;
         TestBase BackupObjectToEdit;
@@ -75,11 +83,12 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
             Tlp.Controls.Clear();
             Tlp.ColumnStyles.Clear();
             Tlp.RowStyles.Clear();
-            Tlp.ColumnCount = 3;
+            Tlp.ColumnCount = 4;  // COL0 = label, COL1 = data field, COL3 = button if needed, COL4 = error
             Tlp.RowCount = f.Length;
 
-            Tlp.ColumnCount = 3;
             int row = -1;
+
+            _IsDirty = false;
 
             foreach (FieldInfo fi in f)
             {
@@ -94,9 +103,9 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
 
                 if ((o is ObjectEditorSpacer) == false)
                 {
-                    var attr = fi.GetCustomAttribute<ObjectEditorAttribute>();
+                    //var attr = fi.GetCustomAttribute<ObjectEditorAttribute>();
                     Tlp.Controls.Add(new Label() { Text = fi.GetCustomAttribute<ObjectEditorAttribute>().DisplayText, Anchor = AnchorStyles.Right, AutoSize = true }, 0, row);
-                    Tlp.Controls.Add(new Label() { Text = "", Anchor = AnchorStyles.Left, AutoSize = true }, 2, row);
+                    Tlp.Controls.Add(new Label() { Text = "", Anchor = AnchorStyles.Left, AutoSize = true }, 3, row);
                 }
 
                 if (o is int)
@@ -123,9 +132,23 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                 else if (o is string)
                 {
                     string value = (string)fi.GetValue(ObjectToEdit);
+                    bool isFileName = (bool)fi.GetCustomAttribute<ObjectEditorAttribute>().IsFileName;
                     TextBox tb = new TextBox() { Text = value, Anchor = AnchorStyles.Left };
                     tb.TextChanged += ValueChanged;
                     Tlp.Controls.Add(tb, 1, row);
+
+                    if (isFileName)
+                    {
+                        FileLoadButton b = new FileLoadButton() { Text = "Browse" };
+                        b.Click += BrowseFile;
+                        b.FileNameTextBox = tb;
+                        Tlp.Controls.Add(b, 2, row);
+
+                        if (File.Exists(tb.Text) == false)
+                        {
+                            _IsDirty = true;
+                        }
+                    }
                 }
                 else if (o is bool)
                 {
@@ -157,9 +180,15 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
 
             // This just helps with Y spacing...
             Tlp.Controls.Add(new Label() { Text = "", Anchor = AnchorStyles.Right }, 0, ++row);
-            _IsDirty = false;
+
 
             Tlp.ResumeLayout();
+
+            // Some fields (such as file names) need to be selected before closing
+            if (_IsDirty)
+            {
+                ValueChanged(null, null);
+            }
         }
 
         private void ValueChanged(object sender, EventArgs e)
@@ -168,6 +197,25 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
             OkButton.Enabled = true;
             CancelButton.Enabled = true;
             _IsDirty = true;
+        }
+
+        private void BrowseFile(object sender, EventArgs e)
+        {
+            NowEditingCallback?.Invoke();
+            OkButton.Enabled = true;
+            CancelButton.Enabled = true;
+            _IsDirty = true;
+
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.InitialDirectory = Constants.MaskFiles;
+            ofd.CheckFileExists = true;
+            ofd.Filter = "Mask Files (*.mask)|*.mask";
+
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                FileLoadButton b = sender as FileLoadButton;
+                b.FileNameTextBox.Text = ofd.FileName;
+            }
         }
 
         public bool IsDirty
@@ -256,11 +304,13 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                             if (commit)
                                 f[i].SetValue(ObjectToEdit, result);
 
-                            Tlp.GetControlFromPosition(2, i).Text = errMsg;
+                            Tlp.GetControlFromPosition(3, i).Text = errMsg;
+                            Tlp.GetControlFromPosition(0, i).ForeColor = Color.Black;
                         }
                         else
                         {
-                            Tlp.GetControlFromPosition(2, i).Text = errMsg;
+                            Tlp.GetControlFromPosition(3, i).Text = errMsg;
+                            Tlp.GetControlFromPosition(0, i).ForeColor = Color.Red;
                             retVal = false;
                         }
                     }
@@ -311,11 +361,13 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                             if (commit)
                                 f[i].SetValue(ObjectToEdit, result);
 
-                            Tlp.GetControlFromPosition(2, i).Text = errMsg;
+                            Tlp.GetControlFromPosition(3, i).Text = errMsg;
+                            Tlp.GetControlFromPosition(0, i).ForeColor = Color.Black;
                         }
                         else
                         {
-                            Tlp.GetControlFromPosition(2, i).Text = errMsg;
+                            Tlp.GetControlFromPosition(3, i).Text = errMsg;
+                            Tlp.GetControlFromPosition(0, i).ForeColor = Color.Red;
                             retVal = false;
                         }
                     }
@@ -361,30 +413,54 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                             if (commit)
                                 f[i].SetValue(ObjectToEdit, result);
 
-                            Tlp.GetControlFromPosition(2, i).Text = errMsg;
+                            Tlp.GetControlFromPosition(3, i).Text = errMsg;
+                            Tlp.GetControlFromPosition(0, i).ForeColor = Color.Black;
                         }
                         else
                         {
-                            Tlp.GetControlFromPosition(2, i).Text = errMsg;
+                            Tlp.GetControlFromPosition(3, i).Text = errMsg;
+                            Tlp.GetControlFromPosition(0, i).ForeColor = Color.Red;
                             retVal = false;
                         }
                     }
                     else if (f[i].GetValue(ObjectToEdit) is string)
                     {
-                        if (commit)
+                        bool valueOk = true;
+                        string errMsg = "";
+
+                        if (f[i].GetCustomAttribute<ObjectEditorAttribute>().IsFileName)
                         {
-                            string s = Tlp.GetControlFromPosition(1, i).Text.Trim();
-                            f[i].SetValue(ObjectToEdit, s.Substring(0, Math.Min(s.Length, f[i].GetCustomAttribute<ObjectEditorAttribute>().MaxLength)));
+                            if (File.Exists(Tlp.GetControlFromPosition(1, i).Text) == false)
+                            {
+                                valueOk = false;
+                                errMsg = "File does not exist";
+                            }
                         }
 
-                        Tlp.GetControlFromPosition(2, i).Text = "";
+                        if (valueOk)
+                        {
+                            if (commit)
+                            {
+                                string s = Tlp.GetControlFromPosition(1, i).Text.Trim();
+                                f[i].SetValue(ObjectToEdit, s.Substring(0, Math.Min(s.Length, f[i].GetCustomAttribute<ObjectEditorAttribute>().MaxLength)));
+                            }
+
+                            Tlp.GetControlFromPosition(3, i).Text = errMsg;
+                            Tlp.GetControlFromPosition(0, i).ForeColor = Color.Black;
+                        }
+                        else
+                        {
+                            Tlp.GetControlFromPosition(3, i).Text = errMsg;
+                            Tlp.GetControlFromPosition(0, i).ForeColor = Color.Red;
+                            retVal = false;
+                        }
                     }
                     else if (f[i].GetValue(ObjectToEdit) is bool)
                     {
                         if (commit)
                             f[i].SetValue(ObjectToEdit, ((CheckBox)Tlp.GetControlFromPosition(1, i)).Checked);
 
-                        Tlp.GetControlFromPosition(2, i).Text = "";
+                        Tlp.GetControlFromPosition(3, i).Text = "";
                     }
                 }
             }
@@ -401,6 +477,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
         {
             if (VerifyChanges(true))
             {
+                _IsDirty = false;
                 ParentForm.AcceptChanges();
                 OkButton.Enabled = false;
                 CancelButton.Enabled = false;

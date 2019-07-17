@@ -40,9 +40,9 @@
             this.button4.BackColor = System.Drawing.Color.Green;
             this.button4.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.button4.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button4.Location = new System.Drawing.Point(92, 177);
+            this.button4.Location = new System.Drawing.Point(30, 159);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(141, 72);
+            this.button4.Size = new System.Drawing.Size(200, 90);
             this.button4.TabIndex = 5;
             this.button4.Text = "PASS";
             this.button4.UseVisualStyleBackColor = false;
@@ -52,9 +52,9 @@
             this.button3.BackColor = System.Drawing.Color.Red;
             this.button3.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.button3.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button3.Location = new System.Drawing.Point(338, 177);
+            this.button3.Location = new System.Drawing.Point(331, 159);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(141, 72);
+            this.button3.Size = new System.Drawing.Size(200, 90);
             this.button3.TabIndex = 4;
             this.button3.Text = "FAIL";
             this.button3.UseVisualStyleBackColor = false;

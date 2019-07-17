@@ -61,6 +61,11 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
                 Qa401 = (QA401Interface)Activator.GetObject(requiredType, "tcp://localhost:9401/QuantAsylumQA401Server");
 
+                if (Qa401.GetVersion() < 1.78)
+                {
+                    System.Windows.Forms.MessageBox.Show("You are running an older version of the QA Analyzer application that is required by this version of Tractor. Please upgrade to a more recent version.", "Version Notice");
+                }
+
                 return true;
             }
             catch (Exception ex)
@@ -135,6 +140,18 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             }
         }
 
+        public void DoFrAquisition(float ampLevel_Dbv)
+        {
+            Qa401.RemotingRunSingleFrExpoChirp(ampLevel_Dbv);
+
+            while (AnalyzerIsBusy())
+            {
+                Thread.Sleep(50);
+            }
+        }
+
+       
+
         public void DoAcquisition()
         {
             Qa401.RunSingle();
@@ -153,6 +170,11 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         public bool AnalyzerIsBusy()
         {
             return (Qa401.GetAcquisitionState() == AcquisitionState.Busy);
+        }
+
+        public void TestMask(string maskFile, out bool passLeft, out bool passRight)
+        {
+            Qa401.ApplyMask(maskFile, out passLeft, out passRight);
         }
 
         public void AuditionStart(string fileName, double volume, bool repeat)
@@ -220,9 +242,9 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             Qa401.ComputeThdPct(fundamental, stopFreq, out thdPctL, out thdPctR);
         }
 
-        public double ComputeThdPct(PointD[] data, float fundamental, float stopFreq)
+        public void ComputeThdnPct(double fundamental, double startFreq, double stopFreq, out double thdPctL, out double thdPctR)
         {
-            return Qa401.ComputeTHDPct(MarshallToQAPointD(data), fundamental, stopFreq);
+            Qa401.ComputeThdNPct(fundamental, startFreq, stopFreq, out thdPctL, out thdPctR);
         }
 
         private QuantAsylum.QA401.PointD[] MarshallToQAPointD(PointD[] dataIn)
@@ -305,12 +327,12 @@ namespace Com.QuantAsylum.Tractor.TestManagers
                         psi.FileName = pathToExe;
                         System.Diagnostics.Process.Start(psi);
 
-                        // Wait up to 5 seconds for the app to get running
-                        for (int i=0; i<5; i++)
+                        // Wait up to 20 seconds for the app to get running
+                        for (int i=0; i<20; i++)
                         {
                             if (IsAppAlreadyRunning())
                             {
-                                Thread.Sleep(5000);
+                                Thread.Sleep(1000);
                                 return true;
                             }
 
@@ -328,6 +350,8 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
             return false;
         }
+
+       
 
         /// <summary>
         /// This class is only needed IF we want to connect to multiple devices

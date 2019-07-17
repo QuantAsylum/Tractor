@@ -1,9 +1,15 @@
-﻿0.92
+﻿0.93
+- Added FreqResponseChirpA01
+- Changes so that UI builder can support string file names, a button for loading a file, and checking to verify file exists. 
+This is used for loading masks
+
+0.92
 - Added ability for any test to provide an operator notification during PASS. The last test to set 
   the operator notification will have that notification shown. This means if you want a message to 
   be passed to the operator, the test that does so should be the last test OR subsequent tests must
   not overwrite the operator notification
 - Added GainSorted5A01 and GainSorted3A01 tests
+- Perf change on tree view redraw
 
 0.91 
 - Minor bug fixing

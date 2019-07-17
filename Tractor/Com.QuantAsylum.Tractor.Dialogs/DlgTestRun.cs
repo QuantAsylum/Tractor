@@ -15,6 +15,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Tractor;
 using Tractor.Com.QuantAsylum.Tractor.Database;
+using Tractor.Com.QuantAsylum.Tractor.Dialogs;
 
 namespace Com.QuantAsylum.Tractor.Dialogs
 {
@@ -433,7 +434,22 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
         private void CloseBtn_Click(object sender, EventArgs e)
         {
-            Close();
+            if (Form1.AppSettings.LockTestScreen)
+            {
+                DlgUnlock dlg = new DlgUnlock();
+
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    if (dlg.Password == Form1.AppSettings.Password)
+                    {
+                        Close();
+                    }
+                }
+            }
+            else
+            {
+                Close();
+            }
         }
 
         private void timer1_Tick(object sender, EventArgs e)

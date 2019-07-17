@@ -76,8 +76,9 @@
             // 
             // checkBox1
             // 
+            this.checkBox1.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(20, 72);
+            this.checkBox1.Location = new System.Drawing.Point(664, 39);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(83, 17);
             this.checkBox1.TabIndex = 7;
@@ -87,20 +88,19 @@
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(327, 20);
+            this.label1.Location = new System.Drawing.Point(287, 35);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(121, 20);
+            this.label1.Size = new System.Drawing.Size(283, 20);
             this.label1.TabIndex = 5;
             this.label1.Text = "Ready to start...";
             // 
             // PauseBtn
             // 
             this.PauseBtn.Enabled = false;
-            this.PauseBtn.Location = new System.Drawing.Point(101, 20);
+            this.PauseBtn.Location = new System.Drawing.Point(98, 6);
             this.PauseBtn.Name = "PauseBtn";
-            this.PauseBtn.Size = new System.Drawing.Size(75, 23);
+            this.PauseBtn.Size = new System.Drawing.Size(80, 80);
             this.PauseBtn.TabIndex = 4;
             this.PauseBtn.Text = "Pause";
             this.PauseBtn.UseVisualStyleBackColor = true;
@@ -109,9 +109,9 @@
             // CloseBtn
             // 
             this.CloseBtn.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.CloseBtn.Location = new System.Drawing.Point(672, 20);
+            this.CloseBtn.Location = new System.Drawing.Point(594, 6);
             this.CloseBtn.Name = "CloseBtn";
-            this.CloseBtn.Size = new System.Drawing.Size(75, 60);
+            this.CloseBtn.Size = new System.Drawing.Size(153, 23);
             this.CloseBtn.TabIndex = 3;
             this.CloseBtn.Text = "Close";
             this.CloseBtn.UseVisualStyleBackColor = true;
@@ -121,9 +121,9 @@
             // 
             this.StopBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.StopBtn.Enabled = false;
-            this.StopBtn.Location = new System.Drawing.Point(182, 20);
+            this.StopBtn.Location = new System.Drawing.Point(184, 6);
             this.StopBtn.Name = "StopBtn";
-            this.StopBtn.Size = new System.Drawing.Size(75, 23);
+            this.StopBtn.Size = new System.Drawing.Size(80, 80);
             this.StopBtn.TabIndex = 2;
             this.StopBtn.Text = "Stop";
             this.StopBtn.UseVisualStyleBackColor = true;
@@ -131,9 +131,9 @@
             // 
             // StartBtn
             // 
-            this.StartBtn.Location = new System.Drawing.Point(20, 20);
+            this.StartBtn.Location = new System.Drawing.Point(12, 6);
             this.StartBtn.Name = "StartBtn";
-            this.StartBtn.Size = new System.Drawing.Size(75, 23);
+            this.StartBtn.Size = new System.Drawing.Size(80, 80);
             this.StartBtn.TabIndex = 0;
             this.StartBtn.Text = "Start";
             this.StartBtn.UseVisualStyleBackColor = true;

@@ -121,6 +121,12 @@
     <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgTestRun.Designer.cs">
       <DependentUpon>DlgTestRun.cs</DependentUpon>
     </Compile>
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgUnlock.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Com.QuantAsylum.Tractor.Dialogs\DlgUnlock.Designer.cs">
+      <DependentUpon>DlgUnlock.cs</DependentUpon>
+    </Compile>
     <Compile Include="Com.QuantAsylum.Tractor.Dialogs\Histogram.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.HTML\Html.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Settings\AppSettings.cs" />
@@ -135,6 +141,8 @@
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA401_QA450.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA450.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\TestManager.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\Distortion\ThdNA01.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\FreqResponseA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\GainSorted5A01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\GainSorted3A01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\ObjectEditorUiBuilder.cs" />
@@ -202,6 +210,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgTestRun.resx">
       <DependentUpon>DlgTestRun.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Com.QuantAsylum.Tractor.Dialogs\DlgUnlock.resx">
+      <DependentUpon>DlgUnlock.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

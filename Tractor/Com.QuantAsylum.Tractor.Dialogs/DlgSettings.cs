@@ -33,8 +33,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
         private void DlgSettings_Load(object sender, EventArgs e)
         {
             foreach (Type testType in System.Reflection.Assembly.GetExecutingAssembly().GetTypes()
-                            .Where(mytype => /*(mytype.GetInterfaces().Contains(typeof(IComposite))) ||*/
-                                            (mytype.GetInterfaces().Contains(typeof(IInstrument)))
+                            .Where(mytype => (mytype.GetInterfaces().Contains(typeof(IInstrument)))
                             ))
             {
                 comboBox1.Items.Add(testType.FullName);
@@ -53,6 +52,8 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             textBox5.Text = Settings.AuditDbSessionName;
             checkBox4.Checked = Settings.UseAuditDb;
             textBox6.Text = Settings.AuditDbEmail;
+            checkBox2.Checked = Settings.LockTestScreen;
+            textBox1.Text = Settings.Password;
         }
 
         private void DlgSettings_FormClosing(object sender, FormClosingEventArgs e)
@@ -75,6 +76,16 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                 Settings.AuditDbSessionName = textBox5.Text;
                 Settings.UseAuditDb = checkBox4.Checked;
                 Settings.AuditDbEmail = textBox6.Text;
+                Settings.Password = textBox1.Text.Trim();
+                if (Settings.Password == "")
+                {
+                    Settings.LockTestScreen = false;
+                }
+                else
+                {
+                    Settings.LockTestScreen = checkBox2.Checked;
+                }
+                
                 return;
             }
 

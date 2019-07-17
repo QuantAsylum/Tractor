@@ -78,6 +78,8 @@ namespace Com.QuantAsylum.Tractor.Tests
     [System.Xml.Serialization.XmlInclude(typeof(ShellA00))]
     [System.Xml.Serialization.XmlInclude(typeof(GainSorted3A01N))]
     [System.Xml.Serialization.XmlInclude(typeof(GainSorted5A01N))]
+    [System.Xml.Serialization.XmlInclude(typeof(FreqResponseA01))]
+    [System.Xml.Serialization.XmlInclude(typeof(ThdNA01))]
     public class TestBase
     {
         [Flags]

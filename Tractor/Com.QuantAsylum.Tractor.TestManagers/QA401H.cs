@@ -82,6 +82,11 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             thdPctR = Convert.ToDouble(d["Right"]);
         }
 
+        public void ComputeThdnPct(double fundamental, double stopFreq, out double ThdPctL, out double ThdPctR)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool ConnectToDevice(out string result)
         {
             result = "";
@@ -144,6 +149,13 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             PostSync("/Acquisition");
         }
 
+        public void DoFrAquisition(float ampLevl_dBV)
+        {
+            throw new NotImplementedException();
+        }
+
+       
+
         void DoAcquisitionAsync()
         {
             PostSync("/AcquisitionAsync");
@@ -154,6 +166,13 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             string s = GetSync("AcquisitionBusy", "Value");
             return Convert.ToBoolean(s);
         }
+
+        public void TestMask(string maskFile, out bool passLeft, out bool passRight)
+        {
+            throw new NotImplementedException();
+        }
+
+        
 
         public void SetFftLength(uint length)
         {
@@ -252,6 +271,11 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         }
 
         void IAudioAnalyzer.DoAcquisitionAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ComputeThdnPct(double fundamental, double startFreq, double stopFreq, out double thdPctL, out double thdPctR)
         {
             throw new NotImplementedException();
         }

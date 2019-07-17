@@ -31,6 +31,10 @@ namespace Com.QuantAsylum.Tractor.Settings
 
         public string AuditDbEmail = "youremail@yourcompany.com";
 
+        public bool LockTestScreen = false;
+
+        public string Password = "";
+
         /// <summary>
         /// Finds a unique name in the TestList given a root. For example, if
         /// the root is "THD" and the list is empty, then "THD-1" will be returned, 

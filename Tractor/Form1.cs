@@ -113,6 +113,19 @@ namespace Tractor
             SetTreeviewControls();
 
             Com.QuantAsylum.Tractor.Database.AuditDb.StartBackgroundWorker();
+
+            string[] args = Environment.GetCommandLineArgs();
+            if (args.Length >= 2)
+            {
+                if (File.Exists(args[1]))
+                {
+                    LoadFromFile(args[1]);
+                }
+                else
+                {
+                    MessageBox.Show("The specifified file does not exist. File: " + args[1]);
+                }
+            }
         }
 
         private void UpdateTitleBar()
@@ -461,6 +474,11 @@ namespace Tractor
             RePopulateTreeView();
 
             SetTreeviewControls();
+
+            if (treeView1.Nodes.Count == 0)
+            {
+                ClearEditFields();
+            }
         }
 
         private void newTestPlan_Click(object sender, EventArgs e)
@@ -505,31 +523,36 @@ namespace Tractor
 
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.InitialDirectory = Constants.DataFilePath;
-            ofd.Filter = "Test Profile files (*.tp)|*.tp|All files (*.*)|*.*";
+            ofd.Filter = "Tractor Test Profile files (*.tractor_tp)|*.tractor_tp|All files (*.*)|*.*";
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                try
-                {
-                    SettingsFile = ofd.FileName;
-                    AppSettings = AppSettings.Deserialize(File.ReadAllText(ofd.FileName));
-                    Type t = Type.GetType(AppSettings.TestClass);
-                    Tm.TestClass = Activator.CreateInstance(t);
-                    AppSettingsDirty = false;
-                    UpdateTitleBar();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("There was an error loading the file: " + ex.Message, "File Load Error");
-                }
-                UpdateTitleBar();
-
-                foreach (TestBase test in AppSettings.TestList)
-                {
-                    test.SetTestManager(Tm);
-                }
-                RePopulateTreeView();
+                LoadFromFile(ofd.FileName);
             }
+        }
+
+        private void LoadFromFile(string fileName)
+        {
+            try
+            {
+                SettingsFile = fileName;
+                AppSettings = AppSettings.Deserialize(File.ReadAllText(fileName));
+                Type t = Type.GetType(AppSettings.TestClass);
+                Tm.TestClass = Activator.CreateInstance(t);
+                AppSettingsDirty = false;
+                UpdateTitleBar();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("There was an error loading the file: " + ex.Message, "File Load Error");
+            }
+            UpdateTitleBar();
+
+            foreach (TestBase test in AppSettings.TestList)
+            {
+                test.SetTestManager(Tm);
+            }
+            RePopulateTreeView();
         }
 
         /// <summary>
@@ -562,7 +585,7 @@ namespace Tractor
         {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.InitialDirectory = Constants.DataFilePath;
-            sfd.Filter = "Test Profile files (*.tp)|*.tp|All files (*.*)|*.*";
+            sfd.Filter = "Tractor Test Profile files (*.tractor_tp)|*.tractor_tp|All files (*.*)|*.*";
 
             if (sfd.ShowDialog() == DialogResult.OK)
             {
