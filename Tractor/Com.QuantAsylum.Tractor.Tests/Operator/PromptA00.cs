@@ -15,7 +15,7 @@ namespace Com.QuantAsylum.Tractor.Tests
         [ObjectEditorAttribute(Index = 200, DisplayText = "Prompt Message:", MaxLength = 128)]
         public string PromptMessage = "";
 
-        [ObjectEditorAttribute(Index = 210, DisplayText = "Bitmap File Name:", MaxLength = 128)]
+        [ObjectEditorAttribute(Index = 210, DisplayText = "Bitmap File Name:", MaxLength = 512, IsFileName = true)]
         public string BitmapFile = "";
 
         [ObjectEditorAttribute(Index = 220, DisplayText = "Display Fail Button")]
@@ -37,9 +37,9 @@ namespace Com.QuantAsylum.Tractor.Tests
             {
                 bmp = new Bitmap(BitmapFile);
             }
-            catch
+            catch (Exception ex)
             {
-
+                MessageBox.Show($"Failed to load specified bitmap file {BitmapFile}. Exception: " + ex.Message);
             }
 
             DlgPrompt dlg = new DlgPrompt(PromptMessage, ShowFailButton, bmp);
@@ -54,8 +54,9 @@ namespace Com.QuantAsylum.Tractor.Tests
 
         public override string GetTestDescription()
         {
-            return "Instructs the user to complete an action. A PNG image may be specified as an instruction aid, and the operator" +
-                "may optionally decide if the action succeeded or failed.";
+            return "Instructs the user to complete an action. A PNG image (512x384) may be specified as an instruction aid, and the operator" +
+                "may optionally decide if the action succeeded or failed. If an image is specified, it will be stretched to fit, maintaining" +
+                "its current aspect ratio.";
         }
     }
 }

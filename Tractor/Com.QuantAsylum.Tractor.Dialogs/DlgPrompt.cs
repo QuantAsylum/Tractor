@@ -22,11 +22,8 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
             if (image != null)
             {
-                this.Height = 650;
                 pictureBox1.Image = image;
             }
-            else
-                this.Height = 300;
         }
     }
 }

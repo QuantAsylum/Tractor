@@ -278,6 +278,10 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
 
 
+        /// <summary>
+        /// Returns true if the QA401 application is running. 
+        /// </summary>
+        /// <returns></returns>
         bool IsAppAlreadyRunning()
         {
             System.Threading.Mutex mutex;
@@ -290,7 +294,6 @@ namespace Com.QuantAsylum.Tractor.TestManagers
                 mutex.ReleaseMutex();
                 mutex.Dispose();
                 return false;
-          
             }
 
             return true;
@@ -330,16 +333,22 @@ namespace Com.QuantAsylum.Tractor.TestManagers
                         // Wait up to 20 seconds for the app to get running
                         for (int i=0; i<20; i++)
                         {
-                            if (IsAppAlreadyRunning())
+                            if (IsAppAlreadyRunning() == true)
                             {
-                                Thread.Sleep(1000);
+                                // At this point we've launched the app and we've determiend
+                                // it's running. Now we must wait to ensure it has been configured
+                                // which could take up to 20 seconds. BUGBUG: Should add a another 
+                                // global mutex to QA401 app to determine that FPGA is configured
+                                Thread.Sleep(20000);
                                 return true;
                             }
 
+                            // Wait 1 second and try again
                             Thread.Sleep(1000);
                         }
 
-                        return true;
+                        // Here we couldn't confirm the app had launched
+                        return false;
                     }
                     catch (Exception ex)
                     {

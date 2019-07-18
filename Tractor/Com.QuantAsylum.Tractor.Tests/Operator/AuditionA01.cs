@@ -7,7 +7,7 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 {
     public class AuditionA01 : UiTestBase
     {
-        [ObjectEditorAttribute(Index = 200, DisplayText = "WAV File Name:", MaxLength = 128)]
+        [ObjectEditorAttribute(Index = 200, DisplayText = "WAV File Name:", MaxLength = 512, IsFileName = true)]
         public string AuditionFileName = "";
 
         [ObjectEditorAttribute(Index = 210, DisplayText = "Output Level (0..1)", MinValue = 0, MaxValue = 1)]

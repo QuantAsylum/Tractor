@@ -1,4 +1,8 @@
-﻿0.98
+﻿0.981
+- Add new file picker button to PromptA00 and AuditionA01 tests.
+- Minor cleanup to QA401 app launch code
+
+0.98
 - UI made more finger friendly with fatter buttons for touch screens
 - Added ThdNA01 for measuring THD+N
 - Activated lock code so that run screen can be locked down. The intent here is to ensure that accidental button presses won't close the test screen
