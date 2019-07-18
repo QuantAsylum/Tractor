@@ -1,4 +1,12 @@
-﻿0.93
+﻿0.98
+- UI made more finger friendly with fatter buttons for touch screens
+- Added ThdNA01 for measuring THD+N
+- Activated lock code so that run screen can be locked down. The intent here is to ensure that accidental button presses won't close the test screen
+- Installer will install registry keys and register the file type "*.tractor_tp". This allows you to double click on a test file and launch Tractor
+- Check will make sure QA401 version is >= 1.78 when using QA401 hardware
+
+
+0.93
 - Added FreqResponseChirpA01
 - Changes so that UI builder can support string file names, a button for loading a file, and checking to verify file exists. 
 This is used for loading masks

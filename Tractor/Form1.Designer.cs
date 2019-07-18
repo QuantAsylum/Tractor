@@ -42,6 +42,7 @@
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openLogInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.queryCloudToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.AddTestBtn = new System.Windows.Forms.Button();
@@ -62,7 +63,6 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel5 = new System.Windows.Forms.Panel();
-            this.queryCloudToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openLogInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
@@ -174,6 +174,9 @@
             // 
             // toolsToolStripMenuItem
             // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openLogInBrowserToolStripMenuItem,
+            this.queryCloudToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -183,6 +186,13 @@
             this.openLogInBrowserToolStripMenuItem.Name = "openLogInBrowserToolStripMenuItem";
             this.openLogInBrowserToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.openLogInBrowserToolStripMenuItem.Text = "Open Log in Browser";
+            // 
+            // queryCloudToolStripMenuItem
+            // 
+            this.queryCloudToolStripMenuItem.Name = "queryCloudToolStripMenuItem";
+            this.queryCloudToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.queryCloudToolStripMenuItem.Text = "Query Cloud";
+            this.queryCloudToolStripMenuItem.Click += new System.EventHandler(this.queryCloudToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -195,18 +205,18 @@
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(20, 42);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(358, 415);
+            this.treeView1.Size = new System.Drawing.Size(358, 372);
             this.treeView1.TabIndex = 0;
             this.treeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterCheck);
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
             // AddTestBtn
             // 
-            this.AddTestBtn.Location = new System.Drawing.Point(23, 14);
+            this.AddTestBtn.Location = new System.Drawing.Point(12, 14);
             this.AddTestBtn.Name = "AddTestBtn";
-            this.AddTestBtn.Size = new System.Drawing.Size(100, 23);
+            this.AddTestBtn.Size = new System.Drawing.Size(90, 50);
             this.AddTestBtn.TabIndex = 1;
-            this.AddTestBtn.Text = "Add Test";
+            this.AddTestBtn.Text = "Add New Test";
             this.AddTestBtn.UseVisualStyleBackColor = true;
             this.AddTestBtn.Click += new System.EventHandler(this.AddButton_Click);
             // 
@@ -217,7 +227,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(20, 42);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(342, 415);
+            this.panel1.Size = new System.Drawing.Size(342, 372);
             this.panel1.TabIndex = 3;
             // 
             // tableLayoutPanel1
@@ -239,14 +249,15 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(340, 413);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(340, 370);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // RunTestsBtn
             // 
-            this.RunTestsBtn.Location = new System.Drawing.Point(628, 14);
+            this.RunTestsBtn.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.RunTestsBtn.Location = new System.Drawing.Point(595, 14);
             this.RunTestsBtn.Name = "RunTestsBtn";
-            this.RunTestsBtn.Size = new System.Drawing.Size(100, 23);
+            this.RunTestsBtn.Size = new System.Drawing.Size(168, 50);
             this.RunTestsBtn.TabIndex = 5;
             this.RunTestsBtn.Text = "Run Tests";
             this.RunTestsBtn.UseVisualStyleBackColor = true;
@@ -254,31 +265,31 @@
             // 
             // MoveUpBtn
             // 
-            this.MoveUpBtn.Location = new System.Drawing.Point(280, 14);
+            this.MoveUpBtn.Location = new System.Drawing.Point(204, 14);
             this.MoveUpBtn.Name = "MoveUpBtn";
-            this.MoveUpBtn.Size = new System.Drawing.Size(75, 23);
+            this.MoveUpBtn.Size = new System.Drawing.Size(90, 50);
             this.MoveUpBtn.TabIndex = 6;
-            this.MoveUpBtn.Text = "Move Up";
+            this.MoveUpBtn.Text = "Move Selected Up";
             this.MoveUpBtn.UseVisualStyleBackColor = true;
             this.MoveUpBtn.Click += new System.EventHandler(this.MoveUpBtn_Click);
             // 
             // MoveDownBtn
             // 
-            this.MoveDownBtn.Location = new System.Drawing.Point(373, 14);
+            this.MoveDownBtn.Location = new System.Drawing.Point(300, 14);
             this.MoveDownBtn.Name = "MoveDownBtn";
-            this.MoveDownBtn.Size = new System.Drawing.Size(75, 23);
+            this.MoveDownBtn.Size = new System.Drawing.Size(90, 50);
             this.MoveDownBtn.TabIndex = 7;
-            this.MoveDownBtn.Text = "Move Down";
+            this.MoveDownBtn.Text = "Move Selected Down";
             this.MoveDownBtn.UseVisualStyleBackColor = true;
             this.MoveDownBtn.Click += new System.EventHandler(this.MoveDownBtn_Click);
             // 
             // DeleteBtn
             // 
-            this.DeleteBtn.Location = new System.Drawing.Point(137, 14);
+            this.DeleteBtn.Location = new System.Drawing.Point(108, 14);
             this.DeleteBtn.Name = "DeleteBtn";
-            this.DeleteBtn.Size = new System.Drawing.Size(100, 23);
+            this.DeleteBtn.Size = new System.Drawing.Size(90, 50);
             this.DeleteBtn.TabIndex = 8;
-            this.DeleteBtn.Text = "Delete";
+            this.DeleteBtn.Text = "Delete Selected";
             this.DeleteBtn.UseVisualStyleBackColor = true;
             this.DeleteBtn.Click += new System.EventHandler(this.DeleteBtn_Click);
             // 
@@ -358,9 +369,9 @@
             this.panel4.Controls.Add(this.MoveUpBtn);
             this.panel4.Controls.Add(this.DeleteBtn);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel4.Location = new System.Drawing.Point(0, 481);
+            this.panel4.Location = new System.Drawing.Point(0, 438);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(784, 55);
+            this.panel4.Size = new System.Drawing.Size(784, 98);
             this.panel4.TabIndex = 16;
             // 
             // splitContainer1
@@ -380,7 +391,7 @@
             this.splitContainer1.Panel2.Controls.Add(this.panel1);
             this.splitContainer1.Panel2.Controls.Add(this.panel5);
             this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(20, 0, 20, 0);
-            this.splitContainer1.Size = new System.Drawing.Size(784, 457);
+            this.splitContainer1.Size = new System.Drawing.Size(784, 414);
             this.splitContainer1.SplitterDistance = 398;
             this.splitContainer1.TabIndex = 17;
             // 
@@ -401,9 +412,6 @@
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(342, 42);
             this.panel5.TabIndex = 14;
-            // 
-            // queryCloudToolStripMenuItem
-            // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[]
                 {openLogInBrowserToolStripMenuItem, queryCloudToolStripMenuItem });
             this.queryCloudToolStripMenuItem.Name = "queryCloudToolStripMenuItem";
