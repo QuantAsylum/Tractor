@@ -40,6 +40,11 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             Qa401.SetToDefault("");
         }
 
+        public double GetVersion()
+        {
+            return Qa401.GetVersion();
+        }
+
         public bool ConnectToDevice(out string result)
         {
             result = "";
@@ -60,12 +65,6 @@ namespace Com.QuantAsylum.Tractor.TestManagers
                 Type requiredType = typeof(QA401Interface);
 
                 Qa401 = (QA401Interface)Activator.GetObject(requiredType, "tcp://localhost:9401/QuantAsylumQA401Server");
-
-                if (Qa401.GetVersion() < 1.78)
-                {
-                    System.Windows.Forms.MessageBox.Show("You are running an older version of the QA Analyzer application that is required by this version of Tractor. Please upgrade to a more recent version.", "Version Notice");
-                }
-
                 return true;
             }
             catch (Exception ex)

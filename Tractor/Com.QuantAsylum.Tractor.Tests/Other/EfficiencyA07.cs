@@ -1,5 +1,6 @@
 ﻿using Com.QuantAsylum.Tractor.TestManagers;
 using System;
+using System.Threading;
 using Tractor;
 using Tractor.Com.QuantAsylum.Tractor.Tests;
 
@@ -54,6 +55,8 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, AnalyzerOutputLevel, TestFrequency);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, AnalyzerOutputLevel, TestFrequency);
+
+            DateTime effStart = DateTime.Now;
             ((IAudioAnalyzer)Tm.TestClass).DoAcquisitionAsync();
 
             float current = 0;
@@ -65,7 +68,10 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
                     current = c;
                 }
 
-                Log.WriteLine(LogType.General, "Current: " + current.ToString("0.000"));
+                //Log.WriteLine(LogType.General, string.Format("Elapsed: {0:0.0}  EfficiencyA07() Current: {1:0.000}", 
+                //    DateTime.Now.Subtract(effStart).TotalMilliseconds, current));
+
+                Thread.Sleep(20);
             }
 
             TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();

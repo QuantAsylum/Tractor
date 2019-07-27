@@ -25,6 +25,8 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
         public bool Hide { get; set; } = false;
         public bool IsFileName { get; set; } = false;
 
+        public bool FileNameCanBeEmpty = false;
+
         /// <summary>
         /// The indicated index must be LESS than the current index
         /// </summary>
@@ -133,6 +135,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                 {
                     string value = (string)fi.GetValue(ObjectToEdit);
                     bool isFileName = (bool)fi.GetCustomAttribute<ObjectEditorAttribute>().IsFileName;
+                    bool canBeEmpty = (bool)fi.GetCustomAttribute<ObjectEditorAttribute>().FileNameCanBeEmpty;
                     TextBox tb = new TextBox() { Text = value, Anchor = AnchorStyles.Left };
                     tb.TextChanged += ValueChanged;
                     Tlp.Controls.Add(tb, 1, row);
@@ -144,7 +147,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                         b.FileNameTextBox = tb;
                         Tlp.Controls.Add(b, 2, row);
 
-                        if (File.Exists(tb.Text) == false)
+                        if (canBeEmpty == false &&  File.Exists(tb.Text) == false)
                         {
                             _IsDirty = true;
                         }
@@ -154,7 +157,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                 {
                     bool value = (bool)fi.GetValue(ObjectToEdit);
                     CheckBox tb = new CheckBox() { Checked = value, Anchor = AnchorStyles.Left };
-                    tb.CheckedChanged+= ValueChanged;
+                    tb.CheckedChanged += ValueChanged;
                     Tlp.Controls.Add(tb, 1, row);
                 }
                 else if (o is ObjectEditorSpacer)
@@ -209,7 +212,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.InitialDirectory = Constants.MaskFiles;
             ofd.CheckFileExists = true;
-            ofd.Filter = "Mask Files (*.mask)|*.mask";
+            ofd.Filter = "All Files (*.*)|*.*";
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
@@ -267,7 +270,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                     if (f[i].GetCustomAttribute<ObjectEditorAttribute>().Hide)
                         continue;
 
-                    if ( (f[i].GetValue(ObjectToEdit) is double) || (f[i].GetValue(ObjectToEdit) is float) )
+                    if ((f[i].GetValue(ObjectToEdit) is double) || (f[i].GetValue(ObjectToEdit) is float))
                     {
                         bool valueOk = true;
                         string errMsg = "";
@@ -430,10 +433,13 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
 
                         if (f[i].GetCustomAttribute<ObjectEditorAttribute>().IsFileName)
                         {
-                            if (File.Exists(Tlp.GetControlFromPosition(1, i).Text) == false)
+                            if (f[i].GetCustomAttribute<ObjectEditorAttribute>().FileNameCanBeEmpty == false)
                             {
-                                valueOk = false;
-                                errMsg = "File does not exist";
+                                if (File.Exists(Tlp.GetControlFromPosition(1, i).Text) == false)
+                                {
+                                    valueOk = false;
+                                    errMsg = "File does not exist";
+                                }
                             }
                         }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Web.Script.Serialization;
 
 namespace Com.QuantAsylum.Tractor.TestManagers
@@ -39,12 +40,18 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             
         }
 
+        public double GetVersion()
+        {
+            string result = GetSync(RootUrl + "/Status/Version", "Value");
+            return Convert.ToDouble(result);
+        }
+
         public bool IsConnected()
         {
-            // Do a current read to see if you got anything back
+            // Do a version read and see if the correct version comes back
             try
             {
-                float current = GetDutCurrent();
+                double current = GetVersion();
                 return true;
             }
             catch
@@ -77,15 +84,15 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         {
             if (impedance == 4)
             {
-                PutSync("/impedance", "Value", 4);
+                PutSync("/Settings/Impedance/4");
             }
             else if (impedance == 8)
             {
-                PutSync("/impedance", "Value", 8);
+                PutSync("/Settings/Impedance/8");
             }
             else if (impedance == 0)
             {
-                PutSync("/impedance", "Value", 0);
+                PutSync("/Settings/Impedance/0");
             }
             else
                 throw new NotImplementedException("Bad value in SetImpedance()");
@@ -93,7 +100,7 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
         public int GetImpedance()
         {
-            string result = GetSync(RootUrl + "/impedance", "Value");
+            string result = GetSync(RootUrl + "/Settings/Impedance", "Value");
             return Convert.ToInt32(result);
         }
 
@@ -104,16 +111,16 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
         public bool GetSupplyState()
         {
-            string result = GetSync(RootUrl + "/dutpower", "Value");
+            string result = GetSync(RootUrl + "/Settings/DutPower", "Value");
             return Convert.ToBoolean(result);
         }
 
         public void SetSupplyState(bool powerEnable)
         {
             if (powerEnable)
-                PutSync("/dutpower", "Value", 1);
+                PutSync("/Settings/DutPower/1");
             else
-                PutSync("/dutpower", "Value", 0);
+                PutSync("/Settings/DutPower/0");
         }
 
         float Voltage;
@@ -130,8 +137,15 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
         public float GetDutCurrent(int averages = 1)
         {
-            string result = GetSync(RootUrl + "/current", "Value");
-            return Convert.ToSingle(result);
+            float sum = 0;
+            for (int i = 0; i < averages; i++)
+            {
+                string result = GetSync(RootUrl + "/Current", "Value");
+                sum += Convert.ToSingle(result);
+                Thread.Sleep(1);
+            }
+
+            return sum / averages;
         }
 
         /*******************************************************************/
@@ -177,6 +191,7 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         {
             string content;
 
+            Client.DefaultRequestHeaders.Accept.Clear();
             Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             var response = Client.GetAsync(url).Result;
             response.EnsureSuccessStatusCode();
@@ -188,7 +203,5 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
             return dict[token].ToString();
         }
-
-      
     }
 }

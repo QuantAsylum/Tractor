@@ -21,10 +21,10 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
         [ObjectEditorAttribute(Index = 200, DisplayText = "Power Enabled")]
         public bool PowerState;
 
-        [ObjectEditorAttribute(Index = 210, DisplayText = "Minimum Current to Pass (dB)", MinValue = 0, MaxValue = 15)]
+        [ObjectEditorAttribute(Index = 210, DisplayText = "Minimum Current to Pass (A)", MinValue = 0, MaxValue = 15, FormatString = "0.000")]
         public float MinimumPassCurrent = 0.005f;
 
-        [ObjectEditorAttribute(Index = 220, DisplayText = "Minimum Current to Pass (dB)", MinValue = 0, MaxValue = 15, MustBeGreaterThanIndex = 210)]
+        [ObjectEditorAttribute(Index = 220, DisplayText = "Maximum Current to Pass (A)", MinValue = 0, MaxValue = 15, FormatString = "0.000", MustBeGreaterThanIndex = 210)]
         public float MaximumPassCurrent = 0.01f;
 
         public PowerA14() : base()
@@ -56,7 +56,7 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 
         public override string GetTestLimits()
         {
-            return string.Format("{0:N1}...{1:N1}A", MinimumPassCurrent, MaximumPassCurrent);
+            return string.Format("{0:N3}...{1:N3}A", MinimumPassCurrent, MaximumPassCurrent);
         }
 
         public override string GetTestDescription()

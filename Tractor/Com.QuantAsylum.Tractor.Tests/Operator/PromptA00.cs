@@ -15,7 +15,7 @@ namespace Com.QuantAsylum.Tractor.Tests
         [ObjectEditorAttribute(Index = 200, DisplayText = "Prompt Message:", MaxLength = 128)]
         public string PromptMessage = "";
 
-        [ObjectEditorAttribute(Index = 210, DisplayText = "Bitmap File Name:", MaxLength = 512, IsFileName = true)]
+        [ObjectEditorAttribute(Index = 210, DisplayText = "Bitmap File Name:", MaxLength = 512, IsFileName = true, FileNameCanBeEmpty = true)]
         public string BitmapFile = "";
 
         [ObjectEditorAttribute(Index = 220, DisplayText = "Display Fail Button")]
@@ -35,7 +35,10 @@ namespace Com.QuantAsylum.Tractor.Tests
             Bitmap bmp = null;
             try
             {
-                bmp = new Bitmap(BitmapFile);
+                if (BitmapFile.Trim() != "")
+                {
+                    bmp = new Bitmap(BitmapFile);
+                }
             }
             catch (Exception ex)
             {

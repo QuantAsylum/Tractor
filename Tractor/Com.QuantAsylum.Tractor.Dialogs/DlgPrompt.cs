@@ -16,6 +16,11 @@ namespace Com.QuantAsylum.Tractor.Dialogs
         {
             InitializeComponent();
 
+            // Not sure why this isn't sticking. This size is specified in designer, but
+            // it's not the size that we get at runtime unless the size is specifically
+            // set.
+            Size = new Size(552, 689);
+
             label1.Text = instruction;
 
             button3.Visible = showFailButton;
@@ -23,6 +28,10 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             if (image != null)
             {
                 pictureBox1.Image = image;
+            }
+            else
+            {
+                Height = Height - pictureBox1.Height;
             }
         }
     }

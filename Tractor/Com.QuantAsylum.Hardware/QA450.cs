@@ -32,6 +32,12 @@ namespace Tractor.Com.QuantAsylum.HardwareXXXXXXXXX
             };
         }
 
+        static public double  GetVersion()
+        {
+            string result = GetSync(RootUrl + "/Status/Version", "Value");
+            return Convert.ToDouble(result);
+        }
+
         static public void SetImpedance(int impedance)
         {
             if (impedance == 4)

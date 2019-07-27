@@ -5,7 +5,7 @@ using Tractor.Com.QuantAsylum.Tractor.Tests;
 namespace Com.QuantAsylum.Tractor.Tests.GainTests
 {
     /// <summary>
-    /// This test will check the gain
+    /// Performs a swept test of gain using an expo sweep and compares the result to a specified mask file.
     /// </summary>
     [Serializable]
     public class FreqResponseA01 : AudioTestBase

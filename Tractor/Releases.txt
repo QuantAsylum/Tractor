@@ -1,4 +1,14 @@
-﻿0.981
+﻿0.99
+- Increase max fft to 64k
+- Changes to efficiency measurement to ensure current is accurately captured
+- Fixed typo/bug in powerstate (text label was wrong)
+- Switched to QA450 REST interface (no more service stack)
+- This version requires QA450 v1.21 or later and QA401 v1.78 or later
+
+0.982
+- Added option for filename to be empty
+
+0.981
 - Add new file picker button to PromptA00 and AuditionA01 tests.
 - Minor cleanup to QA401 app launch code
 

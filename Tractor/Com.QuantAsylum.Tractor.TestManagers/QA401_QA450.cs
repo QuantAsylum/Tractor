@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Com.QuantAsylum.Tractor.TestManagers;
+using Tractor;
 
 namespace Com.QuantAsylum.Tractor.TestManagers
 {
@@ -219,23 +220,39 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         {
             result = "";
 
-            bool r1 = false, r2 = false;
+            bool qa401Ok = false, qa450Ok = false;
 
             if (Qa401.IsConnected() == false)
             {
-                r1 = Qa401.ConnectToDevice(out result);
-                if (r1 == false)
-                {
-                    result += "Unable to connect to the QA401. ";
-                }
+                qa401Ok = Qa401.ConnectToDevice(out result);
             }
 
-            if (Qa450.IsConnected() == false)
+            if (qa401Ok && Qa401.GetVersion() >= Constants.RequiredQa401Version)
             {
-                result += "Unable to the connect to the QA450. ";
+                qa401Ok = true;
+            }
+            else
+            {
+                if (qa401Ok == false)
+                    result += "Unable to connect to the QA401.";
+                else
+                    result += "The QA401 application version was not current. Must be >= " + Constants.RequiredQa401Version.ToString("0.00");
             }
 
-            if (r1 && r2)
+            qa450Ok = Qa450.IsConnected();
+            if (qa450Ok && Qa450.GetVersion() >= Constants.RequiredQa450Version)
+            {
+                qa450Ok = true;
+            }
+            else
+            {
+                if (qa450Ok == false)
+                    result += "Unable to connect to the QA450.";
+                else
+                    result += "The QA450 application version was not current. Must be >= " + Constants.RequiredQa450Version.ToString("0.00");
+            }
+
+            if (qa401Ok && qa450Ok)
             {
                 return true;
             }
