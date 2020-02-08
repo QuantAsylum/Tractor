@@ -24,10 +24,10 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
         [ObjectEditorAttribute(Index = 230, DisplayText = "Pre-analyzer Input Gain (dB)", MinValue = -100, MaxValue = 100)]
         public float ExternalAnalyzerInputGain = -6;
 
-        [ObjectEditorAttribute(Index = 240, DisplayText = "Minimum Efficiency to Pass (dB)", MinValue = 20, MaxValue = 100)]
+        [ObjectEditorAttribute(Index = 240, DisplayText = "Minimum Efficiency to Pass (%)", MinValue = 20, MaxValue = 100)]
         public float MinimumPassEfficiency = 80;
 
-        [ObjectEditorAttribute(Index = 250, DisplayText = "Maximum Efficiency to Pass (dB)", MinValue = -100, MaxValue = 100, MustBeGreaterThanIndex = 240)]
+        [ObjectEditorAttribute(Index = 250, DisplayText = "Maximum Efficiency to Pass (%)", MinValue = -100, MaxValue = 100, MustBeGreaterThanIndex = 240)]
         public float MaximumPassEfficiency = 90;
 
         [ObjectEditorAttribute(Index = 260, DisplayText = "Load Impedance (ohms)", ValidInts = new int[] { 8, 4 })]
@@ -97,7 +97,7 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
     
             if (LeftChannel)
             {
-                tr.StringValue[0] = string.Format("{0:N1}% @ {1:N2} W out", tr.Value[0], wattsL);
+                tr.StringValue[0] = string.Format("{0:N1}% @ {1:N2} W out LPin = {2:N1}", tr.Value[0], wattsL, wattsInPerChannel);
                 if ((tr.Value[0] < MinimumPassEfficiency) || (tr.Value[0] > MaximumPassEfficiency))
                     passLeft = false;
             }
@@ -106,7 +106,7 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 
             if (RightChannel)
             {
-                tr.StringValue[1] = string.Format("{0:N1}% @ {1:N2} W out", tr.Value[1], wattsR);
+                tr.StringValue[1] = string.Format("{0:N1}% @ {1:N2} W out RPin = {2:N1}", tr.Value[1], wattsR, wattsInPerChannel);
                 if ((tr.Value[1] < MinimumPassEfficiency) || (tr.Value[1] > MaximumPassEfficiency))
                     passLeft = false;
             }
@@ -133,7 +133,7 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
         {
             return "Measures the efficiency of the amplifier under test. This is done by measuring amplifier output power " +
                 "and measuring amplifier input power (supply voltage and supply current). The ratio of these measurements " +
-                "is the efficiency, expressed in % (0..100)";
+                "is the efficiency, expressed in % (0..100). Both channels must be used and loaded.";
         }
 
         internal override int HardwareMask

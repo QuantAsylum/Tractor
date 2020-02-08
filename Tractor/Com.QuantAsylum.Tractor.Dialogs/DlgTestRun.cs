@@ -301,7 +301,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                     html.AddParagraph(string.Format("Elapsed Time: {0:N1} sec", ts.TotalSeconds));
 
                     html.Render();
-                    this.Invoke(((MethodInvoker)delegate { TestPassFinished(allPassed, allPassed ? opMessage : ""); }));
+                    this.Invoke(((MethodInvoker)delegate { TestPassFinished(allPassed, opMessage); }));
                 }
                 catch (Exception ex)
                 {

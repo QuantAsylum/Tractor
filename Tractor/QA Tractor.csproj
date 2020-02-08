@@ -143,6 +143,7 @@
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\TestManager.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Distortion\ThdNA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\FreqResponseA01.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\FreqResponseA03.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\GainSorted5A01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\GainSorted3A01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\ObjectEditorUiBuilder.cs" />
@@ -151,6 +152,7 @@
     <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\RmsLevelA03.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Operator\AuditionA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\EfficiencyA07.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\MicCompareA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\PowerA14.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\ImpedanceA03.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Operator\PromptA00.cs" />

@@ -103,12 +103,15 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             Qa401.DoAcquisition();
         }
 
-        public void DoFrAquisition(float ampLevl_dBV)
+        public void DoFrAquisition(float ampLevl_dBV, double windowSec, int smoothingDenominator)
         {
-            throw new NotImplementedException();
+            Qa401.DoFrAquisition(ampLevl_dBV, windowSec, smoothingDenominator);
         }
 
-        
+        public void AddMathToDisplay()
+        {
+            throw new  NotImplementedException();
+        }
 
         public void SetFftLength(uint length)
         {
@@ -155,17 +158,20 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             Qa401.ComputeThdnPct(fundamental, startFreq, stopFreq, out thdPctL, out thdPctR);
         }
 
-        public void TestMask(string maskFile, out bool passLeft, out bool passRight)
+        public void TestMask(string maskFile, bool testL, bool testR, bool testMath, out bool passLeft, out bool passRight, out bool passMath)
         {
-            Qa401.TestMask(maskFile, out passLeft, out passRight);
+            Qa401.TestMask(maskFile, testL, testR, testMath, out passLeft, out passRight, out passMath);
         }
 
-        public void ComputeThdnPct(double fundamental, double stopFreq, out double ThdPctL, out double ThdPctR)
+        public void SetYLimits(int yMax, int yMin)
         {
-            throw new NotImplementedException();
+            Qa401.SetYLimits(yMax, yMin);
         }
 
-       
+        public bool LRVerifyPhase(int bufferOffset)
+        {
+            return Qa401.LRVerifyPhase(bufferOffset);
+        }
 
         public void AuditionStart(string fileName, double volume, bool repeat)
         {

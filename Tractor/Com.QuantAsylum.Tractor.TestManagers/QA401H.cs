@@ -149,12 +149,17 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             PostSync("/Acquisition");
         }
 
-        public void DoFrAquisition(float ampLevl_dBV)
+        public void DoFrAquisition(float ampLevl_dBV, double windowSec, int smoothingDenominator)
         {
             throw new NotImplementedException();
         }
 
-       
+        public void AddMathToDisplay()
+        {
+            throw new NotImplementedException();
+        }
+
+
 
         void DoAcquisitionAsync()
         {
@@ -167,12 +172,22 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             return Convert.ToBoolean(s);
         }
 
-        public void TestMask(string maskFile, out bool passLeft, out bool passRight)
+        public void TestMask(string maskFile, bool testL, bool testR, bool testMath, out bool passLeft, out bool passRight, out bool passMath)
         {
             throw new NotImplementedException();
         }
 
-        
+        public void SetYLimits(int yMax, int yMin)
+        {
+
+        }
+
+        public bool LRVerifyPhase(int bufferOffset)
+        {
+            throw new NotImplementedException();
+        }
+
+
 
         public void SetFftLength(uint length)
         {

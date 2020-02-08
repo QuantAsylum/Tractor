@@ -1,4 +1,14 @@
-﻿0.99
+﻿0.992
+- Fixed bug where switching tests plans could result in inability to re-establish connection to QA401.
+
+0.991
+- Fixed typo in Impedance test
+- Changed button text in Run dialog to "Back to Editor" instead of "Close"
+- Fixed typo in efficiency test
+- Added FreqResponseA03 test.
+- Added ability to set Y axis on all plugins
+
+0.99
 - Increase max fft to 64k
 - Changes to efficiency measurement to ensure current is accurately captured
 - Fixed typo/bug in powerstate (text label was wrong)

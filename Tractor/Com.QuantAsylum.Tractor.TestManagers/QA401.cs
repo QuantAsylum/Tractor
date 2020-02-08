@@ -59,7 +59,9 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
             try
             {
-                TcpChannelInst = new TcpChannel();
+                //TcpChannelInst = new TcpChannel();
+                TcpChannelInst = (TcpChannel)Helper.GetChannel();
+
                 ChannelServices.RegisterChannel(TcpChannelInst, false);
 
                 Type requiredType = typeof(QA401Interface);
@@ -139,9 +141,9 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             }
         }
 
-        public void DoFrAquisition(float ampLevel_Dbv)
+        public void DoFrAquisition(float ampLevel_Dbv, double windowSec, int smoothingDenominator)
         {
-            Qa401.RemotingRunSingleFrExpoChirp(ampLevel_Dbv);
+            Qa401.RemotingRunSingleFrExpoChirp(ampLevel_Dbv, windowSec, smoothingDenominator);
 
             while (AnalyzerIsBusy())
             {
@@ -171,9 +173,19 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             return (Qa401.GetAcquisitionState() == AcquisitionState.Busy);
         }
 
-        public void TestMask(string maskFile, out bool passLeft, out bool passRight)
+        public void TestMask(string maskFile, bool testL, bool testR, bool testMath, out bool passLeft, out bool passRight, out bool passMath)
         {
-            Qa401.ApplyMask(maskFile, out passLeft, out passRight);
+            Qa401.TestMask(maskFile, testL, testR, testMath, out passLeft, out passRight, out passMath);
+        }
+
+        public void SetYLimits(int yMax, int yMin)
+        {
+            Qa401.SetYLimits(yMax, yMin);
+        }
+
+        public void AddMathToDisplay()
+        {
+            Qa401.AddMathToDisplay();
         }
 
         public void AuditionStart(string fileName, double volume, bool repeat)
@@ -244,6 +256,11 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         public void ComputeThdnPct(double fundamental, double startFreq, double stopFreq, out double thdPctL, out double thdPctR)
         {
             Qa401.ComputeThdNPct(fundamental, startFreq, stopFreq, out thdPctL, out thdPctR);
+        }
+
+        public bool LRVerifyPhase(int bufferOffset)
+        {
+            return Qa401.LRVerifyPhase(bufferOffset);
         }
 
         private QuantAsylum.QA401.PointD[] MarshallToQAPointD(PointD[] dataIn)
@@ -366,6 +383,13 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         /// </summary>
         public class Helper
         {
+            static int tcpPort = 4300;
+
+            public static IChannel GetChannel()
+            {
+                return GetChannel(tcpPort++, false);
+            }
+
             public static IChannel GetChannel(int tcpPort, bool isSecure)
             {
                 BinaryServerFormatterSinkProvider serverProv =

@@ -78,7 +78,7 @@
             // 
             this.checkBox1.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(664, 39);
+            this.checkBox1.Location = new System.Drawing.Point(594, 69);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(83, 17);
             this.checkBox1.TabIndex = 7;
@@ -111,9 +111,9 @@
             this.CloseBtn.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.CloseBtn.Location = new System.Drawing.Point(594, 6);
             this.CloseBtn.Name = "CloseBtn";
-            this.CloseBtn.Size = new System.Drawing.Size(153, 23);
+            this.CloseBtn.Size = new System.Drawing.Size(153, 50);
             this.CloseBtn.TabIndex = 3;
-            this.CloseBtn.Text = "Close";
+            this.CloseBtn.Text = "Back to Editor";
             this.CloseBtn.UseVisualStyleBackColor = true;
             this.CloseBtn.Click += new System.EventHandler(this.CloseBtn_Click);
             // 

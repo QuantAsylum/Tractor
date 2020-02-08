@@ -16,10 +16,10 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
         [ObjectEditorAttribute(Index = 210, DisplayText = "Analyzer Output Level (dBV)", MinValue = -100, MaxValue = 6)]
         public float AnalyzerOutputLevel = -30;
 
-        [ObjectEditorAttribute(Index = 220, DisplayText = "Minimum Gain to Pass (dB)", MinValue = -100, MaxValue = 100)]
+        [ObjectEditorAttribute(Index = 220, DisplayText = "Minimum Impedance to Pass (Ω)", MinValue = 0, MaxValue = 100)]
         public float MinimumPassImpedance = 0.01f;
 
-        [ObjectEditorAttribute(Index = 230, DisplayText = "Maximum Gain to Pass (dB)", MinValue = -100, MaxValue = 100, MustBeGreaterThanIndex = 220)]
+        [ObjectEditorAttribute(Index = 230, DisplayText = "Maximum Impedance to Pass (Ω)", MinValue = 0, MaxValue = 100, MustBeGreaterThanIndex = 220)]
         public float MaximumPassImpedance = 0.2f;
 
         [ObjectEditorAttribute(Index = 240, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
@@ -128,9 +128,9 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 
         public override string GetTestDescription()
         {
-            return "Measures the output impedance of an amplifier using an " +
-                   "open-circuit measurement and a measurement at a " +
-                   "specified load.";
+            return "Measures the output impedance of an amplifier by making a measurement " +
+                "at two load points using the QA450.";
+
         }
 
         internal override int HardwareMask

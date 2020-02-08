@@ -8,7 +8,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
     /// Performs a swept test of gain using an expo sweep and compares the result to a specified mask file.
     /// </summary>
     [Serializable]
-    public class FreqResponseA01 : AudioTestBase
+    public class FreqResponseA03 : AudioTestBase
     {
 
         [ObjectEditorAttribute(Index = 210, DisplayText = "Analyzer Output Level (dBV)", MinValue =-100, MaxValue = 6)]
@@ -23,13 +23,16 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
         public int AnalyzerInputRange = 6;
 
-        [ObjectEditorAttribute(Index = 270, DisplayText = "Display Y Max)", MinValue = -200, MaxValue = 200, MustBeGreaterThanIndex = 280)]
+        [ObjectEditorAttribute(Index = 260, DisplayText = "Load Impedance (ohms)", ValidInts = new int[] { 8, 4 })]
+        public int ProgrammableLoadImpedance = 8;
+
+        [ObjectEditorAttribute(Index = 270, DisplayText = "Display Y Max)", MinValue = -200, MaxValue = 200, MustBeGreaterThanIndex = 280 )]
         public int YMax = 10;
 
         [ObjectEditorAttribute(Index = 280, DisplayText = "Display Y Min)", MinValue = -200, MaxValue = 200)]
         public int YMin = -20;
 
-        public FreqResponseA01() : base()
+        public FreqResponseA03() : base()
         {
             Name = this.GetType().Name;
             _TestType = TestTypeEnum.LevelGain;
@@ -41,10 +44,12 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             tr = new TestResult(2);
 
             Tm.SetToDefaults();
+            ((IProgrammableLoad)Tm.TestClass).SetImpedance(ProgrammableLoadImpedance);
             ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize); 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
             ((IAudioAnalyzer)Tm.TestClass).SetYLimits(YMax, YMin);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
+
             ((IAudioAnalyzer)Tm.TestClass).DoFrAquisition(AnalyzerOutputLevel, 0, SmoothingDenominator);
             ((IAudioAnalyzer)Tm.TestClass).TestMask(MaskFileName, LeftChannel, RightChannel, false, out bool passLeft, out bool passRight, out _);
 
@@ -82,7 +87,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
 
         public override string GetTestDescription()
         {
-            return "Measures the frequency response using a chirp and compares to a mask. NOTE: FFT should be >32768.";
+            return "Measures the frequency response into the specified load using a chirp and compares to a mask.";
         }
 
         internal override int HardwareMask

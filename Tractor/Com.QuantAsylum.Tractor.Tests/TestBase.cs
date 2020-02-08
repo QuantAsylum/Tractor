@@ -79,7 +79,9 @@ namespace Com.QuantAsylum.Tractor.Tests
     [System.Xml.Serialization.XmlInclude(typeof(GainSorted3A01N))]
     [System.Xml.Serialization.XmlInclude(typeof(GainSorted5A01N))]
     [System.Xml.Serialization.XmlInclude(typeof(FreqResponseA01))]
+    [System.Xml.Serialization.XmlInclude(typeof(FreqResponseA03))]
     [System.Xml.Serialization.XmlInclude(typeof(ThdNA01))]
+    [System.Xml.Serialization.XmlInclude(typeof(MicCompareA01))]
     //
     // Naming Convention for classes:
     // Class names are as follows, and each must be unique
@@ -87,10 +89,10 @@ namespace Com.QuantAsylum.Tractor.Tests
     // Name of Test is GainSorted5
     // A is the variant of this particular test. The next varient would be B, etc
     // 01 is a bitmask indicating the hardware needed:
-    // 0x1 (lsb) indicates the IAudioAnalyzer interface is needed
-    // 0x2 indicates the IProgrammableLoad interface is needed
-    // 0x4 indicates the Current Meter is needed
-    // 0x8 indicates the Power Supply is needed
+    //  0x1 (lsb) indicates the IAudioAnalyzer interface is needed
+    //  0x2 indicates the IProgrammableLoad interface is needed
+    //  0x4 indicates the Current Meter is needed
+    //  0x8 indicates the Power Supply is needed
     // N indicates the operator will be notified with information beyond the pass/fail (that is, an actionable message)
     //
     public class TestBase

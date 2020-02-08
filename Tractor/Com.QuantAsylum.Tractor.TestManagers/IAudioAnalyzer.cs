@@ -19,16 +19,22 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         void SetInputRange(int attenLevel_dB);
 
         void DoAcquisition();
-        void DoFrAquisition(float ampLevl_dBV);
+        void DoFrAquisition(float ampLevl_dBV, double windowSec, int smoothingDenominator);
         void DoAcquisitionAsync();
         bool AnalyzerIsBusy();
 
-        void TestMask(string maskFile, out bool passLeft, out bool passRight);
+        void TestMask(string maskFile, bool testL, bool testR, bool testMath, out bool passLeft, out bool passRight, out bool passMath);
+
+        void SetYLimits(int yMax, int yMin);
+
+        void AddMathToDisplay();
 
         void ComputeRms(double startFreq, double stopFreq, out double RmsDbvL, out double RmsDbvR);
         void ComputePeak(double startFreq, double stopFreq, out double PeakDbvL, out double PeakDbvR);
         void ComputeThdPct(double fundamental, double stopFreq, out double ThdPctL, out double ThdPctR);
         void ComputeThdnPct(double fundamental, double startFreq, double stopFreq, out double thdPctL, out double thdPctR);
+
+        bool LRVerifyPhase(int bufferOffset);
 
         void AuditionStart(string fileName, double volume, bool repeat);
         void AuditionSetVolume(double volume);
