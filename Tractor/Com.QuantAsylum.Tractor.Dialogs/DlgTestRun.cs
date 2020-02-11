@@ -108,8 +108,13 @@ namespace Com.QuantAsylum.Tractor.Dialogs
         private bool CheckConnections(out string result)
         {
             ((IInstrument)Tm.TestClass).LaunchApplication();
-            ((IInstrument)Tm.TestClass).ConnectToDevice(out result);
-            return ((IInstrument)Tm.TestClass).IsConnected();
+            bool ok = ((IInstrument)Tm.TestClass).ConnectToDevice(out result);
+            if (ok && ((IInstrument)Tm.TestClass).IsConnected())
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private void Start()

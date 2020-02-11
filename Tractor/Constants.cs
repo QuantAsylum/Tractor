@@ -14,7 +14,7 @@ namespace Tractor
         public static string VersionSuffix = "";
 
         public static double RequiredWebserviceVersion = 0.5;
-        public static double RequiredQa401Version = 1.822;
+        public static double RequiredQa401Version = 1.900;
         public static double RequiredQa450Version = 1.21;
 
         public static string DataFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "QuantAsylum", "Tractor");

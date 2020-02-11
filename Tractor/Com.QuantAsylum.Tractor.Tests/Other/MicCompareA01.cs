@@ -46,6 +46,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize * 1024); 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
             ((IAudioAnalyzer)Tm.TestClass).SetYLimits(YMax, YMin);
+            ((IAudioAnalyzer)Tm.TestClass).SetOffsets(PreAnalyzerInputGain, 0);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
 
             ((IAudioAnalyzer)Tm.TestClass).DoFrAquisition(AnalyzerOutputLevel, WindowingMs/1000, SmoothingDenominator);

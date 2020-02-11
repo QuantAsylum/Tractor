@@ -698,7 +698,7 @@ namespace Tractor
 
         private void openLogInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            string s = Constants.TestLogsPath + Constants.LogFileName;
+            string s = Path.Combine(Constants.TestLogsPath, Constants.LogFileName);
 
             if (File.Exists(s))
             {

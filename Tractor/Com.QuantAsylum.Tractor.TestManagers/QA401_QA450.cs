@@ -238,34 +238,50 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
             bool qa401Ok = false, qa450Ok = false;
 
-            if (Qa401.IsConnected() == false)
-            {
-                qa401Ok = Qa401.ConnectToDevice(out result);
-            }
-
-            if (qa401Ok && Qa401.GetVersion() >= Constants.RequiredQa401Version)
+            if (Qa401.IsConnected() == true)
             {
                 qa401Ok = true;
             }
             else
             {
-                if (qa401Ok == false)
-                    result += "Unable to connect to the QA401.";
-                else
-                    result += "The QA401 application version was not current. Must be >= " + Constants.RequiredQa401Version.ToString("0.00");
+                qa401Ok = Qa401.ConnectToDevice(out result);
             }
 
-            qa450Ok = Qa450.IsConnected();
-            if (qa450Ok && Qa450.GetVersion() >= Constants.RequiredQa450Version)
+            if (qa401Ok)
             {
-                qa450Ok = true;
+                if (Qa401.GetVersion() >= Constants.RequiredQa401Version)
+                {
+                    // Version OK
+                }
+                else
+                {
+                    qa401Ok = false;
+                    result += "The QA401 application version was not current. Must be >= " + Constants.RequiredQa401Version.ToString("0.00") + ". ";
+                }
             }
             else
             {
-                if (qa450Ok == false)
-                    result += "Unable to connect to the QA450.";
+                result += "Unable to connect to the QA401. ";
+            }
+
+            qa450Ok = Qa450.IsConnected();
+
+            if (qa450Ok)
+            {
+                if (Qa450.GetVersion() >= Constants.RequiredQa450Version)
+                {
+                    // Version OK
+                }
                 else
-                    result += "The QA450 application version was not current. Must be >= " + Constants.RequiredQa450Version.ToString("0.00");
+                {
+                    qa450Ok = false;
+                    result += "The QA450 application version was not current. Must be >= " + Constants.RequiredQa450Version.ToString("0.00") + ". ";
+                }
+            }
+            else
+            {
+                qa450Ok = false;
+                result += "Unable to connect to the QA450. ";
             }
 
             if (qa401Ok && qa450Ok)
@@ -273,7 +289,7 @@ namespace Com.QuantAsylum.Tractor.TestManagers
                 return true;
             }
 
-            result += "The testing will now stop.";
+            result += "The testing will now stop. ";
             return false;
         }
 

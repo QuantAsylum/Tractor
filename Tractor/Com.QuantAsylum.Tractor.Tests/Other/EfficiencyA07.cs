@@ -52,8 +52,10 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
             ((IAudioAnalyzer)Tm.TestClass).SetYLimits(YMax, YMin);
+            ((IAudioAnalyzer)Tm.TestClass).SetOffsets(PreAnalyzerInputGain, 0);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
             ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize * 1024);
+           
             if (LeftChannel == true && RightChannel == false)
             {
                 ((IAudioAnalyzer)Tm.TestClass).SetMuting(false, true);
@@ -87,8 +89,8 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 
             // Get dBV out and adjust based on input gains
             ((IAudioAnalyzer)Tm.TestClass).ComputeRms(TestFrequency * 0.98f, TestFrequency * 1.02f, out double peakLDbv, out double peakRDbv);
-            peakLDbv -= PreAnalyzerInputGain;
-            peakRDbv -= PreAnalyzerInputGain;
+            //peakLDbv -= PreAnalyzerInputGain;
+            //peakRDbv -= PreAnalyzerInputGain;
 
             // Convert to Volts RMS
             double leftVrms = (double)Math.Pow(10, peakLDbv / 20);
@@ -147,7 +149,10 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
         {
             return "Measures the efficiency of the amplifier under test. This is done by measuring amplifier output power " +
                 "and measuring amplifier input power (supply voltage and supply current). The ratio of these measurements " +
-                "is the efficiency, expressed in % (0..100). Both channels must be used and loaded.";
+                "is the efficiency, expressed in % (0..100). If both Left and Right are selected, then the assumption is " +
+                "that the channels are sharing the power into the amp equally. If a single channel is specified, then the " +
+                "other channel output will be muted and the assumption is the specified channel is using the the full power " +
+                "into the amplifier. ";
         }
 
         internal override int HardwareMask
