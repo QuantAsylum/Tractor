@@ -10,11 +10,11 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
     [Serializable]
     public class RmsLevelA01 : AudioTestBase
     {
-        [ObjectEditorAttribute(Index = 230, DisplayText = "Minimum Level to Pass (dBV)", MinValue = -100, MaxValue = 100)]
-        public float MinimumPassLevel = -10.5f;
-
-        [ObjectEditorAttribute(Index = 240, DisplayText = "Maximum Level to Pass (dBV)", MinValue = -100, MaxValue = 100, MustBeGreaterThanIndex = 230)]
+        [ObjectEditorAttribute(Index = 230, DisplayText = "Maximum Level to Pass (dBV)", MinValue = -150, MaxValue = 0, MustBeGreaterThanIndex = 240)]
         public float MaximumPassLevel = -9.5f;
+
+        [ObjectEditorAttribute(Index = 240, DisplayText = "Minimum Level to Pass (dBV)", MinValue = -150, MaxValue = 0)]
+        public float MinimumPassLevel = -10.5f;
 
         [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
         public int AnalyzerInputRange = 6;
@@ -38,9 +38,10 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
 
             Tm.SetToDefaults();
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
-            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize);
+            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize * 1024);
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
-
+            ((IAudioAnalyzer)Tm.TestClass).SetYLimits(YMax, YMin);
+            ((IAudioAnalyzer)Tm.TestClass).SetOffsets(PreAnalyzerInputGain, 0);
             // Disable generators
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(false, -60, 1000);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(false, -60, 1000);

@@ -39,8 +39,11 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
 
             Tm.SetToDefaults();
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize);
+            ((IAudioAnalyzer)Tm.TestClass).SetYLimits(YMax, YMin);
+            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize * 1024);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetOffsets(PreAnalyzerInputGain, 0);
+
 
             // The RMS of two distinct but equal tones is 3 dBV above level of the tones
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, AnalyzerOutputLevel - 3, 19000);

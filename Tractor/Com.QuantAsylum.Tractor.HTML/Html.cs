@@ -14,7 +14,7 @@ namespace Com.QuantAsylum.Tractor.HTML
     class HtmlWriter
     {
         string Dir;
-        const string ImagePath = @"\Images\";
+        const string ImagePath = "Images";
         string ImageDir;
 
         StringBuilder Sb;
@@ -25,7 +25,7 @@ namespace Com.QuantAsylum.Tractor.HTML
         public HtmlWriter(string directory)
         {
             Dir = directory;
-            ImageDir = Dir + ImagePath;
+            ImageDir = Path.Combine(Dir, ImagePath);
 
             if (Directory.Exists(Dir) == false)
             {
@@ -63,8 +63,8 @@ namespace Com.QuantAsylum.Tractor.HTML
         public string ImageLink(string linkText, Bitmap bmp)
         {
             string fileName = string.Format(@"{0}.png", Guid.NewGuid());
-            bmp.Save(ImageDir + fileName, ImageFormat.Png);
-            return string.Format("<a href=\"{0}\">{1}</a>", @"." + ImagePath + fileName, linkText);
+            bmp.Save(Path.Combine(ImageDir, fileName), ImageFormat.Png);
+            return string.Format("<a href=\"{0}\">{1}</a>", Path.Combine(".", ImagePath, fileName), linkText);
         }
         public void AddImageLink(string linkText, Bitmap bmp)
         {
@@ -77,7 +77,7 @@ namespace Com.QuantAsylum.Tractor.HTML
         public void Render()
         {
             String existingPageContent = "";
-            string file = Dir + Constants.LogFileName;
+            string file = Path.Combine(Dir, Constants.LogFileName);
 
             if (File.Exists(file))
             {

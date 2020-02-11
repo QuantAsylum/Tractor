@@ -102,6 +102,9 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
         public void SetFftLength(uint length)
         {
+            if (length < 2048 || length > 65536 || (length & (length - (uint)1)) != 0 )
+                throw new Exception("Invalid FFT size set in QA401.cs SetFftLength. Length was " + length);
+
             Qa401.SetBufferLength(length);
         }
 
@@ -118,6 +121,25 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         public void AudioGenSetGen2(bool isOn, float ampLevel_dBV, float freq_Hz)
         {
             Qa401.SetGenerator(QuantAsylum.QA401.GenType.Gen2, isOn, ampLevel_dBV, freq_Hz);
+        }
+
+        public void SetMuting(bool muteLeft, bool muteRight)
+        {
+            if (muteLeft == true && muteRight == true)
+                throw new Exception("Both channels cannot be muted in Qa401.cs SetMuting()");
+
+            if (muteLeft)
+            {
+                Qa401.SetMuting(Muting.MuteLeft);
+            }
+            else if (muteRight)
+            {
+                Qa401.SetMuting(Muting.MuteRight);
+            }
+            else
+            {
+                Qa401.SetMuting(Muting.MuteNone);
+            }
         }
 
         public int[] GetInputRanges()
@@ -139,6 +161,11 @@ namespace Com.QuantAsylum.Tractor.TestManagers
                 default:
                     throw new ArgumentException("Attenuation value is not supported");
             }
+        }
+
+        public void SetOffsets(double inputOffset, double outputOffset)
+        {
+            Qa401.SetOffsets(inputOffset, outputOffset);
         }
 
         public void DoFrAquisition(float ampLevel_Dbv, double windowSec, int smoothingDenominator)
@@ -235,17 +262,17 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
         public double ComputeRms(PointD[] data, float startFreq, float stopFreq)
         {
-            return Qa401.ComputePowerDB(MarshallToQAPointD(data), startFreq, stopFreq);
+            return Qa401.ComputePowerDb(MarshallToQAPointD(data), startFreq, stopFreq);
         }
 
-        public void ComputeRms(double startFreq, double stopFreq, out double rmsDbvL, out double rmsDbvR)
+        public void ComputeRms(double startFreq, double stopFreq, out double rmsDbL, out double rmsDbR)
         {
-            Qa401.ComputeRms(startFreq, stopFreq, out rmsDbvL, out rmsDbvR);
+            Qa401.ComputeRmsDb(startFreq, stopFreq, out rmsDbL, out rmsDbR);
         }
 
-        public void ComputePeak(double startFreq, double stopFreq, out double PeakDbvL, out double PeakDbvR)
+        public void ComputePeakDb(double startFreq, double stopFreq, out double PeakDbL, out double PeakDbR)
         {
-            Qa401.GetPeak(startFreq, stopFreq, out PeakDbvL, out PeakDbvR);
+            Qa401.GetPeakDb(startFreq, stopFreq, out PeakDbL, out PeakDbR);
         }
 
         public void ComputeThdPct(double fundamental, double stopFreq, out double thdPctL, out double thdPctR)
@@ -255,7 +282,7 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
         public void ComputeThdnPct(double fundamental, double startFreq, double stopFreq, out double thdPctL, out double thdPctR)
         {
-            Qa401.ComputeThdNPct(fundamental, startFreq, stopFreq, out thdPctL, out thdPctR);
+            Qa401.ComputeThdnPct(fundamental, startFreq, stopFreq, out thdPctL, out thdPctR);
         }
 
         public bool LRVerifyPhase(int bufferOffset)

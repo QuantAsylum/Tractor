@@ -19,10 +19,10 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
         [ObjectEditorAttribute(Index = 210, DisplayText = "Analyzer Output Level (dBV)", MinValue = -100, MaxValue = 6)]
         public float OutputLevel = -30;
 
-        [ObjectEditorAttribute(Index = 230, DisplayText = "Minimum THD to Pass (dB)", MinValue = -100, MaxValue = 100)]
+        [ObjectEditorAttribute(Index = 230, DisplayText = "Minimum THD to Pass (dB)", MinValue = -150, MaxValue = 10)]
         public float MinimumOKTHD = -110;
 
-        [ObjectEditorAttribute(Index = 240, DisplayText = "Maximum THD to Pass (dB)", MinValue = -100, MaxValue = 100, MustBeGreaterThanIndex = 230)]
+        [ObjectEditorAttribute(Index = 240, DisplayText = "Maximum THD to Pass (dB)", MinValue = -150, MaxValue = 10, MustBeGreaterThanIndex = 230)]
         public float MaximumOKTHD = -100;
 
         [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
@@ -40,10 +40,12 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             tr = new TestResult(2);
 
             Tm.SetToDefaults();
-            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize);
+            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize * 1024);
 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
+            ((IAudioAnalyzer)Tm.TestClass).SetYLimits(YMax, YMin);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(InputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetOffsets(PreAnalyzerInputGain, 0);
 
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, OutputLevel, Freq);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, OutputLevel, Freq);

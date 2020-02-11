@@ -31,9 +31,6 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
         [ObjectEditorAttribute(Index = 260, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
         public int InputRange = 6;
 
-        [ObjectEditorAttribute(Index = 270, DisplayText = "Pre-analyzer Input Gain (dB)", MinValue = -100, MaxValue = 100)]
-        public int ExtGain = -6;
-
         public ThdB03() : base()
         {
             Name = this.GetType().Name;
@@ -47,8 +44,10 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
 
             Tm.SetToDefaults();
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize);
+            ((IAudioAnalyzer)Tm.TestClass).SetYLimits(YMax, YMin);
+            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize * 1024);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(InputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetOffsets(PreAnalyzerInputGain, 0);
             ((IProgrammableLoad)Tm.TestClass).SetImpedance(LoadImpedance);
 
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, OutputLevel, Freq);

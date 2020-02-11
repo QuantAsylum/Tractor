@@ -16,8 +16,8 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         [ObjectEditorAttribute(Index = 210, DisplayText = "Analyzer Output Level (dBV)", MinValue =-100, MaxValue = 6)]
         public float AnalyzerOutputLevel = -30;
 
-        [ObjectEditorAttribute(Index = 220, DisplayText = "Pre-analyzer Input Gain (dB)", MinValue = -100, MaxValue = 100)]
-        public float ExternalAnalyzerInputGain = 0;
+        //[ObjectEditorAttribute(Index = 220, DisplayText = "Pre-analyzer Input Gain (dB)", MinValue = -100, MaxValue = 100)]
+        //public float ExternalAnalyzerInputGain = 0;
 
         [ObjectEditorAttribute(Index = 230, DisplayText = "Minimum Gain to Pass (dB)", MinValue = -100, MaxValue = 100)]
         public float MinimumPassGain = -10.5f;
@@ -40,9 +40,11 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             tr = new TestResult(2);
 
             Tm.SetToDefaults();
-            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize); 
-            ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize * 1024); 
+            ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
+            ((IAudioAnalyzer)Tm.TestClass).SetYLimits(YMax, YMin);
+            ((IAudioAnalyzer)Tm.TestClass).SetOffsets(PreAnalyzerInputGain, 0);
 
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, AnalyzerOutputLevel, TestFrequency);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, AnalyzerOutputLevel, TestFrequency);
@@ -52,9 +54,9 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             TestResultBitmap = ((IAudioAnalyzer)Tm.TestClass).GetBitmap();
 
             // Compute the total RMS around the freq of interest
-            ((IAudioAnalyzer)Tm.TestClass).ComputePeak(TestFrequency * 0.90f, TestFrequency * 1.10f, out tr.Value[0], out tr.Value[1]);
-            tr.Value[0] = tr.Value[0] + ExternalAnalyzerInputGain - AnalyzerOutputLevel;
-            tr.Value[1] = tr.Value[1] + ExternalAnalyzerInputGain - AnalyzerOutputLevel;
+            ((IAudioAnalyzer)Tm.TestClass).ComputePeakDb(TestFrequency * 0.90f, TestFrequency * 1.10f, out tr.Value[0], out tr.Value[1]);
+            tr.Value[0] = tr.Value[0] - AnalyzerOutputLevel;
+            tr.Value[1] = tr.Value[1] - AnalyzerOutputLevel;
 
             bool passLeft = true, passRight = true;
 

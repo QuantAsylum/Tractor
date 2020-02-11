@@ -331,7 +331,15 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                         else if (f[i].GetCustomAttribute<ObjectEditorAttribute>().MustBePowerOfTwo ? !IsPowerOfTwo(result) : false)
                         {
                             valueOk = false;
-                            errMsg = "Value is not a power of 2";
+                            int min = (int)(f[i].GetCustomAttribute<ObjectEditorAttribute>().MinValue);
+                            int max = (int)(f[i].GetCustomAttribute<ObjectEditorAttribute>().MaxValue);
+
+                            StringBuilder sb = new StringBuilder();
+                            for (int pwr = (int)Math.Log(min, 2); pwr <= (int)Math.Log(max, 2); pwr++)
+                            {
+                                sb.Append($"{(int)Math.Pow(2, pwr)} ");
+                            }
+                            errMsg = $"Value is not a power of 2. Value must be one of the following [{sb.ToString()}]";
                         }
                         else if (ValidInts == null ? false : !ValidInts.Contains(result))
                         {
@@ -388,7 +396,15 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                         else if (f[i].GetCustomAttribute<ObjectEditorAttribute>().MustBePowerOfTwo ? !IsPowerOfTwo(result) : false)
                         {
                             valueOk = false;
-                            errMsg = "Value is not a power of 2";
+                            int min = (int)(f[i].GetCustomAttribute<ObjectEditorAttribute>().MinValue);
+                            int max = (int)(f[i].GetCustomAttribute<ObjectEditorAttribute>().MaxValue);
+ 
+                            StringBuilder sb = new StringBuilder();
+                            for (int pwr = (int)Math.Log(min, 2); pwr <= (int)Math.Log(max, 2); pwr++)
+                            {
+                                sb.Append($"{(int)Math.Pow(2, pwr)} ");
+                            }
+                            errMsg = $"Value is not a power of 2. Value must be one of the following [{sb.ToString()}]";
                         }
                         else if (result < f[i].GetCustomAttribute<ObjectEditorAttribute>().MinValue)
                         {

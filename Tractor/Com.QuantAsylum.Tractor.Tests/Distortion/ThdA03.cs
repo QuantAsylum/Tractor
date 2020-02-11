@@ -19,10 +19,10 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
         [ObjectEditorAttribute(Index = 210, DisplayText = "Analyzer Output Level (dBV)", MinValue = -100, MaxValue = 6)]
         public float OutputLevel = -30;
 
-        [ObjectEditorAttribute(Index = 230, DisplayText = "Minimum THD to Pass (dB)", MinValue = -100, MaxValue = 10)]
+        [ObjectEditorAttribute(Index = 230, DisplayText = "Minimum THD to Pass (dB)", MinValue = -150, MaxValue = 10)]
         public float MinimumOKTHD = -110;
 
-        [ObjectEditorAttribute(Index = 240, DisplayText = "Maximum THD to Pass (dB)", MinValue = -100, MaxValue = 10, MustBeGreaterThanIndex = 230)]
+        [ObjectEditorAttribute(Index = 240, DisplayText = "Maximum THD to Pass (dB)", MinValue = -150, MaxValue = 10, MustBeGreaterThanIndex = 230)]
         public float MaximumOKTHD = -100;
 
         [ObjectEditorAttribute(Index = 250, DisplayText = "Load Impedance (ohms)", ValidInts = new int[] { 8, 4 })]
@@ -45,9 +45,20 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             Tm.SetToDefaults();
 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
+            ((IAudioAnalyzer)Tm.TestClass).SetYLimits(YMax, YMin);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(InputRange);
-            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize);
+            ((IAudioAnalyzer)Tm.TestClass).SetOffsets(PreAnalyzerInputGain, 0);
+            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize * 1024);
             ((IProgrammableLoad)Tm.TestClass).SetImpedance(ProgrammableLoadImpedance);
+
+            if (LeftChannel == true && RightChannel == false)
+            {
+                ((IAudioAnalyzer)Tm.TestClass).SetMuting(false, true);
+            }
+            if (LeftChannel == false && RightChannel == true)
+            {
+                ((IAudioAnalyzer)Tm.TestClass).SetMuting(true, false);
+            }
 
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, OutputLevel, Freq);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, OutputLevel, Freq);

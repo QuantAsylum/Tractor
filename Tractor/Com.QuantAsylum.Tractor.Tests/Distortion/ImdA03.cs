@@ -52,7 +52,9 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
 
             Tm.SetToDefaults();
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
+            ((IAudioAnalyzer)Tm.TestClass).SetYLimits(YMax, YMin);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetOffsets(PreAnalyzerInputGain, 0);
 
             ((IProgrammableLoad)Tm.TestClass).SetImpedance(ProgrammableLoadImpedance);
 

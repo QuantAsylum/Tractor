@@ -41,6 +41,7 @@ namespace Tractor
 
         public Form1()
         {
+            Log.WriteLine("Application started...");
             This = this;
             InitializeComponent();
 
@@ -548,10 +549,43 @@ namespace Tractor
             }
             UpdateTitleBar();
 
+            bool fftUpgrade = false;
+
             foreach (TestBase test in AppSettings.TestList)
             {
                 test.SetTestManager(Tm);
-            }
+
+                // Upgrade pre 0.993 files to new format for FFT. The old format used FFT size (eg 32768). The 
+                // new format uses K (32). Below we detect it's the old format (>= 2048) and we replace with the
+                // new format and alert the user.
+                if (true)
+                {
+                    if (test is AudioTestBase)
+                    {
+                        AudioTestBase atb = (AudioTestBase)test;
+
+                        if (atb.FftSize >= 2048)
+                        {
+                            fftUpgrade = true;
+                            atb.FftSize = atb.FftSize / 1024;
+                            if (new List<uint>() { 2, 4, 8, 16, 32, 64 }.IndexOf(atb.FftSize) == -1)
+                            {
+                                // Ropund to nearest
+                                atb.FftSize = (uint)Math.Pow(2, Math.Round(Math.Log(atb.FftSize, 2)));
+
+                                if (atb.FftSize > 64)
+                                    atb.FftSize = 64;
+
+                                if (atb.FftSize < 2)
+                                    atb.FftSize = 2;
+                            }
+                        }
+                    }
+                }
+             }
+            if (fftUpgrade)
+                MessageBox.Show("FFT sizes of tests have been upgraded to the new version 0.993 format. Please check the FFT sizes are as expected in each test and save if correct.", "Upgrade Alert", MessageBoxButtons.OK);
+
             RePopulateTreeView();
         }
 

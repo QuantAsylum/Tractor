@@ -98,6 +98,11 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             Qa401.SetInputRange(attenLevel_dB);
         }
 
+        public void SetOffsets(double inputOffset, double outputOffset)
+        {
+            Qa401.SetOffsets(inputOffset, outputOffset);
+        }
+
         public void DoAcquisition()
         {
             Qa401.DoAcquisition();
@@ -138,14 +143,19 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             Qa401.AudioGenSetGen2(isOn, ampLevel_dBV, freq_Hz);
         }
 
+        public void SetMuting(bool muteLeft, bool muteRight)
+        {
+            Qa401.SetMuting(muteLeft, muteRight);
+        }
+
         public void ComputeRms(double startFreq, double stopFreq, out double rmsDbvL, out double rmsDbvR)
         {
             Qa401.ComputeRms(startFreq, stopFreq, out rmsDbvL, out rmsDbvR);
         }
 
-        public void ComputePeak(double startFreq, double stopFreq, out double PeakDbvL, out double PeakDbvR)
+        public void ComputePeakDb(double startFreq, double stopFreq, out double PeakDbvL, out double PeakDbvR)
         {
-            Qa401.ComputePeak(startFreq, stopFreq, out PeakDbvL, out PeakDbvR);
+            Qa401.ComputePeakDb(startFreq, stopFreq, out PeakDbvL, out PeakDbvR);
         }
 
         public void ComputeThdPct(double fundamental, double stopFreq, out double thdPctL, out double thdPctR)

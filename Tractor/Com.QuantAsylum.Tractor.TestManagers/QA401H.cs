@@ -46,6 +46,11 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             PutSync(string.Format("/Settings/AudioGen/2/{0}/{1}/{2}", isOn ? 1 : 0, freq_Hz, ampLevel_dBV));
         }
 
+        public void SetMuting(bool muteLeft, bool muteRight)
+        {
+            throw new NotImplementedException("SetMuting not implemented in Qa401H.cs");
+        }
+
         public void AuditionSetVolume(double volume)
         {
             throw new NotImplementedException();
@@ -68,7 +73,7 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             rmsDbvR = Convert.ToDouble(d["Right"]);
         }
 
-        public void ComputePeak(double startFreq, double stopFreq, out double PeakDbvL, out double PeakDbvR)
+        public void ComputePeakDb(double startFreq, double stopFreq, out double PeakDbvL, out double PeakDbvR)
         {
             Dictionary<string, object> d = GetSync(string.Format("/PeakDbv/{0}/{1}", startFreq, stopFreq));
             PeakDbvL = Convert.ToDouble(d["Left"]);
@@ -197,6 +202,14 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         public void SetInputRange(int attenLevel_dB)
         {
             PutSync(string.Format("/Settings/Input/Max/{0}", attenLevel_dB));
+        }
+
+        public void SetOffsets(double inputOffset, double outputOffset)
+        {
+            if (inputOffset != 0 || outputOffset != 0)
+            {
+                throw new InvalidOperationException("Exception in QA401H.cs SetOffsets(): QA401H can only accept in/out offsets of 0");
+            }
         }
 
         public void SetToDefaults()

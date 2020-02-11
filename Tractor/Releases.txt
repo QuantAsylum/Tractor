@@ -1,5 +1,10 @@
-﻿0.992
+﻿0.993
 - Fixed bug where switching tests plans could result in inability to re-establish connection to QA401.
+- Moved FFT sizes from bytes to kBytes. In older test-plans (pre 0.993) that are opened, they will be migrated automatically.
+- EfficiencyA07 wil now work on single channel or both channels
+- Logging will now happen to the file Tractor_log.txt located in <user>\documents\QuantAsylum\Tractor. Mostly this is exceptions
+- Paths formed are now linux-safe
+- Added ability to set Y axis limits for all audio settings
 
 0.991
 - Fixed typo in Impedance test

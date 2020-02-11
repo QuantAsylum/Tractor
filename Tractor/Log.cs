@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,9 +12,66 @@ namespace Tractor
 
     static class Log
     {
-        static public void WriteLine(LogType logType, string text)
+        static StringBuilder Sb = new StringBuilder();
+
+        static Log()
         {
-            Debug.WriteLine(text);
+            try
+            {
+                File.Delete(Constants.LogFile);
+            }
+            catch (Exception ex)
+            {
+
+            }
+            DateTime now = DateTime.Now;
+
+            Sb.AppendLine($"Log opened on {now.ToLongDateString()} {now.ToLongTimeString()}");
+            Flush();
+        }
+
+        static void Flush()
+        {
+            try
+            {
+                File.AppendAllText(Constants.LogFile, Sb.ToString());
+                Sb = new StringBuilder();
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        static public void WriteLine(string s)
+        {
+            WriteLine(LogType.General, s);
+        }
+
+        static public void WriteLine(string s, params object[] obj)
+        {
+            WriteLine(LogType.General, string.Format(s, obj));
+        }
+
+        static public void WriteLine(LogType logType, string text, ConsoleColor color = ConsoleColor.White)
+        {
+            string s = $"{DateTime.Now.ToLongTimeString().PadRight(15)} {text}";
+            Sb.AppendLine(s);
+            Debug.WriteLine(s);
+            Flush();
+        }
+
+        static public void Write(string s)
+        {
+            Write(LogType.General, s);
+        }
+
+        static public void Write(LogType logType, string text, ConsoleColor color = ConsoleColor.White)
+        {
+            string s = $"{DateTime.Now.ToLongTimeString().PadRight(15)} {text}";
+            Sb.Append(s);
+            Debug.WriteLine(s);
+            Flush();
         }
     }
 }

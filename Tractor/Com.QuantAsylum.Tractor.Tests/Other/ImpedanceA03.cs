@@ -41,6 +41,7 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 
             Tm.SetToDefaults();
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
+            ((IAudioAnalyzer)Tm.TestClass).SetYLimits(YMax, YMin);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
 
             // First, we make 8 ohm measurement

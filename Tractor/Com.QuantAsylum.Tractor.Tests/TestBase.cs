@@ -256,8 +256,8 @@ namespace Com.QuantAsylum.Tractor.Tests
 
     public class AudioTestBase : TestBase
     {
-        [ObjectEditorAttribute(Index = 100, DisplayText = "FFT Size", MustBePowerOfTwo = true, MinValue = 2048, MaxValue = 65536)]
-        public uint FftSize = 8192;
+        [ObjectEditorAttribute(Index = 100, DisplayText = "FFT Size (k)", MustBePowerOfTwo = true, MinValue = 2, MaxValue = 64)]
+        public uint FftSize = 8;
 
         [ObjectEditorAttribute(Index = 102, DisplayText = "Retry Count")]
         public int RetryCount = 2;
@@ -267,5 +267,14 @@ namespace Com.QuantAsylum.Tractor.Tests
 
         [ObjectEditorAttribute(Index = 106, DisplayText = "Measure Right Channel")]
         public bool RightChannel = true;
+
+        [ObjectEditorAttribute(Index = 110, DisplayText = "Display Y Max", MinValue = -200, MaxValue = 200, MustBeGreaterThanIndex = 120)]
+        public int YMax = 10;
+
+        [ObjectEditorAttribute(Index = 120, DisplayText = "Display Y Min", MinValue = -200, MaxValue = 200)]
+        public int YMin = -180;
+
+        [ObjectEditorAttribute(Index = 130, DisplayText = "Pre-analyzer Input Gain (dB)", MinValue = -100, MaxValue = 100)]
+        public int PreAnalyzerInputGain = 0;
     }
 }

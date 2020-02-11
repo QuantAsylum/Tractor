@@ -21,8 +21,8 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
         [ObjectEditorAttribute(Index = 220, DisplayText = "Analyzer Output Level (dBV)", MinValue = -100, MaxValue = 6)]
         public float AnalyzerOutputLevel = -15;
 
-        [ObjectEditorAttribute(Index = 230, DisplayText = "Pre-analyzer Input Gain (dB)", MinValue = -100, MaxValue = 100)]
-        public float ExternalAnalyzerInputGain = -6;
+        //[ObjectEditorAttribute(Index = 230, DisplayText = "Pre-analyzer Input Gain (dB)", MinValue = -100, MaxValue = 100)]
+        //public float ExternalAnalyzerInputGain = -6;
 
         [ObjectEditorAttribute(Index = 240, DisplayText = "Minimum Efficiency to Pass (%)", MinValue = 20, MaxValue = 100)]
         public float MinimumPassEfficiency = 80;
@@ -51,8 +51,17 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             ((IProgrammableLoad)Tm.TestClass).SetImpedance(ProgrammableLoadImpedance);
 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
+            ((IAudioAnalyzer)Tm.TestClass).SetYLimits(YMax, YMin);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
-            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize);
+            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize * 1024);
+            if (LeftChannel == true && RightChannel == false)
+            {
+                ((IAudioAnalyzer)Tm.TestClass).SetMuting(false, true);
+            }
+            if (LeftChannel == false && RightChannel == true)
+            {
+                ((IAudioAnalyzer)Tm.TestClass).SetMuting(true, false);
+            }
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, AnalyzerOutputLevel, TestFrequency);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, AnalyzerOutputLevel, TestFrequency);
 
@@ -78,8 +87,8 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 
             // Get dBV out and adjust based on input gains
             ((IAudioAnalyzer)Tm.TestClass).ComputeRms(TestFrequency * 0.98f, TestFrequency * 1.02f, out double peakLDbv, out double peakRDbv);
-            peakLDbv -= ExternalAnalyzerInputGain;
-            peakRDbv -= ExternalAnalyzerInputGain;
+            peakLDbv -= PreAnalyzerInputGain;
+            peakRDbv -= PreAnalyzerInputGain;
 
             // Convert to Volts RMS
             double leftVrms = (double)Math.Pow(10, peakLDbv / 20);
@@ -89,7 +98,12 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             double wattsL = leftVrms * leftVrms / ProgrammableLoadImpedance;
             double wattsR = rightVrms * rightVrms / ProgrammableLoadImpedance;
 
-            double wattsInPerChannel = AmplifierSupplyVoltage * current / 2;
+            double wattsInPerChannel = AmplifierSupplyVoltage * current;
+
+            // If both channels being testing, then per-channel is half of measured
+            if (LeftChannel == true && RightChannel == true)
+                wattsInPerChannel = wattsInPerChannel / 2;
+
             tr.Value[0] = 100 * wattsL / wattsInPerChannel;
             tr.Value[1] = 100 * wattsR / wattsInPerChannel;
 
