@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -15,8 +16,8 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
         public string ProductId;
         public string SerialNumber;
         public string SessionName;
-        public string Channel;
-        public string TestGroup;
+        public string Channel = "";      // Needed to accept data in old format. Without this there's a server exception
+        public string TestGroup = "";    // Ditto
         public string TestFile;
         public string TestFileMd5;
         public string Name;
@@ -59,17 +60,58 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
             get { return _AuditQueueDepth; }
         }
 
-        static public void StartBackgroundWorker()
+        static public void StartBackgroundTask()
         {
-            var task = new Task(() => BackgroundWorker(), TaskCreationOptions.LongRunning);
+            var task = new Task(() => BackgroundTask(), TaskCreationOptions.LongRunning);
             task.Start();
+        }
+
+        static DateTime LastServerAccess = DateTime.Now;
+
+        /// <summary>
+        /// Ensure server accesses happen at least 1 second apart. Accesses from same IP
+        /// address less than 1 second apart are ignored.
+        /// </summary>
+        /// <param name="requestUri"></param>
+        /// <returns></returns>
+        static Task<HttpResponseMessage> GetAsync(string requestUri)
+        {
+            while (DateTime.Now.Subtract(LastServerAccess).TotalSeconds < 1.05)
+            {
+                Thread.Sleep(100);
+            }
+
+            //Debug.WriteLine($"Last Server Access: {DateTime.Now.Subtract(LastServerAccess).TotalSeconds:0.0} seconds ago");
+            Task <HttpResponseMessage> result = Client.GetAsync(requestUri);
+            LastServerAccess = DateTime.Now;
+            return result;
+        }
+
+        /// <summary>
+        /// Ensure server accesses happen at last 1 second apart. Accesses from same IP
+        /// address less than 1 second apart are ignored.
+        /// </summary>
+        /// <param name="requestUri"></param>
+        /// <param name="body"></param>
+        /// <returns></returns>
+        static Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent body)
+        {
+            while (DateTime.Now.Subtract(LastServerAccess).TotalSeconds < 1.05)
+            {
+                Thread.Sleep(100);
+            }
+
+            //Debug.WriteLine($"Last Server Access: {DateTime.Now.Subtract(LastServerAccess).TotalSeconds:0.0} seconds ago");
+            Task<HttpResponseMessage> result = Client.PostAsync(requestUri, body);
+            LastServerAccess = DateTime.Now;
+            return result;
         }
 
         static public string CheckService()
         {
             try
             {
-                var response = Client.GetAsync(Url + "/api/CheckService").Result;
+                var response = GetAsync(Url + "/api/CheckService").Result;
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -111,7 +153,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
 
                 var json = new JavaScriptSerializer().Serialize(d);
                 var body = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = Client.PostAsync(Url + "/api/QueryGroups", body).Result;
+                var response = PostAsync(Url + "/api/QueryGroups", body).Result;
 
                 string content = response.Content.ReadAsStringAsync().Result;
                 JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
@@ -141,7 +183,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
 
                 var json = new JavaScriptSerializer().Serialize(d);
                 var body = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = Client.PostAsync(Url + "/api/QueryTests", body).Result;
+                var response = PostAsync(Url + "/api/QueryTests", body).Result;
 
                 string content = response.Content.ReadAsStringAsync().Result;
                 JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
@@ -177,7 +219,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
 
                 var json = new JavaScriptSerializer().Serialize(d);
                 var body = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = Client.PostAsync(Url + "/api/QueryTestNames", body).Result;
+                var response = PostAsync(Url + "/api/QueryTestNames", body).Result;
 
                 string content = response.Content.ReadAsStringAsync().Result;
                 JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
@@ -212,7 +254,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
 
                 var json = new JavaScriptSerializer().Serialize(d);
                 var body = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = Client.PostAsync(Url + "/api/QueryResults", body).Result;
+                var response = PostAsync(Url + "/api/QueryResults", body).Result;
 
                 string content = response.Content.ReadAsStringAsync().Result;
                 JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
@@ -245,7 +287,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
 
             var json = new JavaScriptSerializer().Serialize(d);
             var body = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = Client.PostAsync(Url + "/api/QueryResults", body).Result;
+            var response = PostAsync(Url + "/api/QueryResults", body).Result;
 
             string content = response.Content.ReadAsStringAsync().Result;
             JavaScriptSerializer jsSerializer = new JavaScriptSerializer();
@@ -296,7 +338,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
         {
             var json = new JavaScriptSerializer().Serialize(d);
             var body = new StringContent(json, Encoding.UTF8, "application/json");
-            var response = Client.PostAsync(Url + "/api/AddTest", body).Result;
+            var response = PostAsync(Url + "/api/AddTest", body).Result;
             Log.WriteLine(LogType.Database, string.Format("PostAsync() to cloud finished. Response: " + response.StatusCode.ToString()));
 
             if (response.IsSuccessStatusCode)
@@ -305,33 +347,39 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
                 return false;
         }
 
-        static void BackgroundWorker()
+        static void BackgroundTask()
         {
-            const int fileLimit = 500;
+            Random r = new Random();
+
             while (true)
             {
                 try
                 {
-                    string[] filePaths = Directory.GetFiles(Constants.AuditPath, "*.cache", SearchOption.TopDirectoryOnly);
+                    List<string> filePaths = Directory.GetFiles(Constants.AuditPath, "*.cache", SearchOption.TopDirectoryOnly).ToList();
 
-                    _AuditQueueDepth = filePaths.Length;
-                    if (filePaths.Length > fileLimit)
+                    _AuditQueueDepth = filePaths.Count;
+
+                    // Do in batches of 50. Do in random order so if we see a bad record, we're not always 
+                    // starting with that one and trying that record over and over: If that record is corrupted
+                    // then the effort will never finish.
+                    if (filePaths.Count > 0)
                     {
-                        for (int i = 0; i <= fileLimit; i++)
+                        for (int i = 0; i < 50; i++)
                         {
-                            SubmitFileToServer(filePaths[i]);
-                            Thread.Sleep(1100);
+                            int randIndex = r.Next(0, filePaths.Count);
+                            if (SubmitFileToServer(filePaths[randIndex]))
+                            {
+                                filePaths.RemoveAt(randIndex);
+                                _AuditQueueDepth = filePaths.Count;
+                            }
+                            Thread.Sleep(1000);
+
+                            if (filePaths.Count == 0)
+                                break;
                         }
                     }
-                    else if (filePaths.Length >= 1)
-                    {
-                        SubmitFileToServer(filePaths[0]);
-                        Thread.Sleep(1100);
-                    }
-                    else
-                    {
-                        Thread.Sleep(5000);
-                    }
+
+                    Thread.Sleep(5000);
                 }
                 catch (Exception ex)
                 {
@@ -345,7 +393,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
         /// Reads a file from the filesystem, converts it to an Audit, and pushes to cloud
         /// </summary>
         /// <param name="fileName"></param>
-        static void SubmitFileToServer(string fileName)
+        static bool SubmitFileToServer(string fileName)
         {
             try
             {
@@ -355,6 +403,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
                 {
                     File.Delete(fileName);
                     Log.WriteLine(LogType.Database, "AuditDb BackgroundWorker successfully submitted a file to cloud");
+                    return true;
                 }
                 else
                 {
@@ -365,6 +414,8 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
             {
                 Log.WriteLine(LogType.Database, "AuditDb BackgroundWorker exception: " + ex.Message);
             }
+
+            return false;
         }
     }
 }

@@ -50,7 +50,11 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             textBox3.Text = Settings.DbSessionName;
             textBox4.Text = Settings.ProductId.ToString();
             textBox5.Text = Settings.AuditDbSessionName;
+
+            checkBox4.CheckedChanged -= checkBox4_CheckedChanged;
             checkBox4.Checked = Settings.UseAuditDb;
+            checkBox4.CheckedChanged += checkBox4_CheckedChanged;
+
             textBox6.Text = Settings.AuditDbEmail;
             checkBox2.Checked = Settings.LockTestScreen;
             textBox1.Text = Settings.Password;

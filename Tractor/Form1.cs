@@ -113,7 +113,7 @@ namespace Tractor
 
             SetTreeviewControls();
 
-            Com.QuantAsylum.Tractor.Database.AuditDb.StartBackgroundWorker();
+            Com.QuantAsylum.Tractor.Database.AuditDb.StartBackgroundTask();
 
             string[] args = Environment.GetCommandLineArgs();
             if (args.Length >= 2)
@@ -494,7 +494,7 @@ namespace Tractor
 
             AppSettings = new AppSettings();
             AppSettingsDirty = true;
-            UpdateTitleBar();
+            SettingsFile = "";
             Type t = Type.GetType(AppSettings.TestClass);
             Tm.TestClass = Activator.CreateInstance(t);
             foreach (TestBase test in AppSettings.TestList)

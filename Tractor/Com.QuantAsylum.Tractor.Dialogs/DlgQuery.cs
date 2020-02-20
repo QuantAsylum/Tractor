@@ -31,6 +31,11 @@ namespace Tractor.Com.QuantAsylum.Tractor.Dialogs
             UpdateButtonState();
         }
 
+        private void DlgQuery_FormClosing(object sender, FormClosingEventArgs e)
+        {
+
+        }
+
         private void UpdateButtonState()
         {
             if (TestGroups.Count == 0 || TestGroups.Count == 1)
@@ -71,9 +76,6 @@ namespace Tractor.Com.QuantAsylum.Tractor.Dialogs
             try
             {
                 TestGroups = AuditDb.QueryGroupsBySerialNumber(textBox2.Text, textBox1.Text);
-
-                // Need to limit rate webservice rate to no more than one call per second
-                Thread.Sleep(1000);
 
                 UpdateButtonState();
                 if (TestGroups.Count > 0)
@@ -222,5 +224,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Dialogs
                 Log.WriteLine(LogType.Error, "An exception occured load a PID fron a file: " + ex.Message);
             }
         }
+
+      
     }
 }

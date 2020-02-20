@@ -1,4 +1,11 @@
-﻿0.993
+﻿0.994
+- Fixed bug where older-style audit records could get stuck and never upload to server
+- Fixed bug where stuck records hogged all the upload time and fresh records were ignored
+- Fixed bug so that AuditDb warning was only shown when first enabled instead of everytime you entered settings
+- Updated cloud server to 0.52
+- Updates to Mic Comparison to handle new Axis and FFT
+
+0.993
 - Fixed bug where switching tests plans could result in inability to re-establish connection to QA401.
 - Moved FFT sizes from bytes to kBytes. In older test-plans (pre 0.993) that are opened, they will be migrated automatically.
 - EfficiencyA07 wil now work on single channel or both channels

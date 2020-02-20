@@ -33,8 +33,6 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         {
             Name = this.GetType().Name;
             _TestType = TestTypeEnum.Other;
-            if (FftSize < 32768)
-                FftSize = 32768;
         }
 
         public override void DoTest(string title, out TestResult tr)
@@ -59,8 +57,8 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             int passCount = 0;
             if (CheckPhase) 
             {
-                if (((IAudioAnalyzer)Tm.TestClass).LRVerifyPhase((int)FftSize / 4)) ++passCount;
-                if (((IAudioAnalyzer)Tm.TestClass).LRVerifyPhase((int)FftSize / 4 + 300)) ++passCount;
+                if (((IAudioAnalyzer)Tm.TestClass).LRVerifyPhase((int)FftSize * 1024 / 4)) ++passCount;
+                if (((IAudioAnalyzer)Tm.TestClass).LRVerifyPhase((int)FftSize * 1024 / 4 + 300)) ++passCount;
                 if (passCount != 2)
                     passPhase = false;
             }
@@ -88,7 +86,8 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
 
         public override string GetTestDescription()
         {
-            return "Compares a reference microphone to a test microphone. The difference is compared to a specified mask.";
+            return "Compares a reference microphone (left channel) to a test microphone (right channel). The difference (L-R) is " +
+                "displayed and compared to a specified mask.";
         }
 
         internal override int HardwareMask

@@ -314,6 +314,7 @@
             this.MinimizeBox = false;
             this.Name = "DlgQuery";
             this.Text = "Audit Database Query Parameters";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.DlgQuery_FormClosing);
             this.Load += new System.EventHandler(this.DlgQuery_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
