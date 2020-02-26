@@ -230,27 +230,27 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             Qa401.AuditionStop();
         }
 
-        public PointD[] GetData(ChannelEnum channel)
-        {
-            QuantAsylum.QA401.PointD[] dataIn;
-            PointD[] dataOut;
+        //public PointD[] GetData(ChannelEnum channel)
+        //{
+        //    QuantAsylum.QA401.PointD[] dataIn;
+        //    PointD[] dataOut;
 
-            switch (channel)
-            {
-                case ChannelEnum.Left:
-                    dataIn = Qa401.GetData(ChannelType.LeftIn);
-                    break;
-                case ChannelEnum.Right:
-                    dataIn = Qa401.GetData(ChannelType.RightIn);
-                    break;
-                default:
-                    throw new ArgumentException("Invalid arguement in GetData()");
-            }
+        //    switch (channel)
+        //    {
+        //        case ChannelEnum.Left:
+        //            dataIn = Qa401.GetData(ChannelType.LeftIn);
+        //            break;
+        //        case ChannelEnum.Right:
+        //            dataIn = Qa401.GetData(ChannelType.RightIn);
+        //            break;
+        //        default:
+        //            throw new ArgumentException("Invalid arguement in GetData()");
+        //    }
 
-            dataOut = new PointD[dataIn.Length];
+        //    dataOut = new PointD[dataIn.Length];
 
-            return dataOut = MarshallToPointD(dataIn);
-        }
+        //    return dataOut = MarshallToPointD(dataIn);
+        //}
 
         public Bitmap GetBitmap()
         {
@@ -260,10 +260,10 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             return (Bitmap)Image.FromStream(ms);
         }
 
-        public double ComputeRms(PointD[] data, float startFreq, float stopFreq)
-        {
-            return Qa401.ComputePowerDb(MarshallToQAPointD(data), startFreq, stopFreq);
-        }
+        //public double ComputeRms(PointD[] data, float startFreq, float stopFreq)
+        //{
+        //    return Qa401.ComputePowerDb(MarshallToQAPointD(data), startFreq, stopFreq);
+        //}
 
         public void ComputeRms(double startFreq, double stopFreq, out double rmsDbL, out double rmsDbR)
         {

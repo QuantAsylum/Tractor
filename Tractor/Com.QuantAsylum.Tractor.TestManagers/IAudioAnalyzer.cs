@@ -44,7 +44,8 @@ namespace Com.QuantAsylum.Tractor.TestManagers
         void AuditionSetVolume(double volume);
         void AuditionStop();
 
-        PointD[] GetData(ChannelEnum channel);
+        //PointD[] GetData(ChannelEnum channel);
+
         Bitmap GetBitmap();
     }
 }

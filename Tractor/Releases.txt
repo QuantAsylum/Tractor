@@ -1,4 +1,7 @@
-﻿0.994
+﻿0.995
+- Removed old-style deprecated interfaces (old style = pass data back and forth via remoting. new style = don't pull data over, just ask for calc to be done on host)
+
+0.994
 - Fixed bug where older-style audit records could get stuck and never upload to server
 - Fixed bug where stuck records hogged all the upload time and fresh records were ignored
 - Fixed bug so that AuditDb warning was only shown when first enabled instead of everytime you entered settings

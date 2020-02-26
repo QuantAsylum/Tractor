@@ -203,10 +203,10 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             return Qa401.GetBitmap();
         }
 
-        public PointD[] GetData(ChannelEnum channel)
-        {
-            return Qa401.GetData(channel);
-        }
+        //public PointD[] GetData(ChannelEnum channel)
+        //{
+        //    return Qa401.GetData(channel);
+        //}
 
         public void SetToDefaults()
         {
