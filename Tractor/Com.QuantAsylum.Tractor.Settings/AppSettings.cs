@@ -17,17 +17,19 @@ namespace Com.QuantAsylum.Tractor.Settings
 
         public bool AbortOnFailure = true;
 
-        public string DbConnectString = "Server=MyPc\\SQLEXPRESS;Integrated security = SSPI; Initial Catalog = QATestDB; User ID = sa; Password=password";
-
-        public bool UseDb = false;
-
-        public string DbSessionName = "";
-
-        public bool UseAuditDb = false;
+        public string SessionName = "";
 
         public Guid ProductId = Guid.NewGuid();
 
-        public string AuditDbSessionName = "";
+        public bool UseDb = false;
+
+        public string DbConnectString = "Server=MyPc\\SQLEXPRESS;Integrated security = SSPI; Initial Catalog = QATestDB; User ID = sa; Password=password";
+
+        public bool UseCsvLog = false;
+
+        public string CsvFileName = "";
+
+        public bool UseAuditDb = false;
 
         public string AuditDbEmail = "youremail@yourcompany.com";
 

@@ -22,7 +22,7 @@ namespace Com.QuantAsylum.Tractor.Database
             }
             catch (Exception ex)
             {
-                Log.WriteLine(LogType.Database, ex.Message);
+                Log.WriteLine(LogType.Database, "CreateNew() exception: " + ex.Message);
             }
 
             return false;
@@ -38,7 +38,7 @@ namespace Com.QuantAsylum.Tractor.Database
             }
             catch (Exception ex)
             {
-                Log.WriteLine(LogType.Database, ex.Message);
+                Log.WriteLine(LogType.Database, "DeleteExisting() exception: " + ex.Message);
             }
 
             return false;
@@ -58,7 +58,7 @@ namespace Com.QuantAsylum.Tractor.Database
             }
             catch (Exception ex)
             {
-                Log.WriteLine(LogType.Database, ex.Message);
+                Log.WriteLine(LogType.Database, "OpenExisting() exception: " + ex.Message);
             }
 
             return false;
@@ -76,7 +76,7 @@ namespace Com.QuantAsylum.Tractor.Database
             }
             catch (Exception ex)
             {
-                Log.WriteLine(LogType.Error, "Exception submitting changes in InsertTest(): " + ex.Message);
+                Log.WriteLine(LogType.Error, "InsertTest() exception: " + ex.Message);
             }
 
             return false;

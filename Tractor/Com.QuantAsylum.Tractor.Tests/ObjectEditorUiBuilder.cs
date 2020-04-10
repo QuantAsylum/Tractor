@@ -488,7 +488,9 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Failed to parse attribute in AutobuilUi.cs: " + ex.Message);
+                string s = "Failed to parse attribute in AutobuilUi.cs: " + ex.Message;
+                Log.WriteLine(LogType.Error, s);
+                MessageBox.Show(s);
                 return false;
             }
 

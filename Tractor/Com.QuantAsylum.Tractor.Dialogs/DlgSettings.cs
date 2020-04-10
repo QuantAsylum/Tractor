@@ -27,7 +27,6 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             InitializeComponent();
             Settings = settings;
             label5.Text = "";
-            label7.Text = "";
         }
 
         private void DlgSettings_Load(object sender, EventArgs e)
@@ -47,9 +46,11 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             checkBox1.Checked = Settings.AbortOnFailure;
             checkBox3.Checked = Settings.UseDb;
             textBox2.Text = Settings.DbConnectString;
-            textBox3.Text = Settings.DbSessionName;
-            textBox4.Text = Settings.ProductId.ToString();
-            textBox5.Text = Settings.AuditDbSessionName;
+            textBox5.Text = Settings.SessionName;
+            textBox9.Text = Settings.ProductId.ToString();
+
+            checkBox5.Checked = Settings.UseCsvLog;
+            textBox7.Text = Settings.CsvFileName;
 
             checkBox4.CheckedChanged -= checkBox4_CheckedChanged;
             checkBox4.Checked = Settings.UseAuditDb;
@@ -69,18 +70,26 @@ namespace Com.QuantAsylum.Tractor.Dialogs
         // OK Button clicked
         private void button1_Click(object sender, EventArgs e)
         {
-            if (Guid.TryParse(textBox4.Text, out Guid guidResult))
+            CanClose = true;
+
+            if (Guid.TryParse(textBox9.Text, out Guid guidResult))
             {
                 Settings.TestClass = comboBox1.Text;
+                Settings.SessionName = textBox5.Text;
+                Settings.ProductId = guidResult;
+
                 Settings.AbortOnFailure = checkBox1.Checked;
+
                 Settings.UseDb = checkBox3.Checked;
                 Settings.DbConnectString = textBox2.Text;
-                Settings.DbSessionName = textBox3.Text;
-                Settings.ProductId = guidResult;
-                Settings.AuditDbSessionName = textBox5.Text;
+
+                Settings.UseCsvLog = checkBox5.Checked;
+                Settings.CsvFileName = textBox7.Text.Trim();
+               
                 Settings.UseAuditDb = checkBox4.Checked;
                 Settings.AuditDbEmail = textBox6.Text;
                 Settings.Password = textBox1.Text.Trim();
+
                 if (Settings.Password == "")
                 {
                     Settings.LockTestScreen = false;
@@ -89,12 +98,42 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                 {
                     Settings.LockTestScreen = checkBox2.Checked;
                 }
+
+                if (Settings.CsvFileName != "")
+                {
+                    string f = Path.Combine(Constants.CsvLogsPath, Settings.CsvFileName);
+
+                    if (Path.HasExtension(f) == false)
+                    {
+                        f = f + ".csv";
+                        Settings.CsvFileName = Path.GetFileName(f);
+                    }
+
+                    if (File.Exists(f) == false)
+                    {
+                        try
+                        {
+                            File.CreateText(f).Close();
+                            File.Delete(f);
+                        }
+                        catch (Exception ex)
+                        {
+                            label5.Text = "CSV File Name isn't valid: " + ex.Message;
+                            CanClose = false;
+                        }
+                    }
+                }
+
+                if (Settings.CsvFileName == "" && Settings.UseCsvLog)
+                {
+                    label5.Text = "CSV file name not specified";
+                    CanClose = false;
+                }
                 
                 return;
             }
 
             CanClose = false;
-
         }
 
         // Cancel button clicked
@@ -138,8 +177,8 @@ namespace Com.QuantAsylum.Tractor.Dialogs
         // Test connection to audit database
         private void button6_Click(object sender, EventArgs e)
         {
-            label7.Text = "Wait...";
-            label7.Update();
+            label5.Text = "Wait...";
+            label5.Update();
 
             try
             {
@@ -147,35 +186,35 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                 {
                     if (result >= Constants.RequiredWebserviceVersion)
                     {
-                        label7.Text = string.Format("Connection successful. Webservice version: {0:0.00}", result);
+                        label5.Text = string.Format("Connection successful. Webservice version: {0:0.00}", result);
                     }
                     else
                     {
-                        label7.Text = string.Format("Bad version. Needed {0:0.00} but found {1:0.00}", Constants.RequiredWebserviceVersion, result);
+                        label5.Text = string.Format("Bad version. Needed {0:0.00} but found {1:0.00}", Constants.RequiredWebserviceVersion, result);
                     }
                 }
                 else
                 {
-                    label7.Text = "Connection failed. Service or internet connection may be down";
+                    label5.Text = "Connection failed. Service or internet connection may be down";
                 }
             }
             catch (Exception ex)
             {
-                label7.Text = ex.Message.Substring(0, Math.Min(100, ex.Message.Length-1));
+                label5.Text = ex.Message.Substring(0, Math.Min(100, ex.Message.Length-1));
             }
         }
 
         // Generate new Product ID
         private void button7_Click(object sender, EventArgs e)
         {
-            textBox4.Text = Guid.NewGuid().ToString();
-            label7.Text = "";
+            textBox9.Text = Guid.NewGuid().ToString();
+            label5.Text = "";
         }
 
         // Save Product ID to file
         private void button8_Click(object sender, EventArgs e)
         {
-            if (Guid.TryParse(textBox4.Text, out Guid guidResult))
+            if (Guid.TryParse(textBox9.Text, out Guid guidResult))
             {
                 try
                 {
@@ -197,7 +236,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             }
             else
             {
-                label7.Text = "Bad GUID. Please correct and try again";
+                label5.Text = "Bad GUID. Please correct and try again";
             }
 
         }
@@ -220,7 +259,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
                     if (Guid.TryParse(lines[0], out Guid guidResult))
                     {
-                        textBox4.Text = guidResult.ToString();
+                        textBox9.Text = guidResult.ToString();
                         return;
                     }
 

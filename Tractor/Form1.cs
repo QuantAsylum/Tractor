@@ -41,7 +41,7 @@ namespace Tractor
 
         public Form1()
         {
-            Log.WriteLine("Application started...");
+            Log.WriteLine($"Version {Constants.Version:0.000}. Application started...");
             This = this;
             InitializeComponent();
 
@@ -104,6 +104,7 @@ namespace Tractor
         {
             Directory.CreateDirectory(Constants.DataFilePath);
             Directory.CreateDirectory(Constants.TestLogsPath);
+            Directory.CreateDirectory(Constants.CsvLogsPath);
             Directory.CreateDirectory(Constants.AuditPath);
             Directory.CreateDirectory(Constants.PidPath);
 
@@ -440,11 +441,11 @@ namespace Tractor
                 }
             }
 
-            DlgTestRun dlg = new DlgTestRun(Tm, TestRunCallback, Constants.TestLogsPath);
+            DlgTestRun dlg = new DlgTestRun(Tm, TestRunCallback, Constants.TestLogsPath, Constants.CsvLogsPath);
 
             this.Visible = false;
             HasRun = true;
-            if (dlg.ShowDialog() == DialogResult.OK)
+            if (dlg.ShowDialog() == DialogResult.OK) 
             {
 
             }
@@ -536,6 +537,7 @@ namespace Tractor
         {
             try
             {
+                Log.WriteLine($"LoadFromFile: {fileName}");
                 SettingsFile = fileName;
                 AppSettings = AppSettings.Deserialize(File.ReadAllText(fileName));
                 Type t = Type.GetType(AppSettings.TestClass);
@@ -545,7 +547,9 @@ namespace Tractor
             }
             catch (Exception ex)
             {
-                MessageBox.Show("There was an error loading the file: " + ex.Message, "File Load Error");
+                string s = $"There was an error loading the file: {ex.Message}";
+                Log.WriteLine(s);
+                MessageBox.Show(s, "File Load Error");
             }
             UpdateTitleBar();
 
@@ -610,7 +614,9 @@ namespace Tractor
             }
             catch (Exception ex)
             {
-                MessageBox.Show("There was an error saving the file: " + ex.Message, "File Save Error");
+                string s = $"There was an error saving the file: {ex.Message}";
+                Log.WriteLine(s);
+                MessageBox.Show(s, "File Save Error");
             }
             UpdateTitleBar();
         }
@@ -632,7 +638,9 @@ namespace Tractor
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("There was an error saving the file: " + ex.Message, "File Save Error");
+                    string s = "There was an error saving the file: " + ex.Message;
+                    Log.WriteLine(LogType.Error, s);
+                    MessageBox.Show(s, "File Save Error");
                 }
             }
             UpdateTitleBar();

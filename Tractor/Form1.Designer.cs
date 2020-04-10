@@ -185,7 +185,7 @@
             // 
             this.openLogInBrowserToolStripMenuItem.Name = "openLogInBrowserToolStripMenuItem";
             this.openLogInBrowserToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.openLogInBrowserToolStripMenuItem.Text = "Open Log in Browser";
+            this.openLogInBrowserToolStripMenuItem.Text = "Open Product HTML Log in Browser";
             // 
             // queryCloudToolStripMenuItem
             // 

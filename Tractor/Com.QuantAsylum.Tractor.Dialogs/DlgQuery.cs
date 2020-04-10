@@ -89,7 +89,9 @@ namespace Tractor.Com.QuantAsylum.Tractor.Dialogs
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Web service call failed: " + ex.Message);
+                string s = "Web service call failed exception: " + ex.Message;
+                Log.WriteLine(LogType.Database, s);
+                MessageBox.Show(s);
             }
         }
 
@@ -221,7 +223,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Dialogs
             }
             catch (Exception ex)
             {
-                Log.WriteLine(LogType.Error, "An exception occured load a PID fron a file: " + ex.Message);
+                Log.WriteLine(LogType.Error, "An exception occured loading a PID fron a file: " + ex.Message);
             }
         }
 

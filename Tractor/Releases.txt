@@ -1,5 +1,11 @@
-﻿0.995
+﻿0.997
+- Added ability to log to CSV file. CSV files will be logged to a directory located at C:\Users\<USER>\Documents\QuantAsylum\Tractor\CsvLogs
+- Consolidated UI on logging
+- Verify all database logging options are correct when opening older test files with this version!
+
+0.995
 - Removed old-style deprecated interfaces (old style = pass data back and forth via remoting. new style = don't pull data over, just ask for calc to be done on host)
+- Fortified logging of exceptions with some more detail
 
 0.994
 - Fixed bug where older-style audit records could get stuck and never upload to server

@@ -2,6 +2,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
+using Tractor;
 using Tractor.Com.QuantAsylum.Tractor.Tests;
 
 namespace Com.QuantAsylum.Tractor.Tests
@@ -42,7 +43,9 @@ namespace Com.QuantAsylum.Tractor.Tests
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to load specified bitmap file {BitmapFile}. Exception: " + ex.Message);
+                string s = $"Failed to load specified bitmap file {BitmapFile}. Exception: " + ex.Message;
+                Log.WriteLine(LogType.Error, s);
+                MessageBox.Show(s);
             }
 
             DlgPrompt dlg = new DlgPrompt(PromptMessage, ShowFailButton, bmp);

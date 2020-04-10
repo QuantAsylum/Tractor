@@ -125,7 +125,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
             }
             catch (Exception ex)
             {
-
+                Log.WriteLine(LogType.Database, "CheckService() exception: " + ex.Message);
             }
 
             throw new HttpRequestException("CheckService() failed");
@@ -163,7 +163,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
             }
             catch (Exception ex)
             {
-
+                Log.WriteLine(LogType.Database, "QueryGroupsBySerialNumber() exception: " + ex.Message);
             }
 
             return new List<string> { "An error occured in QueryGroupsBySerialNumber()" };
@@ -205,7 +205,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
             }
             catch (Exception ex)
             {
-
+                Log.WriteLine(LogType.Database, "QueryTestsByGroup() exception: " + ex.Message);
             }
 
             return "An error occurred in QueryTestByGroup()";
@@ -230,7 +230,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
             }
             catch (Exception ex)
             {
-
+                Log.WriteLine(LogType.Database, "QueryTestNames() exception: " + ex.Message);
             }
 
             return new List<string> { "An error occured in QueryTestNames()" };
@@ -274,7 +274,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
             }
             catch (Exception ex)
             {
-               
+                Log.WriteLine(LogType.Database, "QueryStatsByTest() exception: " + ex.Message);
             }
 
             return "An error occurred. ";
@@ -295,15 +295,6 @@ namespace Tractor.Com.QuantAsylum.Tractor.Database
             List<double> vals = jsSerializer.Deserialize<List<double>>(result);
 
             StringBuilder sb = new StringBuilder();
-            //if (ad.Count > 0)
-            //{
-            //    sb.AppendLine("Unit: " + ad[0].SerialNumber);
-            //    sb.AppendLine("Date: " + ad[0].Time.ToString());
-            //    for (int i = 0; i < ad.Count; i++)
-            //    {
-            //        sb.AppendFormat("{0}[{1}] {2} [{3}]  {4}" + Environment.NewLine, ad[i].Name, ad[i].Channel, ad[i].ResultString, ad[i].TestLimits, ad[i].PassFail);
-            //    }
-            //}
 
             return sb.ToString();
         }

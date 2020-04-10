@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
@@ -27,6 +29,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
         bool Pause = false;
 
         string ReportDirectory = "";
+        string CsvLogDirectory = "";
 
         TestManager Tm;
 
@@ -35,10 +38,11 @@ namespace Com.QuantAsylum.Tractor.Dialogs
         public delegate void TestRunComplete();
         public TestRunComplete RunCompleteCallback;
 
-        public DlgTestRun(TestManager tm, TestRunComplete runCompleteCallback, string reportDir)
+        public DlgTestRun(TestManager tm, TestRunComplete runCompleteCallback, string reportDir, string csvLogDir)
         {
             InitializeComponent();
             ReportDirectory = reportDir;
+            CsvLogDirectory = csvLogDir;
             Tm = tm;
             RunCompleteCallback = runCompleteCallback;
         }
@@ -150,6 +154,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                     bool allPassed = true;
                     string opMessage = "";
 
+                    // Tests that run together (eg left and right channels) are part of the same test group
                     Guid testGroup = Guid.NewGuid();
 
                     for (int i = 0; i < Form1.AppSettings.TestList.Count; i++)
@@ -255,6 +260,41 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                             Form1.AppSettings.TestList[i].TestResultBitmap == null ? "[No Image]" : html.ImageLink("Screen", Form1.AppSettings.TestList[i].TestResultBitmap)
                             ));
 
+                        if (Form1.AppSettings.UseCsvLog) 
+                        {
+                            string fileName = Path.Combine(Constants.CsvLogsPath, Form1.AppSettings.CsvFileName);
+
+                            if (File.Exists(fileName) == false)
+                            {
+                                try
+                                {
+                                    Log.WriteLine(LogType.General, "CSV Log file created: " + fileName);
+                                    File.AppendAllText(fileName, GetCsvHeader());
+                                }
+                                catch (Exception ex)
+                                {
+                                    Log.WriteLine(LogType.Error, "CSV Log File could not be created. CSV logging disabled: " + ex.Message);
+                                    Form1.AppSettings.UseCsvLog = false;
+                                }
+                            }
+
+                            if (Form1.AppSettings.TestList[i] is AudioTestBase)
+                            {
+                                if (((AudioTestBase)Form1.AppSettings.TestList[i]).LeftChannel)
+                                {
+                                    SubmitToCsv(fileName, testGroup, 0, Form1.AppSettings.TestList[i], tr);
+                                }
+                                if (((AudioTestBase)Form1.AppSettings.TestList[i]).RightChannel)
+                                {
+                                    SubmitToCsv(fileName, testGroup, 1, Form1.AppSettings.TestList[i], tr);
+                                }
+                            }
+                            else
+                            {
+                                SubmitToCsv(fileName, testGroup, 0, Form1.AppSettings.TestList[i], tr);
+                            }
+                        }
+
                         if (Form1.AppSettings.UseAuditDb)
                         {
                             if (Form1.AppSettings.TestList[i] is AudioTestBase)
@@ -327,7 +367,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             Test tri = new Test()
             {
                 SerialNumber = Tm.LocalStash.ContainsKey("SerialNumber") ? Tm.LocalStash["SerialNumber"] : "0",
-                SessionName = Form1.AppSettings.DbSessionName,
+                SessionName = Form1.AppSettings.SessionName,
                 Name = tb.Name,
                 Time = DateTime.Now,
                 PassFail = tr.Pass,
@@ -348,7 +388,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
             {
                 ProductId = Form1.AppSettings.ProductId.ToString(),
                 SerialNumber = Tm.LocalStash.ContainsKey("SerialNumber") ? Tm.LocalStash["SerialNumber"] : "0",
-                SessionName = Form1.AppSettings.AuditDbSessionName,
+                SessionName = Form1.AppSettings.SessionName,
                 Channel = (channelIndex == 0 ? "Left" : "Right"),
                 Name = tb.Name,
                 TestGroup = testGroup.ToString(),
@@ -362,6 +402,41 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                 Email = Form1.AppSettings.AuditDbEmail
             };
             AuditDb.SubmitAuditData(d);
+        }
+
+        private string GetCsvHeader()
+        {
+            string s = "ProductId,SerialNumber,SessionName,Channel,Name,TestGroup,TestFile,TestFileMd5,Time,PassFail,ResultString,Result,TestLimits" + Environment.NewLine;
+            return s;
+        }
+
+        private void SubmitToCsv(string fileName, Guid testGroup, int channelIndex, TestBase tb, TestResult tr)
+        {
+            string s =
+                Form1.AppSettings.ProductId.ToString() + "," +
+                (Tm.LocalStash.ContainsKey("SerialNumber") ? Tm.LocalStash["SerialNumber"] : "0") + "," +
+                Form1.AppSettings.SessionName + "," +
+                (channelIndex == 0 ? "Left" : "Right") + "," +
+                tb.Name + "," +
+                testGroup.ToString() + "," +
+                Form1.SettingsFile + "," +
+                ComputeMd5(Form1.AppSettings) + "," +
+                DateTime.Now + "," +
+                tr.Pass + "," +
+                tr.StringValue[channelIndex] + "," +
+                tr.Value[channelIndex].ToString("0.000", CultureInfo.InvariantCulture) + "," +
+                tb.GetTestLimits() + "," +
+                Environment.NewLine;
+
+                try
+                {
+                    File.AppendAllText(fileName, s);
+                }
+                catch (Exception ex)
+                {
+                    Log.WriteLine(LogType.Error, $"Failed to write line to CSV file. CSV logging has been disabled. Filename: {fileName} Message: {ex.Message}");
+                    Form1.AppSettings.UseCsvLog = false;
+                }
         }
 
         private string ComputeMd5(AppSettings settings)
