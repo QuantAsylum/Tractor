@@ -28,7 +28,7 @@ namespace Tractor
         TestManager Tm;
         bool AppSettingsDirty = false;
 
-        static internal string SettingsFile = "";
+        static internal string SettingsFile = "";  
 
         bool HasRun = false;
 
@@ -704,19 +704,7 @@ namespace Tractor
             }
         } 
 
-        private void openLogInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string s = Path.Combine(Constants.TestLogsPath, Constants.LogFileName);
-
-            if (File.Exists(s))
-            {
-                System.Diagnostics.Process.Start(s);
-            }
-            else
-            {
-                MessageBox.Show("The log doesn't yet exist.");
-            }
-        }
+       
 
         private void queryCloudToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -748,6 +736,43 @@ namespace Tractor
             EditingInProgress = false;
             treeView1.Enabled = true;
             SetTreeviewControls();
+        }
+
+        private void openLogInBrowserToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string s = Path.Combine(Constants.TestLogsPath, Constants.LogFileName);
+
+            if (File.Exists(s))
+            {
+                System.Diagnostics.Process.Start(s);
+            }
+            else
+            {
+                MessageBox.Show("The log doesn't yet exist.");
+            }
+        }
+
+        private void openProgramLogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (File.Exists(Constants.LogFile))
+            {
+                try
+                {
+                    if (File.Exists(Constants.TmpLogFile))
+                        File.Delete(Constants.TmpLogFile);
+
+                    File.Copy(Constants.LogFile, Constants.TmpLogFile);
+                    System.Diagnostics.Process.Start(Constants.TmpLogFile);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Unable to start the text viewer process. Exception was: " + ex.Message);
+                }
+            }
+            else
+            {
+                MessageBox.Show("The log doesn't yet exist.");
+            }
         }
     }
 }

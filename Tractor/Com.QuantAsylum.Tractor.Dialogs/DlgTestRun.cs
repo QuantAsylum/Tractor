@@ -273,8 +273,8 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                                 }
                                 catch (Exception ex)
                                 {
-                                    Log.WriteLine(LogType.Error, "CSV Log File could not be created. CSV logging disabled: " + ex.Message);
-                                    Form1.AppSettings.UseCsvLog = false;
+                                    Log.WriteLine(LogType.Error, "CSV Log File could not be created. " + ex.Message);
+                                    throw new InvalidOperationException("Unabled to write to CSV log file. Disable CSV logging to bypass.");
                                 }
                             }
 
@@ -351,7 +351,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                 catch (Exception ex)
                 {
                     Log.WriteLine(LogType.Error, ex.Message);
-                    this.Invoke(((MethodInvoker)delegate { TestPassFinished(false, ""); }));
+                    this.Invoke(((MethodInvoker)delegate { TestPassFinished(false, "See Log"); }));
                 }
 
                 if (Tm.TestClass is IPowerSupply)
@@ -435,7 +435,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                 catch (Exception ex)
                 {
                     Log.WriteLine(LogType.Error, $"Failed to write line to CSV file. Filename: {fileName} Message: {ex.Message}");
-                    throw new InvalidOperationException("Unabled to write to log file. Disable CSV logging to bypass.");
+                    throw new InvalidOperationException("Unabled to write to CSV log file. Disable CSV logging to bypass.");
             }
         }
 

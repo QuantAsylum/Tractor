@@ -1,4 +1,14 @@
-﻿0.997
+﻿0.998
+- Fixed bug where unselected channels were not being muted. That is, if you create a test and opt to check on left channel only, the right channel should 
+  be muted. This allows testing power amps with limited supplies. 
+- If both channels are selected for test, then left and right channels will be displayed. Similarly if a channel is muted it won't be displayed. This change touched
+  every test module, so be aware of peculiarties.
+- Change the behavior where a CSV log exception does NOT stop logging and continue. Instead, the test will fail with a message to check log. You can then go Tools 
+  and open the program log
+- This version requires QAAnalyzer.EXE version 1.908. 
+  
+
+0.997
 - Added ability to log to CSV file. CSV files will be logged to a directory located at C:\Users\<USER>\Documents\QuantAsylum\Tractor\CsvLogs
 - Consolidated UI on logging
 - Verify all database logging options are correct when opening older test files with this version!

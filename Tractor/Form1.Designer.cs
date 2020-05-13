@@ -42,6 +42,7 @@
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openLogInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openProgramLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.queryCloudToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.treeView1 = new System.Windows.Forms.TreeView();
@@ -65,6 +66,7 @@
             this.panel5 = new System.Windows.Forms.Panel();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openLogInBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openProgramLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -186,6 +188,13 @@
             this.openLogInBrowserToolStripMenuItem.Name = "openLogInBrowserToolStripMenuItem";
             this.openLogInBrowserToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.openLogInBrowserToolStripMenuItem.Text = "Open Product HTML Log in Browser";
+            // 
+            // openProgramLogToolStripMenuItem
+            // 
+            this.openProgramLogToolStripMenuItem.Name = "openProgramLogToolStripMenuItem";
+            this.openProgramLogToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.openProgramLogToolStripMenuItem.Text = "Open Program Log";
+
             // 
             // queryCloudToolStripMenuItem
             // 
@@ -413,18 +422,24 @@
             this.panel5.Size = new System.Drawing.Size(342, 42);
             this.panel5.TabIndex = 14;
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[]
-                {openLogInBrowserToolStripMenuItem, queryCloudToolStripMenuItem });
+                {openLogInBrowserToolStripMenuItem, openProgramLogToolStripMenuItem, queryCloudToolStripMenuItem });
             this.queryCloudToolStripMenuItem.Name = "queryCloudToolStripMenuItem";
             this.queryCloudToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.queryCloudToolStripMenuItem.Text = "Query Cloud";
+            this.queryCloudToolStripMenuItem.Click += new System.EventHandler(this.queryCloudToolStripMenuItem_Click);
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
+
             this.openLogInBrowserToolStripMenuItem.Name = "openLogInBrowserToolStripMenuItem";
             this.openLogInBrowserToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
-            this.openLogInBrowserToolStripMenuItem.Text = "Open Log in Browser";
-            this.queryCloudToolStripMenuItem.Click += new System.EventHandler(this.queryCloudToolStripMenuItem_Click);
+            this.openLogInBrowserToolStripMenuItem.Text = "Open Test Log in Browser";
             this.openLogInBrowserToolStripMenuItem.Click += openLogInBrowserToolStripMenuItem_Click;
+
+            this.openProgramLogToolStripMenuItem.Name = "openProgramLogToolStripMenuItem";
+            this.openProgramLogToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.openProgramLogToolStripMenuItem.Text = "Open Program Log";
+            this.openProgramLogToolStripMenuItem.Click += openProgramLogToolStripMenuItem_Click;
             // 
             // Form1
             // 
@@ -501,6 +516,7 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openLogInBrowserToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openProgramLogToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem queryCloudToolStripMenuItem;
     }
 }

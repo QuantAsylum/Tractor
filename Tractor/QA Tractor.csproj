@@ -39,9 +39,9 @@
     <ApplicationIcon>Tractor Icon2.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="QAAnalyzer, Version=1.7.0.4, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="QAAnalyzer, Version=1.9.0.7, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Visual Studio 2010\Projects\QA401 GIT\Application\bin\Debug\QAAnalyzer.exe</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\QuantAsylum\QA401\QAAnalyzer.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
