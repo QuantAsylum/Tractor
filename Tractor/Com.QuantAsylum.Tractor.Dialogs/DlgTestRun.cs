@@ -434,9 +434,9 @@ namespace Com.QuantAsylum.Tractor.Dialogs
                 }
                 catch (Exception ex)
                 {
-                    Log.WriteLine(LogType.Error, $"Failed to write line to CSV file. CSV logging has been disabled. Filename: {fileName} Message: {ex.Message}");
-                    Form1.AppSettings.UseCsvLog = false;
-                }
+                    Log.WriteLine(LogType.Error, $"Failed to write line to CSV file. Filename: {fileName} Message: {ex.Message}");
+                    throw new InvalidOperationException("Unabled to write to log file. Disable CSV logging to bypass.");
+            }
         }
 
         private string ComputeMd5(AppSettings settings)

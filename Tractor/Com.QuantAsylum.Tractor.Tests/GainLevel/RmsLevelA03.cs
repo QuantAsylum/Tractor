@@ -41,11 +41,12 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
             tr = new TestResult(2);
 
             Tm.SetToDefaults();
+            SetupBaseTests();
+
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
             ((IProgrammableLoad)Tm.TestClass).SetImpedance(ProgrammableLoadImpedance);
-            ((IAudioAnalyzer)Tm.TestClass).SetYLimits(YMax, YMin);
-            ((IAudioAnalyzer)Tm.TestClass).SetOffsets(PreAnalyzerInputGain, 0);
+
             // Disable generators
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(false, -60, 1000);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(false, -60, 1000);

@@ -276,5 +276,13 @@ namespace Com.QuantAsylum.Tractor.Tests
 
         [ObjectEditorAttribute(Index = 130, DisplayText = "Pre-analyzer Input Gain (dB)", MinValue = -100, MaxValue = 100)]
         public int PreAnalyzerInputGain = 0;
+
+        public void SetupBaseTests()
+        {
+            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize * 1024);
+            ((IAudioAnalyzer)Tm.TestClass).SetYLimits(YMax, YMin);
+            ((IAudioAnalyzer)Tm.TestClass).SetOffsets(PreAnalyzerInputGain, 0);
+            ((IAudioAnalyzer)Tm.TestClass).SetMuting(!LeftChannel, !RightChannel);
+        }
     }
 }

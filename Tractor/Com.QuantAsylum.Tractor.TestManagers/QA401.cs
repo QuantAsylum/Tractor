@@ -131,14 +131,17 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             if (muteLeft)
             {
                 Qa401.SetMuting(Muting.MuteLeft);
+                Qa401.SetDisplayTraces(false, true);
             }
             else if (muteRight)
             {
                 Qa401.SetMuting(Muting.MuteRight);
+                Qa401.SetDisplayTraces(true, false);
             }
             else
             {
                 Qa401.SetMuting(Muting.MuteNone);
+                Qa401.SetDisplayTraces(true, true);
             }
         }
 

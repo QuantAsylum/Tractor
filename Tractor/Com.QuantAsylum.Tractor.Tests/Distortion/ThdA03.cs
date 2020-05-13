@@ -43,12 +43,10 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             tr = new TestResult(2);
 
             Tm.SetToDefaults();
+            SetupBaseTests();
 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm.TestClass).SetYLimits(YMax, YMin);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(InputRange);
-            ((IAudioAnalyzer)Tm.TestClass).SetOffsets(PreAnalyzerInputGain, 0);
-            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize * 1024);
             ((IProgrammableLoad)Tm.TestClass).SetImpedance(ProgrammableLoadImpedance);
 
             if (LeftChannel == true && RightChannel == false)

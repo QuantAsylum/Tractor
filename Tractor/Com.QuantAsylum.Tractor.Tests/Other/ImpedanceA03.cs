@@ -40,9 +40,9 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             double[] vOut8 = new double[2] { double.NaN, double.NaN };
 
             Tm.SetToDefaults();
+            SetupBaseTests();
+
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm.TestClass).SetYLimits(YMax, YMin);
-            ((IAudioAnalyzer)Tm.TestClass).SetOffsets(PreAnalyzerInputGain, 0);
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
 
             // First, we make 8 ohm measurement

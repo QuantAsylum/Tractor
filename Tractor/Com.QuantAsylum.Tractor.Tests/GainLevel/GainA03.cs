@@ -44,11 +44,10 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             tr = new TestResult(2);
 
             Tm.SetToDefaults();
+            SetupBaseTests();
+
             ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
-            ((IAudioAnalyzer)Tm.TestClass).SetFftLength(FftSize * 1024);
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm.TestClass).SetYLimits(YMax, YMin);
-            ((IAudioAnalyzer)Tm.TestClass).SetOffsets(PreAnalyzerInputGain, 0);
             ((IProgrammableLoad)Tm.TestClass).SetImpedance(ProgrammableLoadImpedance);
 
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, AnalyzerOutputLevel, TestFrequency);

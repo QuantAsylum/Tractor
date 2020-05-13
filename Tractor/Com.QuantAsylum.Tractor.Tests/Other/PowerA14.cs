@@ -39,6 +39,8 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             tr = new TestResult(2);
 
             Tm.SetToDefaults();
+            SetupBaseTests();
+
             ((IPowerSupply)Tm.TestClass).SetSupplyState(PowerState);
             Thread.Sleep(1200);
             float current = ((ICurrentMeter)Tm.TestClass).GetDutCurrent(3);
