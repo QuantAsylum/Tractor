@@ -23,10 +23,10 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
     [Serializable]
     public class ImdA03 : AudioTestBase
     {
-        [ObjectEditorAttribute(Index = 200, DisplayText = "Minimum Level to Pass (dB)", MinValue = -200, MaxValue = 100)]
+        [ObjectEditorAttribute(Index = 200, DisplayText = "Minimum Level to Pass (dBc)", MinValue = -200, MaxValue = 100)]
         public float MinimumPassLevel = -250;
 
-        [ObjectEditorAttribute(Index = 205, DisplayText = "Maximum Level to Pass (dB)", MinValue = -200, MaxValue = 100, MustBeGreaterThanIndex = 200)]
+        [ObjectEditorAttribute(Index = 205, DisplayText = "Maximum Level to Pass (dBc)", MinValue = -200, MaxValue = 100, MustBeGreaterThanIndex = 200)]
         public float MaximumPassLevel = -105;
 
         [ObjectEditorAttribute(Index = 210, DisplayText = "Analyzer Output Level (dBV)", MinValue = -50, MaxValue = 6)]
@@ -109,7 +109,7 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
         {
             return  "Performs IMD ITU Test. This test generates dual tones at 19 and 20 KHz, each with a level 3 dB below the specified amplitude " +
                     "and at the specified load. The combined amplitude of the tones will be the value specified in the test parameters. The resultant " +
-                    "mixing product at 1 KHz is measured, and the amplitude relative to the specified amplitude is computed. If the amplitude " +
+                    "mixing product at 1 kHz is measured, and the amplitude relative to the specified amplitude is computed. If the amplitude " +
                     "relative to the specified output amplitude is within the specified window limits, then the test is considered to pass.";
         }
 

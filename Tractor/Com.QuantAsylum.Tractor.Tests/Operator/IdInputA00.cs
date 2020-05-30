@@ -11,7 +11,7 @@ namespace Com.QuantAsylum.Tractor.Tests
     public class IdInputA00 : UiTestBase
     {
 
-        [ObjectEditorAttribute(Index = 200, DisplayText = "Prompt Message:", MaxLength = 32)]
+        [ObjectEditorAttribute(Index = 200, DisplayText = "Prompt Message", MaxLength = 32)]
         public string Msg = "";
 
         public IdInputA00() : base()

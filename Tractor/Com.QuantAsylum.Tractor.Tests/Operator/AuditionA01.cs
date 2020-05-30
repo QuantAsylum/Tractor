@@ -7,13 +7,13 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 {
     public class AuditionA01 : UiTestBase
     {
-        [ObjectEditorAttribute(Index = 200, DisplayText = "WAV File Name:", MaxLength = 512, IsFileName = true)]
+        [ObjectEditorAttribute(Index = 200, DisplayText = "WAV File Name", MaxLength = 512, IsFileName = true)]
         public string AuditionFileName = "";
 
         [ObjectEditorAttribute(Index = 210, DisplayText = "Output Level (0..1)", MinValue = 0, MaxValue = 1)]
         public float AuditionAmplitude = 0.2f;
 
-        [ObjectEditorAttribute(Index = 220, DisplayText = "Operator Instruction:", MaxLength = 128)]
+        [ObjectEditorAttribute(Index = 220, DisplayText = "Operator Instruction", MaxLength = 128)]
         public string OperatorInstruction = "";
 
         public AuditionA01() : base()

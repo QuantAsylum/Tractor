@@ -16,11 +16,28 @@ namespace Tractor
         [STAThread]
         static void Main()
         {
+            if (ParseCommandLineArgs() == false)
+                return;
+
             AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
+        }
+
+        static bool ParseCommandLineArgs()
+        {
+            for (int i = 1; i < Environment.GetCommandLineArgs().Length; i++)
+            {
+                if (Environment.GetCommandLineArgs()[i].ToUpper() == "-H")
+                {
+                    AutoDoc.Dump();
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>

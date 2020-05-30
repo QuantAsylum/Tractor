@@ -1,4 +1,8 @@
-﻿0.998
+﻿0.999
+- Added command line switch to dump help and terminate. The help file is markdown and dumped into the exe dir. It's used to generate the help that is uploaded
+  at github.
+
+0.998
 - Fixed bug where unselected channels were not being muted. That is, if you create a test and opt to check on left channel only, the right channel should 
   be muted. This allows testing power amps with limited supplies. 
 - If both channels are selected for test, then left and right channels will be displayed. Similarly if a channel is muted it won't be displayed. This change touched

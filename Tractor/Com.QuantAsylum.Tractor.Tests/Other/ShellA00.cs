@@ -13,10 +13,10 @@ namespace Com.QuantAsylum.Tractor.Tests
     [Serializable]
     public class ShellA00 : UiTestBase
     {
-        [ObjectEditorAttribute(Index = 200, DisplayText = "Process Name:", MaxLength = 128)]
+        [ObjectEditorAttribute(Index = 200, DisplayText = "Process Name", MaxLength = 128)]
         public string ProcessName = "";
 
-        [ObjectEditorAttribute(Index = 210, DisplayText = "Arguments:", MaxLength = 128)]
+        [ObjectEditorAttribute(Index = 210, DisplayText = "Arguments", MaxLength = 128)]
         public string Arguments = "";
 
         [ObjectEditorAttribute(Index = 220, DisplayText = "Timeout (sec)", MinValue = 1, MaxValue = 100)]
