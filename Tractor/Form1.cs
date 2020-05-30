@@ -774,5 +774,17 @@ namespace Tractor
                 MessageBox.Show("The log doesn't yet exist.");
             }
         }
+
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e) 
+        {
+            try
+            { 
+                System.Diagnostics.Process.Start(@"https://github.com/QuantAsylum/Tractor/wiki");
+            }
+            catch
+            {
+                MessageBox.Show("There was an error opening the github wiki website", "Error", MessageBoxButtons.OK);
+            }
+        }
     }
 }

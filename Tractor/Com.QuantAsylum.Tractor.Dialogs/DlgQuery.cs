@@ -112,8 +112,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Dialogs
 
             var s = AuditDb.QueryTestsByGroup(textBox2.Text, TestGroups[TestGroupIndex]);
             textBox3.Text = s;
-            UpdateButtonState(); ;
-
+            UpdateButtonState(); 
         }
 
         // Older
@@ -169,16 +168,6 @@ namespace Tractor.Com.QuantAsylum.Tractor.Dialogs
             textBox6.Text = AuditDb.QueryStatsByTest(textBox4.Text, comboBox1.GetItemText(comboBox1.SelectedItem), textBox5.Text, checkBox1.Checked, checkBox2.Checked);
 
         }
-
-        //private void comboBox1_TextUpdate(object sender, EventArgs e)
-        //{
-
-        //}
-
-        //private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        //{
-
-        //}
 
         private void comboBox1_KeyDown(object sender, KeyEventArgs e)
         {

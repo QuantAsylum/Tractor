@@ -18,7 +18,7 @@
                 components.Dispose();
             }
             base.Dispose(disposing);
-        }
+        } 
 
         #region Windows Form Designer generated code
 
@@ -208,6 +208,7 @@
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "Help";
+            this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
             // 
             // treeView1
             // 
@@ -426,7 +427,6 @@
             this.queryCloudToolStripMenuItem.Name = "queryCloudToolStripMenuItem";
             this.queryCloudToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.queryCloudToolStripMenuItem.Text = "Query Cloud";
-            this.queryCloudToolStripMenuItem.Click += new System.EventHandler(this.queryCloudToolStripMenuItem_Click);
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
