@@ -7,15 +7,16 @@ using System.Threading.Tasks;
 
 namespace Tractor
 {
-    static class Constants
+    static class Constants 
     {
         public static string TitleBarText = "QuantAsylum TRACTOR";
-        public static readonly double Version = 0.999;
+        public static readonly double Version = 1.000;
         public static string VersionSuffix = "";
 
         public static double RequiredWebserviceVersion = 0.5;
         public static double RequiredQa401Version = 1.908;
         public static double RequiredQa450Version = 1.21;
+        public static double RequiredQa351Version = 1.033;
 
         public static string DataFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "QuantAsylum", "Tractor");
         public static string MaskFiles = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "QuantAsylum", "QA401", "UserMasks");

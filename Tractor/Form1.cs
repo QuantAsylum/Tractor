@@ -132,7 +132,7 @@ namespace Tractor
 
         private void UpdateTitleBar()
         {
-            string s = string.Format("{0} {1}", Constants.TitleBarText, Constants.Version);
+            string s = string.Format("{0} {1}", Constants.TitleBarText, Constants.Version.ToString("0.000"));
 
             if (SettingsFile != "")
                 Text = s + string.Format(" [{0:0.00}{1}]", Path.GetFileName(SettingsFile), AppSettingsDirty ? "*" : "");

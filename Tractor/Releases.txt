@@ -1,4 +1,8 @@
-﻿0.999
+﻿1.0
+- Operator Dlg Prompt window made always on top
+- Added QA351 voltage test
+
+0.999
 - Added command line switch to dump help and terminate. The help file (Tractor_Help.md) is markdown and placed int the Tractor data directory . It's used to generate the help that is uploaded
   at github.
 - Lots of changes for spelling, unifying field names, etc. 

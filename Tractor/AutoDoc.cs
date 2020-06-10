@@ -165,6 +165,9 @@ namespace Tractor
             Dic.Add("Minimum Current to Pass (A)", "The minimum current, in amps, required in order to pass the test.");
             Dic.Add("Maximum Current to Pass (A)", "The maximum current, in amps, required in order to pass the test.");
 
+            Dic.Add("Minimum Voltage to Pass (V)", "The minimum voltage, in volts, required in order to pass the test.");
+            Dic.Add("Maximum Voltage to Pass (V)", "The maximum voltage, in volts, required in order to pass the test.");
+
             Dic.Add("RMS Measurement Start (Hz)", "The starting frequency of the indicated RMS measurement. ");
             Dic.Add("RMS Measurement Stop (Hz)", "The ending frequency of the indicated RMS measurement.");
 
@@ -205,6 +208,8 @@ namespace Tractor
 
             Dic.Add("Start Frequency (Hz)", "The starting frequency of the noise measurement for THD+N measurements.");
             Dic.Add("Stop Frequency (Hz)", "The stopping frequency of the noise measurement for THD+N measurements.");
+
+            Dic.Add("Channel", "Specifies the DVM channel to make the measurement. On the QA351, valid channel numbers are 0 (Main) and 1 (Aux).");
 
             Dic.Add("", "");
         }

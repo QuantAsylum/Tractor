@@ -137,8 +137,11 @@
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\IInstrument.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\IPowerSupply.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\IProgrammableLoad.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\IVoltMeter.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA351.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA401.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA401H.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA401_QA351.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA401_QA450.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA450.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\TestManager.cs" />
@@ -154,6 +157,7 @@
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Operator\AuditionA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\EfficiencyA07.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\MicCompareA01.cs" />
+    <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\VoltageA80.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\PowerA14.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Other\ImpedanceA03.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Operator\PromptA00.cs" />
