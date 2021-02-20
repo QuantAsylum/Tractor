@@ -33,6 +33,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         {
             Name = this.GetType().Name;
             _TestType = TestTypeEnum.LevelGain;
+            FftSize = 32;  // Override and set 32K as default
         }
 
         public override void DoTest(string title, out TestResult tr)
@@ -82,7 +83,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
 
         public override string GetTestDescription()
         {
-            return "Measures the frequency response using a chirp and compares to a mask. NOTE: FFT should be >32768.";
+            return "Measures the frequency response using a chirp and compares to a mask. NOTE: FFT should be >=32768.";
         }
 
         internal override int HardwareMask

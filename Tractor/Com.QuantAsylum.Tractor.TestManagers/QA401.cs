@@ -168,12 +168,12 @@ namespace Com.QuantAsylum.Tractor.TestManagers
 
         public void SetOffsets(double inputOffset, double outputOffset)
         {
-            Qa401.SetOffsets(inputOffset, outputOffset);
+            Qa401.SetOffsets(inputOffset, outputOffset); 
         }
 
         public void DoFrAquisition(float ampLevel_Dbv, double windowSec, int smoothingDenominator)
         {
-            Qa401.RemotingRunSingleFrExpoChirp(ampLevel_Dbv, windowSec, smoothingDenominator);
+            Qa401.RemotingRunSingleFrExpoChirp(ampLevel_Dbv, false, windowSec, smoothingDenominator);
 
             while (AnalyzerIsBusy())
             {
