@@ -64,7 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoDoc.cs" />
-    <Compile Include="Com.QuantAsylum.Hardware\QA450.cs" />
+    <Compile Include="Com.QuantAsylum.Hardware\QA40x.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Database\AuditDb.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Database\Db.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Database\DataSchema.cs" />
@@ -138,12 +138,12 @@
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\IPowerSupply.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\IProgrammableLoad.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\IVoltMeter.cs" />
-    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA351.cs" />
-    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA401.cs" />
-    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA401H.cs" />
-    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA401_QA351.cs" />
-    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA401_QA450.cs" />
-    <Compile Include="Com.QuantAsylum.Tractor.TestManagers\QA450.cs" />
+    <Compile Include="Com.QuantAsylum.Hardware\QA351.cs" />
+    <Compile Include="Com.QuantAsylum.Hardware\QA401.cs" />
+    <Compile Include="Com.QuantAsylum.Hardware\QA401H.cs" />
+    <Compile Include="Com.QuantAsylum.Hardware\QA401_QA351.cs" />
+    <Compile Include="Com.QuantAsylum.Hardware\QA401_QA450.cs" />
+    <Compile Include="Com.QuantAsylum.Hardware\QA450.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.TestManagers\TestManager.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\Distortion\ThdNA01.cs" />
     <Compile Include="Com.QuantAsylum.Tractor.Tests\GainLevel\FreqResponseA01.cs" />

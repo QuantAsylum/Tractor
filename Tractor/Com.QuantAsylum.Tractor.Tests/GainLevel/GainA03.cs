@@ -108,12 +108,14 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             return "Measures the gain at a specified frequency and amplitude at a specified load impedance. Results must be within a given window to pass.";
         }
 
-        internal override int HardwareMask
+        public override bool IsRunnable()
         {
-            get
+            if (Tm.TestClass is IAudioAnalyzer && Tm.TestClass is IProgrammableLoad)
             {
-                return (int)HardwareTypes.AudioAnalyzer | (int)HardwareTypes.ProgrammableLoad;
+                return true;
             }
+
+            return false;
         }
     }
 }

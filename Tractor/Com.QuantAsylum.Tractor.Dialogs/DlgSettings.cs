@@ -177,6 +177,7 @@ namespace Com.QuantAsylum.Tractor.Dialogs
         // Test connection to audit database
         private void button6_Click(object sender, EventArgs e)
         {
+
             label5.Text = "Wait...";
             label5.Update();
 

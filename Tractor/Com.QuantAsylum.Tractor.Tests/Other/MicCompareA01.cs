@@ -89,12 +89,14 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
                 "displayed and compared to a specified mask.";
         }
 
-        internal override int HardwareMask
+        public override bool IsRunnable()
         {
-            get
+            if (Tm.TestClass is IAudioAnalyzer)
             {
-                return (int)HardwareTypes.AudioAnalyzer;
+                return true;
             }
+
+            return false;
         }
     }
 }

@@ -7,9 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Com.QuantAsylum.Tractor.TestManagers;
 using Tractor;
+using Tractor.Com.QuantAsylum.Hardware;
 using Tractor.Com.QuantAsylum.Tractor.TestManagers;
 
-namespace Com.QuantAsylum.Tractor.TestManagers
+namespace Com.QuantAsylum.Hardware
 {
     class QA401_QA351 : /* IComposite, */IInstrument, IAudioAnalyzer, IVoltMeter
     {

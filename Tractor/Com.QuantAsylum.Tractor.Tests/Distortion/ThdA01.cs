@@ -97,12 +97,15 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             return "Measures THD at a given frequency and amplitude. Results must be within a given window to pass.";
         }
 
-        internal override int HardwareMask
+        public override bool IsRunnable()
         {
-            get
+            if (Tm.TestClass is IAudioAnalyzer)
             {
-                return (int)HardwareTypes.AudioAnalyzer;
+                return true;
             }
+
+            return false;
         }
+
     }
 }

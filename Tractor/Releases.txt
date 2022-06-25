@@ -1,8 +1,18 @@
-﻿1.01
+﻿1.1
+- Added support for QA40x
+- Disabled support for cloud audit database in new projects
+- Simplified and clarified error reporting for tests not available. That is, if you try to make a voltage measurement
+  but you don't have a volt meter as part of your configuration, the message will be more helpful
+
+
+1.01
 - Default FFT size for FreqResponseA01 to 32K (change min required QA401 version to 1.916 to ensure this is avoided)
 
-1.001
+1.01
 - Fixed issue related to RemotingRunSingleFrExpoChirp. In previous QA401 release the number of args was changed, but that wasn't updated in Tractor
+- Default FFT size for FreqResponseA01 to 32K (change min required QA401 version to 1.916 to ensure this is avoided)
+
+
 1.0
 - Operator Dlg Prompt window made always on top
 - Added QA351 voltage test

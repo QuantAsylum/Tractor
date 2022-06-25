@@ -113,12 +113,14 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
                     "relative to the specified output amplitude is within the specified window limits, then the test is considered to pass.";
         }
 
-        internal override int HardwareMask
+        public override bool IsRunnable()
         {
-            get
+            if (Tm.TestClass is IAudioAnalyzer && Tm.TestClass is IProgrammableLoad)
             {
-                return (int)HardwareTypes.AudioAnalyzer | (int)HardwareTypes.ProgrammableLoad;
+                return true;
             }
+
+            return false;
         }
 
     }

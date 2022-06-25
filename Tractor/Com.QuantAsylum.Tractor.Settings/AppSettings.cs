@@ -13,7 +13,7 @@ namespace Com.QuantAsylum.Tractor.Settings
     {
         public List<TestBase> TestList = new List<TestBase>();
 
-        public string TestClass = "Com.QuantAsylum.Tractor.TestManagers.QA401";
+        public string TestClass = typeof(Hardware.QA40x).ToString();
 
         public bool AbortOnFailure = true;
 
@@ -36,6 +36,8 @@ namespace Com.QuantAsylum.Tractor.Settings
         public bool LockTestScreen = false;
 
         public string Password = "";
+
+        public int SettingsFileVersion = 3;
 
         /// <summary>
         /// Finds a unique name in the TestList given a root. For example, if

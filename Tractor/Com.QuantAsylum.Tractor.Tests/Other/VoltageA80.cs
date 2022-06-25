@@ -60,16 +60,12 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
 
         public override bool IsRunnable()
         {
-            int val = HardwareMask & ((int)HardwareTypes.PowerSupply | (int)HardwareTypes.CurrentMeter);
-            return ((val & 0x14) == 0x14);
-        }
-
-        internal override int HardwareMask
-        {
-            get
+            if (Tm.TestClass is IVoltMeter && Tm.TestClass is IPowerSupply)
             {
-                return (int)HardwareTypes.PowerSupply | (int)HardwareTypes.CurrentMeter;
+                return true;
             }
+
+            return false;
         }
     }
 }

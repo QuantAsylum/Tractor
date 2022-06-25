@@ -86,12 +86,14 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             return "Measures the frequency response using a chirp and compares to a mask. NOTE: FFT should be >=32768.";
         }
 
-        internal override int HardwareMask
+        public override bool IsRunnable()
         {
-            get
+            if (Tm.TestClass is IAudioAnalyzer)
             {
-                return (int)HardwareTypes.AudioAnalyzer;
+                return true;
             }
+
+            return false;
         }
     }
 }

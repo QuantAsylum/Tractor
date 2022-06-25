@@ -16,7 +16,7 @@ using System.Threading;
 using System.Runtime.Serialization.Formatters;
 using System.Collections;
 
-namespace Com.QuantAsylum.Tractor.TestManagers
+namespace Com.QuantAsylum.Hardware
 {
     class QA401 : IInstrument, IAudioAnalyzer
     {
@@ -293,7 +293,7 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             return Qa401.LRVerifyPhase(bufferOffset);
         }
 
-        private QuantAsylum.QA401.PointD[] MarshallToQAPointD(PointD[] dataIn)
+        private QuantAsylum.QA401.PointD[] MarshallToQAPointD(QuantAsylum.QA401.PointD[] dataIn)
         {
             QuantAsylum.QA401.PointD[] dataOut = new QuantAsylum.QA401.PointD[dataIn.Length];
 
@@ -305,13 +305,13 @@ namespace Com.QuantAsylum.Tractor.TestManagers
             return dataOut;
         }
 
-        private PointD[] MarshallToPointD(QuantAsylum.QA401.PointD[] dataIn)
+        private QuantAsylum.QA401.PointD[] MarshallToPointD(QuantAsylum.QA401.PointD[] dataIn)
         {
-            PointD[] dataOut = new PointD[dataIn.Length];
+            QuantAsylum.QA401.PointD[] dataOut = new QuantAsylum.QA401.PointD[dataIn.Length];
 
             for (int i = 0; i < dataOut.Length; i++)
             {
-                dataOut[i] = new PointD { X = dataIn[i].X, Y = dataIn[i].Y };
+                dataOut[i] = new QuantAsylum.QA401.PointD { X = dataIn[i].X, Y = dataIn[i].Y };
             }
 
             return dataOut;

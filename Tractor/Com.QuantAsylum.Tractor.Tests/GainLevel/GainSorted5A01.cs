@@ -202,12 +202,14 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
                 "will be prompted in the pass/fail screen with a message corresponding to a particular gain range. This allows performance sorting by an operator.";
         }
 
-        internal override int HardwareMask
+        public override bool IsRunnable()
         {
-            get
+            if (Tm.TestClass is IAudioAnalyzer)
             {
-                return (int)HardwareTypes.AudioAnalyzer;
+                return true;
             }
+
+            return false;
         }
     }
 }

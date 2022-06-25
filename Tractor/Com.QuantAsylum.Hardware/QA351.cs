@@ -6,8 +6,9 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Web.Script.Serialization;
+using Tractor.Com.QuantAsylum.Tractor.TestManagers;
 
-namespace Tractor.Com.QuantAsylum.Tractor.TestManagers
+namespace Tractor.Com.QuantAsylum.Hardware
 {
     class QA351 : IInstrument, IVoltMeter
     {

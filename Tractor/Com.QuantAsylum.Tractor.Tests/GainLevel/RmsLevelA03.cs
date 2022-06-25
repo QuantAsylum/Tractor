@@ -88,12 +88,14 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
                    "within the specified limits, then 'pass = true' is returned.";
         }
 
-        internal override int HardwareMask
+        public override bool IsRunnable()
         {
-            get
+            if (Tm.TestClass is IAudioAnalyzer && Tm.TestClass is IProgrammableLoad)
             {
-                return (int)HardwareTypes.AudioAnalyzer | (int)HardwareTypes.ProgrammableLoad;
+                return true;
             }
+
+            return false;
         }
     }
 }

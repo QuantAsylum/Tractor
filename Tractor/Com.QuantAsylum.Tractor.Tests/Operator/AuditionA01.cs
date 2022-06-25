@@ -62,13 +62,14 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             return "Allows operator to audition a wave file. This can be helpful for checking volume and tone controls.";
         }
 
-        internal override int HardwareMask
+        public override bool IsRunnable()
         {
-            get
+            if (Tm.TestClass is IAudioAnalyzer)
             {
-                return (int)HardwareTypes.AudioAnalyzer;
+                return true;
             }
-        }
 
+            return false;
+        }
     }
 }

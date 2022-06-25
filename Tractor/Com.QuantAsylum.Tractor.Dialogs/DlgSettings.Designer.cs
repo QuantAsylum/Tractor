@@ -55,11 +55,11 @@
             this.button6 = new System.Windows.Forms.Button();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.textBox7 = new System.Windows.Forms.TextBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.checkBox5 = new System.Windows.Forms.CheckBox();
             this.label10 = new System.Windows.Forms.Label();
-            this.textBox7 = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -297,6 +297,7 @@
             // 
             // button6
             // 
+            this.button6.Enabled = false;
             this.button6.Location = new System.Drawing.Point(19, 83);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(101, 23);
@@ -308,6 +309,7 @@
             // checkBox4
             // 
             this.checkBox4.AutoSize = true;
+            this.checkBox4.Enabled = false;
             this.checkBox4.Location = new System.Drawing.Point(46, 18);
             this.checkBox4.Name = "checkBox4";
             this.checkBox4.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
@@ -316,6 +318,16 @@
             this.checkBox4.Text = "Use Database";
             this.checkBox4.UseVisualStyleBackColor = true;
             this.checkBox4.CheckedChanged += new System.EventHandler(this.checkBox4_CheckedChanged);
+            // 
+            // textBox7
+            // 
+            this.textBox7.Location = new System.Drawing.Point(124, 52);
+            this.textBox7.Name = "textBox7";
+            this.textBox7.Size = new System.Drawing.Size(351, 20);
+            this.textBox7.TabIndex = 21;
+            this.toolTip1.SetToolTip(this.textBox7, "If you specify a filename only, then .CSV will be appended AND it will be located" +
+        " in the default CSV directory. But you can specify a full path here if required." +
+        " ");
             // 
             // tabControl1
             // 
@@ -360,16 +372,6 @@
             this.label10.Size = new System.Drawing.Size(54, 13);
             this.label10.TabIndex = 22;
             this.label10.Text = "File Name";
-            // 
-            // textBox7
-            // 
-            this.textBox7.Location = new System.Drawing.Point(124, 52);
-            this.textBox7.Name = "textBox7";
-            this.textBox7.Size = new System.Drawing.Size(351, 20);
-            this.textBox7.TabIndex = 21;
-            this.toolTip1.SetToolTip(this.textBox7, "If you specify a filename only, then .CSV will be appended AND it will be located" +
-        " in the default CSV directory. But you can specify a full path here if required." +
-        " ");
             // 
             // tabPage2
             // 

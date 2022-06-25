@@ -1,29 +1,26 @@
-﻿using System;
+﻿using Com.QuantAsylum.Tractor.TestManagers;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Web.Script.Serialization;
 
-namespace Tractor.Com.QuantAsylum.HardwareXXXXXXXXX
+namespace Com.QuantAsylum.Hardware
 {
-    /// <summary>
-    /// Implents a simple REST interface to the QA450
-    /// </summary>
-    static class Qa450Hw
+    class QA450 : IInstrument, Tractor.TestManagers.IProgrammableLoad, ICurrentMeter, IPowerSupply
     {
         static HttpClient Client = new HttpClient();
 
         static string RootUrl;
 
-        static Qa450Hw()
+        public QA450()
         {
             SetRootUrl("http://localhost:9450");
         }
 
-        static void SetRootUrl(string rootUrl)
+        void SetRootUrl(string rootUrl)
         {
             RootUrl = rootUrl;
             Client = new HttpClient
@@ -32,71 +29,131 @@ namespace Tractor.Com.QuantAsylum.HardwareXXXXXXXXX
             };
         }
 
-        static public double  GetVersion()
+        public bool ConnectToDevice(out string result)
+        {
+            // Nothing special to do for REST device
+            result = "";
+            return true;
+        }
+
+        public void CloseConnection()
+        {
+            
+        }
+
+        public double GetVersion()
         {
             string result = GetSync(RootUrl + "/Status/Version", "Value");
             return Convert.ToDouble(result);
         }
 
-        static public void SetImpedance(int impedance)
+        public bool IsConnected()
+        {
+            // Do a version read and see if the correct version comes back
+            try
+            {
+                double current = GetVersion();
+                return true;
+            }
+            catch
+            {
+
+            }
+
+            return false;
+        }
+
+        public bool IsRunning()
+        {
+            return IsConnected();
+        }
+
+        public void LaunchApplication()
+        {
+        }
+
+        public void SetToDefaults()
+        {
+        }
+
+        public int[] GetSupportedImpedances()
+        {
+            return new int[] { 0, 4, 8 };
+        }
+
+        public void SetImpedance(int impedance)
         {
             if (impedance == 4)
             {
-                PutSync("/impedance", "Value", 4);
+                PutSync("/Settings/Impedance/4");
             }
             else if (impedance == 8)
             {
-                PutSync("/impedance", "Value", 8);
+                PutSync("/Settings/Impedance/8");
             }
             else if (impedance == 0)
             {
-                PutSync("/impedance", "Value", 0);
+                PutSync("/Settings/Impedance/0");
             }
             else
                 throw new NotImplementedException("Bad value in SetImpedance()");
         }
 
-        static public int GetImpedance()
+        public int GetImpedance()
         {
-            string result = GetSync(RootUrl + "/impedance", "Value");
+            string result = GetSync(RootUrl + "/Settings/Impedance", "Value");
             return Convert.ToInt32(result);
         }
 
-        static public float GetCurrent()
+        public float GetLoadTemperature()
         {
-            string result = GetSync(RootUrl + "/current", "Value");
-            return Convert.ToSingle(result);
+            throw new NotImplementedException();
         }
 
-        static public bool IsConnected()
+        public bool GetSupplyState()
         {
-            string result = GetSync(RootUrl + "/connection", "Value");
+            string result = GetSync(RootUrl + "/Settings/DutPower", "Value");
             return Convert.ToBoolean(result);
         }
 
-        /// <summary>
-        /// Sets the QA450 to a known state
-        /// </summary>
-        static public void SetToDefault()
-        {
-            PutSync("/default");
-        }
-
-        static public void SetDutPower(bool powerEnable)
+        public void SetSupplyState(bool powerEnable)
         {
             if (powerEnable)
-                PutSync("/dutpower", "Value", 1);
+                PutSync("/Settings/DutPower/1");
             else
-                PutSync("/dutpower", "Value", 0);
+                PutSync("/Settings/DutPower/0");
         }
 
-        static public bool GetDutPower()
+        float Voltage;
+        public void SetSupplyVoltage(float voltage)
         {
-            string result = GetSync(RootUrl + "/dutpower", "Value");
-            return Convert.ToBoolean(result);
+            // Doesn't do anything on QA450. Fake it.
+            Voltage = voltage;
         }
 
-        static private void PutSync(string url)
+        public float GetSupplyVoltage()
+        {
+            return Voltage;
+        }
+
+        public float GetDutCurrent(int averages = 1)
+        {
+            float sum = 0;
+            for (int i = 0; i < averages; i++)
+            {
+                string result = GetSync(RootUrl + "/Current", "Value");
+                sum += Convert.ToSingle(result);
+                Thread.Sleep(1);
+            }
+
+            return sum / averages;
+        }
+
+        /*******************************************************************/
+        /*********************** HELPERS for REST **************************/
+        /*******************************************************************/
+
+        private void PutSync(string url)
         {
             PutSync(url, "", 0);
         }
@@ -107,7 +164,7 @@ namespace Tractor.Com.QuantAsylum.HardwareXXXXXXXXX
         /// <param name="url"></param>
         /// <param name="token"></param>
         /// <param name="value"></param>
-        static private void PutSync(string url, string token, int value)
+        private void PutSync(string url, string token, int value)
         {
             string json;
 
@@ -131,10 +188,11 @@ namespace Tractor.Com.QuantAsylum.HardwareXXXXXXXXX
         /// <param name="url"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        static private string GetSync(string url, string token)
+        private string GetSync(string url, string token)
         {
             string content;
 
+            Client.DefaultRequestHeaders.Accept.Clear();
             Client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             var response = Client.GetAsync(url).Result;
             response.EnsureSuccessStatusCode();

@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 
-namespace Com.QuantAsylum.Tractor.TestManagers
+namespace Com.QuantAsylum.Hardware
 {
     class QA401H : IInstrument, IAudioAnalyzer
     {

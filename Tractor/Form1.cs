@@ -290,13 +290,12 @@ namespace Tractor
             }
             else if (tb.IsRunnable())
             {
-                tb.CheckValues(out string values);
-                s = string.Format("Description: {0}\n\nRunnable: Yes\n\nIssues: {1}", tb.GetTestDescription(), values == "" ? "None" : values);
+                tb.CheckValues(out string issues);
+                s = string.Format("Description: {0}\n\nRunnable: Yes\n\nIssues: {1}", tb.GetTestDescription(), issues == "" ? "None" : issues);
             }
             else
             {
-                s = string.Format("Description: {0}\n\nRunnable: No. The selected test class does not support this test.", tb.GetTestDescription());
-
+                s = string.Format("Description: {0}\n\nRunnable: No. The selected test class does not support this test. See Settings->Setup to adjust the test configuration.", tb.GetTestDescription());
             }
             label3.Text = s;
         }
@@ -436,7 +435,7 @@ namespace Tractor
             {
                 if (tb.IsRunnable() == false)
                 {
-                    MessageBox.Show("Not all tests are runnable. Make sure you have the correct class specified in Settings");
+                    MessageBox.Show($"Not all tests are runnable. The test '{tb}' requires hardware that isn't present. Make sure you have the correct hardware specified in Settings->Setup.");
                     return;
                 }
             }

@@ -154,12 +154,14 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
                 "into the amplifier. ";
         }
 
-        internal override int HardwareMask
+        public override bool IsRunnable()
         {
-            get
+            if (Tm.TestClass is IAudioAnalyzer && Tm.TestClass is IProgrammableLoad && Tm.TestClass is ICurrentMeter)
             {
-                return (int)HardwareTypes.AudioAnalyzer | (int)HardwareTypes.ProgrammableLoad | (int)HardwareTypes.CurrentMeter;
+                return true;
             }
+
+            return false;
         }
     }
 }

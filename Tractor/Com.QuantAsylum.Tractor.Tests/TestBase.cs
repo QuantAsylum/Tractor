@@ -99,20 +99,20 @@ namespace Com.QuantAsylum.Tractor.Tests
     //
     public class TestBase
     {
-        [Flags]
-        internal enum HardwareTypes { AudioAnalyzer = 0x01, ProgrammableLoad = 0x02, CurrentMeter = 0x04, PowerSupply = 0x10 }
+        //[Flags]
+        //internal enum HardwareTypes { AudioAnalyzer = 0x01, ProgrammableLoad = 0x02, CurrentMeter = 0x04, PowerSupply = 0x10 }
 
         /// <summary>
         /// Returns a value indicating the hardware required to run this test
         /// </summary>
-        internal virtual int HardwareMask
-        {
-            get
-            {
-                return 0;
-            }
+        //internal virtual int HardwareMask
+        //{
+        //    get
+        //    {
+        //        return 0;
+        //    }
  
-        }
+        //}
 
         internal bool RunTest { get; set; } = true;
 
@@ -207,35 +207,13 @@ namespace Com.QuantAsylum.Tractor.Tests
         }
 
         /// <summary>
-        /// Allows test to determine if all the required pieces are present
+        /// Allows test to determine if all the required pieces are present. Each class should define what instruments
+        /// are required if additional hardware is needed.
         /// </summary>
         /// <returns></returns>
         public virtual bool IsRunnable()
         {
-            bool success = true;
-
-            if ((HardwareMask & (int)HardwareTypes.AudioAnalyzer) > 0 )
-            {
-                if (Tm.TestClass is IAudioAnalyzer == false)
-                    success = false;
-            }
-            if ((HardwareMask & (int)HardwareTypes.CurrentMeter) > 0)
-            {
-                if (Tm.TestClass is ICurrentMeter == false)
-                    success = false;
-            }
-            if ((HardwareMask & (int)HardwareTypes.PowerSupply) > 0)
-            {
-                if (Tm.TestClass is IPowerSupply == false)
-                    success = false;
-            }
-            if ((HardwareMask & (int)HardwareTypes.ProgrammableLoad) > 0)
-            {
-                if (Tm.TestClass is IProgrammableLoad == false)
-                    success = false;
-            }
-
-            return success;
+            return true;
         }
 
         /// <summary>
