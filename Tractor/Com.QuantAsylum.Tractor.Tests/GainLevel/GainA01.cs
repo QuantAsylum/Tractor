@@ -1,5 +1,6 @@
 ﻿using Com.QuantAsylum.Tractor.TestManagers;
 using System;
+using Tractor;
 using Tractor.Com.QuantAsylum.Tractor.Tests;
 
 namespace Com.QuantAsylum.Tractor.Tests.GainTests
@@ -25,14 +26,16 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         [ObjectEditorAttribute(Index = 240, DisplayText = "Maximum Gain to Pass (dB)", MinValue = -100, MaxValue = 100, MustBeGreaterThanIndex = 230)]
         public float MaximumPassGain = -9.5f;
 
-        [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
-        public int AnalyzerInputRange = 6;
+        [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range")]
+        public AudioAnalyzerInputRanges AnalyzerInputRange = new AudioAnalyzerInputRanges() { InputRange = 6 };
 
         public GainA01() : base()
         {
             Name = this.GetType().Name;
             _TestType = TestTypeEnum.LevelGain;
         }
+
+       
 
         public override void DoTest(string title, out TestResult tr)
         {
@@ -42,7 +45,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             Tm.SetToDefaults();
             SetupBaseTests();
 
-            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange.InputRange);
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
 
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, AnalyzerOutputLevel, TestFrequency);

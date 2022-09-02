@@ -20,8 +20,8 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         //[ObjectEditorAttribute(Index = 220, DisplayText = "Pre-analyzer Input Gain (dB)", MinValue = -100, MaxValue = 100)]
         //public float ExternalAnalyzerInputGain = 0;
 
-        [ObjectEditorAttribute(Index = 225, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
-        public int AnalyzerInputRange = 6;
+        [ObjectEditorAttribute(Index = 225, DisplayText = "Analyzer Input Range")]
+        public AudioAnalyzerInputRanges AnalyzerInputRange = new AudioAnalyzerInputRanges() { InputRange = 6 };
 
         //---------------
 
@@ -111,7 +111,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             SetupBaseTests();
 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange.InputRange);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, AnalyzerOutputLevel, TestFrequency);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, AnalyzerOutputLevel, TestFrequency);
 

@@ -23,8 +23,8 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         [ObjectEditorAttribute(Index = 230, DisplayText = "Mask File Name", IsFileName = true, MaxLength = 512)]
         public string MaskFileName = "";
 
-        [ObjectEditorAttribute(Index = 240, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
-        public int AnalyzerInputRange = 6;
+        [ObjectEditorAttribute(Index = 240, DisplayText = "Analyzer Input Range")]
+        public AudioAnalyzerInputRanges AnalyzerInputRange = new AudioAnalyzerInputRanges() { InputRange = 6 };
 
         [ObjectEditorAttribute(Index = 250, DisplayText = "Check Phase")]
         public bool CheckPhase = false;
@@ -44,7 +44,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             SetupBaseTests();
 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange.InputRange);
 
             ((IAudioAnalyzer)Tm.TestClass).DoFrAquisition(AnalyzerOutputLevel, WindowingMs/1000, SmoothingDenominator);
             ((IAudioAnalyzer)Tm.TestClass).TestMask(MaskFileName, false, false, true, out bool passLeft, out bool passRight, out bool passMath);
@@ -61,7 +61,6 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
                 if (passCount != 2)
                     passPhase = false;
             }
-
 
             tr.Pass = passMath && passPhase;
 

@@ -23,8 +23,8 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
         [ObjectEditorAttribute(Index = 210, DisplayText = "Analyzer Output Level (dBV)", MinValue = -50, MaxValue = 6)]
         public float AnalyzerOutputLevel = -10;
 
-        [ObjectEditorAttribute(Index = 215, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
-        public int AnalyzerInputRange = 6;
+        [ObjectEditorAttribute(Index = 215, DisplayText = "Analyzer Input Range")]
+        public AudioAnalyzerInputRanges AnalyzerInputRange = new AudioAnalyzerInputRanges() { InputRange = 6 };
 
         public ImdA01() : base()
         {
@@ -41,7 +41,7 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
             SetupBaseTests();
 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange.InputRange);
 
 
             // The RMS of two distinct but equal tones is 3 dBV above level of the tones

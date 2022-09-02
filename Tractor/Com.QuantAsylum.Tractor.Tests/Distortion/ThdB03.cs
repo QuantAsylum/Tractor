@@ -28,8 +28,8 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
         [ObjectEditorAttribute(Index = 250, DisplayText = "Load Impedance (ohms)", ValidInts = new int[] { 8, 4 })]
         public int LoadImpedance = 8;
 
-        [ObjectEditorAttribute(Index = 260, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
-        public int InputRange = 6;
+        [ObjectEditorAttribute(Index = 260, DisplayText = "Analyzer Input Range")]
+        public AudioAnalyzerInputRanges AnalyzerInputRange = new AudioAnalyzerInputRanges() { InputRange = 6 };
 
         public ThdB03() : base()
         {
@@ -46,7 +46,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             SetupBaseTests();
 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(InputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange.InputRange);
             ((IProgrammableLoad)Tm.TestClass).SetImpedance(LoadImpedance);
 
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, OutputLevel, Freq);

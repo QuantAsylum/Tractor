@@ -20,8 +20,8 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         [ObjectEditorAttribute(Index = 215, DisplayText = "Mask File Name", IsFileName = true, MaxLength = 512)]
         public string MaskFileName = "";
 
-        [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
-        public int AnalyzerInputRange = 6;
+        [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range")]
+        public AudioAnalyzerInputRanges AnalyzerInputRange = new AudioAnalyzerInputRanges() { InputRange = 6 };
 
         [ObjectEditorAttribute(Index = 260, DisplayText = "Load Impedance (ohms)", ValidInts = new int[] { 8, 4 })]
         public int ProgrammableLoadImpedance = 8;
@@ -43,7 +43,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             ((IProgrammableLoad)Tm.TestClass).SetImpedance(ProgrammableLoadImpedance);
 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange.InputRange);
             ((IAudioAnalyzer)Tm.TestClass).DoFrAquisition(AnalyzerOutputLevel, 0, SmoothingDenominator);
             ((IAudioAnalyzer)Tm.TestClass).TestMask(MaskFileName, LeftChannel, RightChannel, false, out bool passLeft, out bool passRight, out _);
 

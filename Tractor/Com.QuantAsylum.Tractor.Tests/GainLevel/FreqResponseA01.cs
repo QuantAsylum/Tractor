@@ -20,14 +20,8 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
         [ObjectEditorAttribute(Index = 215, DisplayText = "Mask File Name", IsFileName = true, MaxLength = 512)]
         public string MaskFileName = "";
 
-        [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
-        public int AnalyzerInputRange = 6;
-
-        //[ObjectEditorAttribute(Index = 270, DisplayText = "Display Y Max)", MinValue = -200, MaxValue = 200, MustBeGreaterThanIndex = 280)]
-        //public int YMax = 10;
-
-        //[ObjectEditorAttribute(Index = 280, DisplayText = "Display Y Min)", MinValue = -200, MaxValue = 200)]
-        //public int YMin = -20;
+        [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range")]
+        public AudioAnalyzerInputRanges AnalyzerInputRange = new AudioAnalyzerInputRanges() { InputRange = 6 };
 
         public FreqResponseA01() : base()
         {
@@ -45,7 +39,7 @@ namespace Com.QuantAsylum.Tractor.Tests.GainTests
             SetupBaseTests();
 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange.InputRange);
             ((IAudioAnalyzer)Tm.TestClass).DoFrAquisition(AnalyzerOutputLevel, 0, SmoothingDenominator);
             ((IAudioAnalyzer)Tm.TestClass).TestMask(MaskFileName, LeftChannel, RightChannel, false, out bool passLeft, out bool passRight, out _);
 

@@ -35,8 +35,8 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
         [ObjectEditorAttribute(Index = 215, DisplayText = "Load Impedance", ValidInts = new int[] { 8, 4 })]
         public int ProgrammableLoadImpedance = 8;
 
-        [ObjectEditorAttribute(Index = 220, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
-        public int AnalyzerInputRange = 6;
+        [ObjectEditorAttribute(Index = 220, DisplayText = "Analyzer Input Range")]
+        public AudioAnalyzerInputRanges AnalyzerInputRange = new AudioAnalyzerInputRanges() { InputRange = 6 };
 
 
         public ImdA03() : base()
@@ -54,7 +54,7 @@ namespace Com.QuantAsylum.Tractor.Tests.IMDTests
             SetupBaseTests();
 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange.InputRange);
 
             ((IProgrammableLoad)Tm.TestClass).SetImpedance(ProgrammableLoadImpedance);
 

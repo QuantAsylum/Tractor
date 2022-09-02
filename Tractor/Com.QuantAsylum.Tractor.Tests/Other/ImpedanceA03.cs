@@ -22,8 +22,8 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
         [ObjectEditorAttribute(Index = 230, DisplayText = "Maximum Impedance to Pass (Ω)", MinValue = 0, MaxValue = 100, MustBeGreaterThanIndex = 220)]
         public float MaximumPassImpedance = 0.2f;
 
-        [ObjectEditorAttribute(Index = 240, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
-        public int AnalyzerInputRange = 6;
+        [ObjectEditorAttribute(Index = 240, DisplayText = "Analyzer Input Range")]
+        public AudioAnalyzerInputRanges AnalyzerInputRange = new AudioAnalyzerInputRanges() { InputRange = 6 };
 
         public ImpedanceA03() : base()
         {
@@ -43,7 +43,7 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             SetupBaseTests();
 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange.InputRange);
 
             // First, we make 8 ohm measurement
             ((IProgrammableLoad)Tm.TestClass).SetImpedance(8);

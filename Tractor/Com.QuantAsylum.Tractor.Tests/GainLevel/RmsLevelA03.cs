@@ -20,8 +20,8 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
         [ObjectEditorAttribute(Index = 250, DisplayText = "Load Impedance (ohms)", ValidInts = new int[] { 8, 4 })]
         public int ProgrammableLoadImpedance = 8;
 
-        [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
-        public int AnalyzerInputRange = 6;
+        [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range")]
+        public AudioAnalyzerInputRanges AnalyzerInputRange = new AudioAnalyzerInputRanges() { InputRange = 6 };
 
         [ObjectEditorAttribute(Index = 260, DisplayText = "RMS Measurement Start (Hz)", MinValue = 10, MaxValue = 20000)]
         public float StartFreq = 20;
@@ -44,7 +44,7 @@ namespace Com.QuantAsylum.Tractor.Tests.NoiseFloors
             SetupBaseTests();
 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange.InputRange);
             ((IProgrammableLoad)Tm.TestClass).SetImpedance(ProgrammableLoadImpedance);
 
             // Disable generators

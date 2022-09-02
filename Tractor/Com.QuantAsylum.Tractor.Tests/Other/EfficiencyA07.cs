@@ -33,8 +33,8 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
         [ObjectEditorAttribute(Index = 260, DisplayText = "Load Impedance (ohms)", ValidInts = new int[] { 8, 4 })]
         public int ProgrammableLoadImpedance = 8;
 
-        [ObjectEditorAttribute(Index = 270, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
-        public int AnalyzerInputRange = 26;
+        [ObjectEditorAttribute(Index = 270, DisplayText = "Analyzer Input Range")]
+        public AudioAnalyzerInputRanges AnalyzerInputRange = new AudioAnalyzerInputRanges() { InputRange = 6 };
 
         public EfficiencyA07() : base()
         {
@@ -53,7 +53,7 @@ namespace Com.QuantAsylum.Tractor.Tests.Other
             ((IProgrammableLoad)Tm.TestClass).SetImpedance(ProgrammableLoadImpedance);
 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange.InputRange);
            
             if (LeftChannel == true && RightChannel == false)
             {

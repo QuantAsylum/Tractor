@@ -1,4 +1,5 @@
-﻿using Com.QuantAsylum.Tractor.Tests;
+﻿using Com.QuantAsylum.Tractor.TestManagers;
+using Com.QuantAsylum.Tractor.Tests;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -41,6 +42,11 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
     public class ObjectEditorSpacer
     {
 
+    }
+
+    public class AudioAnalyzerInputRanges
+    {
+        public int InputRange;
     }
 
     class FileLoadButton : Button
@@ -117,7 +123,14 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                     tb.TextChanged += ValueChanged;
                     Tlp.Controls.Add(tb, 1, row);
                 }
-                if (o is uint)
+                else if (o is AudioAnalyzerInputRanges)
+                {
+                    AudioAnalyzerInputRanges value = (AudioAnalyzerInputRanges)fi.GetValue(ObjectToEdit);
+                    TextBox tb = new TextBox() { Text = value.InputRange.ToString(), Anchor = AnchorStyles.Left, AutoSize = true };
+                    tb.TextChanged += ValueChanged;
+                    Tlp.Controls.Add(tb, 1, row);
+                }
+                else if (o is uint)
                 {
                     uint value = (uint)fi.GetValue(ObjectToEdit);
                     TextBox tb = new TextBox() { Text = value.ToString(), Anchor = AnchorStyles.Left, AutoSize = true };
@@ -326,7 +339,6 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                         {
                             valueOk = false;
                             errMsg = "Value is not an integer";
-
                         }
                         else if (f[i].GetCustomAttribute<ObjectEditorAttribute>().MustBePowerOfTwo ? !IsPowerOfTwo(result) : false)
                         {
@@ -371,6 +383,35 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
                         {
                             if (commit)
                                 f[i].SetValue(ObjectToEdit, result);
+
+                            Tlp.GetControlFromPosition(3, i).Text = errMsg;
+                            Tlp.GetControlFromPosition(0, i).ForeColor = Color.Black;
+                        }
+                        else
+                        {
+                            Tlp.GetControlFromPosition(3, i).Text = errMsg;
+                            Tlp.GetControlFromPosition(0, i).ForeColor = Color.Red;
+                            retVal = false;
+                        }
+                    }
+                    else if (f[i].GetValue(ObjectToEdit) is AudioAnalyzerInputRanges)
+                    {
+                        bool valueOk = true;
+                        string errMsg = "";
+                        //int[] ValidInputLevels = t   ((f[i].GetCustomAttribute<ObjectEditorAttribute>().ValidInts;
+
+                        if (int.TryParse(Tlp.GetControlFromPosition(1, i).Text, out int result) == false ||
+                            ((IAudioAnalyzer)ObjectToEdit.Tm.TestClass).GetInputRanges().Contains(result) == false)
+                        {
+                            valueOk = false;
+                            string validRange = string.Join(", ", ((IAudioAnalyzer)ObjectToEdit.Tm.TestClass).GetInputRanges());
+                            errMsg = $"Value isn't a valid input range ({validRange} dBV)";
+                        }
+
+                        if (valueOk)
+                        {
+                            if (commit)
+                                f[i].SetValue(ObjectToEdit, new AudioAnalyzerInputRanges() { InputRange = result });
 
                             Tlp.GetControlFromPosition(3, i).Text = errMsg;
                             Tlp.GetControlFromPosition(0, i).ForeColor = Color.Black;
@@ -484,6 +525,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests
 
                         Tlp.GetControlFromPosition(3, i).Text = "";
                     }
+                    
                 }
             }
             catch (Exception ex)

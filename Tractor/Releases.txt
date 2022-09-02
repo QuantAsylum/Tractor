@@ -1,4 +1,7 @@
-﻿1.1
+﻿1.101
+- Fixed bug where QA40x supported input levels weren't being correctly used
+
+1.1
 - Added support for QA40x
 - Disabled support for cloud audit database in new projects
 - Simplified and clarified error reporting for tests not available. That is, if you try to make a voltage measurement

@@ -25,8 +25,8 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
         [ObjectEditorAttribute(Index = 240, DisplayText = "Maximum THD to Pass (dB)", MinValue = -150, MaxValue = 10, MustBeGreaterThanIndex = 230)]
         public float MaximumOKTHD = -100;
 
-        [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range", ValidInts = new int[] { 6, 26 })]
-        public int InputRange = 6;
+        [ObjectEditorAttribute(Index = 250, DisplayText = "Analyzer Input Range")]
+        public AudioAnalyzerInputRanges AnalyzerInputRange = new AudioAnalyzerInputRanges() { InputRange = 6 };
 
         public ThdA01() : base()
         {
@@ -43,7 +43,7 @@ namespace Tractor.Com.QuantAsylum.Tractor.Tests.THDs
             SetupBaseTests();
 
             ((IAudioAnalyzer)Tm.TestClass).AudioAnalyzerSetTitle(title);
-            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(InputRange);
+            ((IAudioAnalyzer)Tm.TestClass).SetInputRange(AnalyzerInputRange.InputRange);
 
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen1(true, OutputLevel, Freq);
             ((IAudioAnalyzer)Tm.TestClass).AudioGenSetGen2(false, OutputLevel, Freq);
