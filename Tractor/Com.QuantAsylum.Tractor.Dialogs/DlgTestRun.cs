@@ -166,6 +166,12 @@ namespace Com.QuantAsylum.Tractor.Dialogs
 
                     for (int i = 0; i < Form1.AppSettings.TestList.Count; i++)
                     {
+                        if (Form1.AppSettings.TestList[i].RunTest == false)
+                        {
+                            dataGridView1[(int)ColText.PASSFAIL, i].Value = "Skipped";
+                            continue;
+                        }
+
                         if (Abort)
                         {
                             dataGridView1.Invoke((MethodInvoker)delegate { dataGridView1[(int)ColText.PASSFAIL, i].Value = "Aborted..."; });
